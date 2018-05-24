@@ -1,1 +1,1 @@
-# ViesysAirships
+# Viesys Airships - A Minecraft mod.

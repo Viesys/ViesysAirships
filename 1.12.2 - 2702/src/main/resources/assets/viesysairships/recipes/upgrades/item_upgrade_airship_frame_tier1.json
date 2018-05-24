@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "viesysairships:upgrades/item_upgrade_airship_frame",
+  "pattern": [
+    "FLF",
+    "A#A",
+    "FLF"
+  ],
+  "key": {
+    "F": {
+      "item": "viesysairships:upgrades/item_upgrade_airship_frame",
+      "data": 0
+    },
+    "L": {
+      "item": "viesysairships:item_logic_chip"
+    },
+    "#": {
+      "item": "viesysairships:item_airship_frame"
+    },
+    "A": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "viesysairships:upgrades/item_upgrade_airship_frame",
+    "data": 1,
+    "count": 1
+  }
+}
