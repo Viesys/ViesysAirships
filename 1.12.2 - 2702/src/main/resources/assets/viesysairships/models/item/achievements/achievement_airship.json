@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "viesysairships:items/achievements/achievement_airship_create"
-    }
-}
