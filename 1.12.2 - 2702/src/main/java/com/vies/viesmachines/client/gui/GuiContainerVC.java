@@ -6,22 +6,19 @@ import java.io.IOException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import com.vies.viesmachines.api.GuiVC;
+import com.vies.viesmachines.api.GuiVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.Keybinds;
 import com.vies.viesmachines.client.gui.buttons.GuiButtonMenuCustomizeVC;
 import com.vies.viesmachines.client.gui.buttons.GuiButtonMenuMainVC;
 import com.vies.viesmachines.client.gui.buttons.GuiButtonMenuModuleVC;
 import com.vies.viesmachines.client.gui.buttons.GuiButtonMenuRedstoneVC;
-import com.vies.viesmachines.client.gui.buttons.GuiButtonMenuUpgradeVC;
-import com.vies.viesmachines.common.entity.airships.EntityAirshipCore;
+import com.vies.viesmachines.client.gui.buttons.GuiButtonMenuStatsVC;
 import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
 import com.vies.viesmachines.network.NetworkHandler;
-import com.vies.viesmachines.network.server.airship.customize.MessageGuiCustomizeMenu;
-import com.vies.viesmachines.network.server.airship.main.MessageGuiMainMenu;
-import com.vies.viesmachines.network.server.airship.module.MessageGuiModuleMenu;
-import com.vies.viesmachines.network.server.airship.redstone.MessageGuiRedstoneMenu;
-import com.vies.viesmachines.network.server.airship.upgrade.MessageGuiUpgradeMenu;
+import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuCustomize;
+import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuMain;
+import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuStats;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -31,6 +28,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
@@ -40,16 +38,19 @@ import net.minecraft.util.text.TextFormatting;
 
 public class GuiContainerVC extends GuiContainer {
 	
+	protected int modelRotationHorizontal;
+	protected boolean modelRidingEntity;
+	
 	public static int textRedNumber;
 	public static int textGreenNumber;
 	public static int textBlueNumber;
 	
-	public static boolean frameTransparentInfo;
-	public static boolean balloonTransparentInfo;
+	//public static boolean frameTransparentInfo;
+	//public static boolean balloonTransparentInfo;
 	
 	public static String textNameStorage;
 	
-	public static int storedRedstone;
+	public static int ammoToApply;
 	
 	public static int metaInfo;
 	public static int itemstackInfo;
@@ -58,8 +59,8 @@ public class GuiContainerVC extends GuiContainer {
 	public static int supporterHeadInfo;
 	public static int holidayInfo;
 	
-	public static int metaFrameInfo;
-	public static int metaBalloonInfo;
+	//public static int metaFrameInfo;
+	//public static int metaBalloonInfo;
 	
 	protected IInventory playerInv;
 	protected EntityMachineBase machine;
@@ -77,9 +78,7 @@ public class GuiContainerVC extends GuiContainer {
 		this.ySize = 222;
 	}
 	
-	/**
-     * Adds the buttons (and other controls) to the screen in question.
-     */
+	/** Adds the buttons (and other controls) to the screen in question.*/
     @Override
     public void initGui() 
     {
@@ -88,39 +87,50 @@ public class GuiContainerVC extends GuiContainer {
     	buttonList.clear();
     	Keyboard.enableRepeatEvents(true);
     	
-    	GuiVC.buttonMM1 = new GuiButtonMenuMainVC(1001, this.guiLeft - 35, this.guiTop + 8 + (16 * 0), 36, 14, "", 0);
-    	GuiVC.buttonMM2 = new GuiButtonMenuUpgradeVC(1002, this.guiLeft - 35, this.guiTop + 8 + (16 * 1), 36, 14, "", 0);
-    	GuiVC.buttonMM3 = new GuiButtonMenuCustomizeVC(1003, this.guiLeft - 35, this.guiTop + 8 + (16 * 2), 36, 14, "", 0);
-    	GuiVC.buttonMM4 = new GuiButtonMenuModuleVC(1004, this.guiLeft - 35, this.guiTop + 8 + (16 * 3), 36, 14, "", 0);
-    	GuiVC.buttonMM5 = new GuiButtonMenuRedstoneVC(1005, this.guiLeft - 35, this.guiTop + 8 + (16 * 6), 36, 14, "", 0);
+    	GuiVM.buttonMM1 = new GuiButtonMenuMainVC(1001, this.guiLeft - 35, this.guiTop + 8 + (16 * 0)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM2 = new GuiButtonMenuStatsVC(1002, this.guiLeft - 35, this.guiTop + 8 + (16 * 1)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM3 = new GuiButtonMenuCustomizeVC(1003, this.guiLeft - 35, this.guiTop + 8 + (16 * 2)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM4 = new GuiButtonMenuModuleVC(1004, this.guiLeft - 35, this.guiTop + 8 + (16 * 3)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM5 = new GuiButtonMenuRedstoneVC(1005, this.guiLeft - 35, this.guiTop + 8 + (16 * 6)+50, 36, 14, "", 0);
     }
     
-    /**
-     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
-     */
+    /** Called by the controls from the buttonList when activated. (Mouse pressed for buttons) */
 	@Override
     protected void actionPerformed(GuiButton parButton) 
     {
 		if (parButton.id == 1001)
 	    {
-			NetworkHandler.sendToServer(new MessageGuiMainMenu());
+			NetworkHandler.sendToServer(new MessageGuiMachineMenuMain());
 	    }
 		if (parButton.id == 1002)
 	    {
-			NetworkHandler.sendToServer(new MessageGuiUpgradeMenu());
+			NetworkHandler.sendToServer(new MessageGuiMachineMenuStats());
 	    }
 		if (parButton.id == 1003)
 	    {
-			NetworkHandler.sendToServer(new MessageGuiCustomizeMenu());
+			NetworkHandler.sendToServer(new MessageGuiMachineMenuCustomize());
 	    }
 		if (parButton.id == 1004)
 	    {
-			NetworkHandler.sendToServer(new MessageGuiModuleMenu());
+			//NetworkHandler.sendToServer(new MessageGuiModuleMenu());
 	    }
 		if (parButton.id == 1005)
 	    {
-			NetworkHandler.sendToServer(new MessageGuiRedstoneMenu());
+			//NetworkHandler.sendToServer(new MessageGuiRedstoneMenu());
 	    }
+		
+		// Preview Undo:
+		if (parButton.id == 11)
+	    {
+			this.modelRotationHorizontal = 160;
+		}
+		
+		// Preview Toggle Riding Entity:
+		if (parButton.id == 12
+		|| parButton.id == 13)
+	    {
+			this.modelRidingEntity = !this.modelRidingEntity;
+		}
 		
         this.buttonList.clear();
         this.initGui();
@@ -130,33 +140,56 @@ public class GuiContainerVC extends GuiContainer {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
 	{
-		//Draws the left Redstone extension for the current Redstone amount
-		this.drawRect(this.guiLeft - 35, this.guiTop + 117, this.guiLeft + 1, this.guiTop + 137, Color.BLACK.getRGB());
-		this.drawRect(this.guiLeft - 34, this.guiTop + 118, this.guiLeft, this.guiTop + 136, Color.LIGHT_GRAY.getRGB());
-		this.drawRect(this.guiLeft - 32, this.guiTop + 120, this.guiLeft - 2, this.guiTop + 134, Color.BLACK.getRGB());
+		int x = 110+5;
+		int x1 = 91+5;
+		
+		// Draws the top left extension for the current Health amount:
+		this.drawRect(this.guiLeft - 35, this.guiTop + 117-x, this.guiLeft + 1, this.guiTop + 137-x, Color.BLACK.getRGB());
+		this.drawRect(this.guiLeft - 34, this.guiTop + 118-x, this.guiLeft, this.guiTop + 136-x, Color.LIGHT_GRAY.getRGB());
+		this.drawRect(this.guiLeft - 32, this.guiTop + 120-x, this.guiLeft - 2, this.guiTop + 134-x, Color.BLACK.getRGB());
+		
+		// Draws the bottom left extension for the current Energy amount:
+		this.drawRect(this.guiLeft - 35, this.guiTop + 117-x1, this.guiLeft + 1, this.guiTop + 137-x1, Color.BLACK.getRGB());
+		this.drawRect(this.guiLeft - 34, this.guiTop + 118-x1, this.guiLeft, this.guiTop + 136-x1, Color.LIGHT_GRAY.getRGB());
+		this.drawRect(this.guiLeft - 32, this.guiTop + 120-x1, this.guiLeft - 2, this.guiTop + 134-x1, Color.BLACK.getRGB());
 	}
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
-		//Balance
+		// Health label:
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(-16.5, 121.5, 0);
+			GlStateManager.translate(-16.5, 7, 0);
 			GlStateManager.scale(0.5, 0.5, 0.5);
-			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(References.localNameVC("vc.main.available"), 0, false, TextFormatting.DARK_GREEN), 0, 0, Color.WHITE.getRGB());
+			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(References.localNameVC("viesmachines.gui.tt.health.0"), 0, false, TextFormatting.RED, 0), 0, 0, Color.WHITE.getRGB());
+		}
+		GlStateManager.popMatrix();
+		// Energy label:
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(-16.5, 7+19, 0);
+			GlStateManager.scale(0.5, 0.5, 0.5);
+			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(References.localNameVC("viesmachines.gui.tt.energy.0"), 0, false, TextFormatting.YELLOW, 1), 0, 0, Color.WHITE.getRGB());
 		}
 		GlStateManager.popMatrix();
 		
-		//Redstone amount
+		// Health amount:
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(-16.5, 127, 0);
+			GlStateManager.translate(-16.5, 12, 0);
 			GlStateManager.scale(0.75, 0.75, 0.75);
 			
-			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(Integer.toString(7
-					//this.airship.getStoredRedstone()
-					), 0, false, TextFormatting.WHITE), 0, 0, Color.WHITE.getRGB());
+			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(Integer.toString((int)this.machine.getHealth()), 0, false, TextFormatting.WHITE, 0), 0, 0, Color.WHITE.getRGB());
+		}
+		GlStateManager.popMatrix();
+		// Energy amount:
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(-16.5, 12+19, 0);
+			GlStateManager.scale(0.75, 0.75, 0.75);
+			
+			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(Integer.toString((int)this.machine.getEnergy()), 0, false, TextFormatting.WHITE, 0), 0, 0, Color.WHITE.getRGB());
 		}
 		GlStateManager.popMatrix();
 	}
@@ -176,7 +209,7 @@ public class GuiContainerVC extends GuiContainer {
 	public void updateScreen()
     {
         super.updateScreen();
-
+        
         if(!this.mc.player.isEntityAlive() 
          || this.mc.player.isDead
         || !this.mc.player.isRiding())
@@ -187,49 +220,63 @@ public class GuiContainerVC extends GuiContainer {
 	
 	//==============================
 	
-	/**
-	 * Makes the inserted string flash.
-	 */
-	protected static String stringToFlashGolden(String parString, int parShineLocation, boolean parReturnToBlack, TextFormatting colorIn)
+    /** Makes the inserted string centered with no shadow. */
+    public void centeredString(FontRenderer fontRendererIn, String text, int x, int y, int color)
+    {
+        fontRendererIn.drawString(text, (x - fontRendererIn.getStringWidth(text) / 2), y, color);
+    }
+    
+	/** Makes the inserted string flash. */
+	protected static String stringToFlashGolden(String parString, int parShineLocation, boolean parReturnToBlack, TextFormatting colorIn, int colorTypeIn)
 	{
-	   int stringLength = parString.length();
-	   
-	   if(stringLength < 1)
-	   {
-	      return "";
-	   }
-	   
-	   String outputString = "";
-	   
-	   for(int i = 0; i < stringLength; i++)
-	   {
-	      if((i + parShineLocation+Minecraft.getSystemTime() / 20) % 68 == 0)
-	      {
-	         outputString = outputString + TextFormatting.WHITE + parString.substring(i, i + 1);    
-	      }
-	      else if((i + parShineLocation+Minecraft.getSystemTime() / 20) % 68 == 1)
-	      {
-	          outputString = outputString + TextFormatting.YELLOW + parString.substring(i, i + 1);    
-	      }
-	      else if((i + parShineLocation+Minecraft.getSystemTime() / 20) % 68 == 87)
-	      {
-	         outputString = outputString + TextFormatting.YELLOW + parString.substring(i, i + 1);    
-	      }
-	      else
-	      {
-	         outputString = outputString + colorIn + parString.substring(i, i + 1);        
-	      }
-	   }
-	   
-	   // return color to a common one after (most chat is white, but for other GUI might want black)
-	   if(parReturnToBlack)
-	   {
-	      return outputString + TextFormatting.BLACK;
-	   }
-	   
-	   return outputString + TextFormatting.WHITE;
+		int stringLength = parString.length();
+		
+		TextFormatting color1 = TextFormatting.WHITE;
+		TextFormatting color2 = TextFormatting.YELLOW;
+		
+		if (colorTypeIn == 1)
+		{
+			color1 = TextFormatting.LIGHT_PURPLE;
+			color2 = TextFormatting.DARK_PURPLE;
+		}
+		
+		if(stringLength < 1)
+		{
+			return "";
+		}
+		
+		String outputString = "";
+		
+		for(int i = 0; i < stringLength; i++)
+		{
+			if((i + parShineLocation+Minecraft.getSystemTime() / 20) % 68 == 0)
+			{
+				outputString = outputString + color1 + parString.substring(i, i + 1);    
+			}
+			else if((i + parShineLocation+Minecraft.getSystemTime() / 20) % 68 == 1)
+			{
+				outputString = outputString + color2 + parString.substring(i, i + 1);    
+			}
+			else if((i + parShineLocation+Minecraft.getSystemTime() / 20) % 68 == 87)
+			{
+				outputString = outputString + color2 + parString.substring(i, i + 1);    
+			}
+			else
+			{
+				outputString = outputString + colorIn + parString.substring(i, i + 1);        
+			}
+		}
+		
+		// Return color to a common one after (most chat is white, but for other GUI might want black):
+		if(parReturnToBlack)
+		{
+			return outputString + TextFormatting.BLACK;
+		}
+		
+		return outputString + TextFormatting.WHITE;
 	}
 	
+	/** Makes the inserted string rainbow colored. */
 	protected static String stringToRainbow(String parString, boolean parReturnToBlack)
 	{
 	   int stringLength = parString.length();
@@ -255,7 +302,8 @@ public class GuiContainerVC extends GuiContainer {
 	   {
 	      outputString = outputString+colorChar[i%8]+parString.substring(i, i+1);
 	   }
-	   // return color to a common one after (most chat is white, but for other GUI might want black)
+	   
+	   // Return color to a common one after (most chat is white, but for other GUI might want black):
 	   if (parReturnToBlack)
 	   {
 	      return outputString+TextFormatting.BLACK;
@@ -263,14 +311,13 @@ public class GuiContainerVC extends GuiContainer {
 	   return outputString+TextFormatting.WHITE;
 	}
     
+	/** Get the instance of the font renderer. */
     protected FontRenderer getFontRenderer()
     {
         return this.mc.fontRenderer;
     }
 	
-	/**
-     * Draws an ItemStack.
-     */
+	/** Draws an ItemStack. */
     protected void drawItemStack(ItemStack stack, int x, int y, String altText)
     {
         GlStateManager.translate(0.0F, 0.0F, 32.0F);
@@ -283,9 +330,7 @@ public class GuiContainerVC extends GuiContainer {
         this.itemRender.zLevel = 0.0F;
     }
 	
-	/**
-     * Draws a Rotating ItemStack.
-     */
+	/** Draws a Rotating ItemStack. */
     protected void drawRotatingItemStack(ItemStack stack, int posXIn, int posYIn)
     {
     	GlStateManager.pushMatrix();
@@ -319,9 +364,7 @@ public class GuiContainerVC extends GuiContainer {
 		GlStateManager.popMatrix();
     }
 	
-	/**
-     * Draws an Entity Head.
-     */
+	/** Draws an Entity Head. */
     protected void drawEntityHead(int xIn, int yIn, int skullType)
     {
     	
@@ -381,12 +424,9 @@ public class GuiContainerVC extends GuiContainer {
 		GlStateManager.popMatrix();
     }
 	
-	/**
-     * Draws a Supporter Head.
-     */
+	/** Draws a Supporter Head. */
     protected void drawEntitySupporterHead(int xIn, int yIn, int skullType)
     {
-    	
     	GlStateManager.pushMatrix();
 		{
 			GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -443,15 +483,15 @@ public class GuiContainerVC extends GuiContainer {
 		GlStateManager.popMatrix();
     }
     
-    /**
-     * Draws an entity on the screen looking toward the cursor.
-     */
-    protected void drawEntityOnScreen(int posX, int posY, int scale, EntityAirshipCore entityIn)
+    /** Draws an entity on the screen. */
+    protected void drawEntityOnScreen(int posX, int posY, int horizontalIn, int scale, Entity entityIn, boolean ridingEntityIn)
     {
     	GlStateManager.pushMatrix();
 		{
 			GL11.glEnable(GL11.GL_CULL_FACE);
 	        GL11.glCullFace(GL11.GL_FRONT);
+	        
+	        EntityMachineBase machineIn = (EntityMachineBase) entityIn;
 	        
 	        GlStateManager.translate(posX, posY, 100.0F);
 	        GlStateManager.scale((float)(scale), (float)scale, (float)scale);
@@ -462,7 +502,7 @@ public class GuiContainerVC extends GuiContainer {
 	        GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
 	        
 	        //Fixes the position to be at a right
-	        GlStateManager.rotate(entityIn.prevRotationYaw, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(horizontalIn, 0.0F, 1.0F, 0.0F);
 	        
 	        RenderHelper.disableStandardItemLighting();
 	        
@@ -473,9 +513,16 @@ public class GuiContainerVC extends GuiContainer {
 	        
 	        //This is the non-multipass rendering way to render an entity.
 	        //rendermanager.renderEntity(entityIn, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
-	        //rendermanager.world.spa
+	        
 	        rendermanager.renderEntityStatic(entityIn, 0, false);
 	        rendermanager.renderMultipass(entityIn, 0F);
+	        
+	        if (ridingEntityIn)
+	        {
+	        	Entity rider = entityIn.getControllingPassenger();
+	        	
+	        	rendermanager.renderEntityStatic(rider, 0, false);
+	        }
 	        
 	        rendermanager.setRenderShadow(true);
 	        
@@ -485,8 +532,56 @@ public class GuiContainerVC extends GuiContainer {
 		GlStateManager.popMatrix();
     }
     
-    public void centeredString(FontRenderer fontRendererIn, String text, int x, int y, int color)
+    /** Draws a machine part on the screen. */
+    protected void drawEntityMachinePartOnScreen(int posX, int posY, int horizontalIn, int scale, Entity entityIn, boolean ridingEntityIn, int previewPartIn)
     {
-        fontRendererIn.drawString(text, (x - fontRendererIn.getStringWidth(text) / 2), y, color);
+    	GlStateManager.pushMatrix();
+		{
+			GL11.glEnable(GL11.GL_CULL_FACE);
+	        GL11.glCullFace(GL11.GL_FRONT);
+	        
+	        EntityMachineBase machineIn = (EntityMachineBase) entityIn;
+	        
+	        machineIn.setPreviewPart(previewPartIn);
+	        
+	        GlStateManager.translate(posX, posY, 100.0F);
+	        GlStateManager.scale((float)(scale), (float)scale, (float)scale);
+	        
+	        /////Flips the model right side up.
+	        GlStateManager.rotate(200.0F, 0.0F, 0.0F, 1.0F);
+	        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+	        GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
+	        
+	        //Fixes the position to be at a right
+	        GlStateManager.rotate(horizontalIn, 0.0F, 1.0F, 0.0F);
+	        
+	        RenderHelper.disableStandardItemLighting();
+	        
+	        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+	        
+	        rendermanager.setPlayerViewY(180.0F);
+	        rendermanager.setRenderShadow(false);
+	        
+	        //This is the non-multipass rendering way to render an entity.
+	        //rendermanager.renderEntity(entityIn, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+	        
+	        rendermanager.renderEntityStatic(entityIn, 0, false);
+	        rendermanager.renderMultipass(entityIn, 0F);
+	        
+	        if (ridingEntityIn)
+	        {
+	        	Entity rider = entityIn.getControllingPassenger();
+	        	
+	        	rendermanager.renderEntityStatic(rider, 0, false);
+	        }
+	        
+	        rendermanager.setRenderShadow(true);
+	        
+	        machineIn.setPreviewPart(0);
+	        
+	        GL11.glCullFace(GL11.GL_BACK);
+	        GL11.glDisable(GL11.GL_CULL_FACE);
+		}
+		GlStateManager.popMatrix();
     }
 }

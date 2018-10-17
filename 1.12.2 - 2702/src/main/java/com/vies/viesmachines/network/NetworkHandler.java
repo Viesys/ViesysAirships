@@ -2,14 +2,67 @@ package com.vies.viesmachines.network;
 
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.network.client.MessageConfig;
-import com.vies.viesmachines.network.server.machine.MessageMachineGuiMenuMain;
-import com.vies.viesmachines.network.server.machine.MessageMachineGuiMenuSelectMusic;
-import com.vies.viesmachines.network.server.machine.song.MessageGuiMusicPlay;
-import com.vies.viesmachines.network.server.machine.song.MessageGuiMusicPlayArea;
-import com.vies.viesmachines.network.server.machine.song.MessageGuiMusicRandom;
-import com.vies.viesmachines.network.server.machine.song.MessageGuiMusicSet;
-import com.vies.viesmachines.network.server.machine.song.MessageGuiMusicStop;
-import com.vies.viesmachines.network.server.machine.song.MessageGuiMusicStopArea;
+import com.vies.viesmachines.network.client.tileentity.MessageGuiExtractorSyncClientOn;
+import com.vies.viesmachines.network.server.machine.MessageFlyingThunderStrike;
+import com.vies.viesmachines.network.server.machine.MessageMachineProjectileShoot;
+import com.vies.viesmachines.network.server.machine.gui.customize.MessageHelperGuiMachineMenuCustomizePrimaryDefault;
+import com.vies.viesmachines.network.server.machine.gui.customize.MessageHelperGuiMachineMenuCustomizePrimaryTransparent;
+import com.vies.viesmachines.network.server.machine.gui.customize.MessageHelperGuiMachineMenuCustomizeSecondaryDefault;
+import com.vies.viesmachines.network.server.machine.gui.customize.MessageHelperGuiMachineMenuCustomizeSecondaryTransparent;
+import com.vies.viesmachines.network.server.machine.gui.customize.activemodels.MessageGuiMachineMenuCustomizeActiveModels;
+import com.vies.viesmachines.network.server.machine.gui.customize.activemodels.MessageHelperGuiMachineMenuCustomizeActiveModelApply;
+import com.vies.viesmachines.network.server.machine.gui.customize.displaybanner.MessageGuiMachineMenuCustomizeDisplayBanner;
+import com.vies.viesmachines.network.server.machine.gui.customize.primaryskin.MessageGuiMachineMenuCustomizePrimarySkinTexture;
+import com.vies.viesmachines.network.server.machine.gui.customize.primaryskin.color.MessageGuiMachineMenuCustomizePrimarySkinColor;
+import com.vies.viesmachines.network.server.machine.gui.customize.primaryskin.color.MessageHelperGuiMachineMenuCustomizePrimarySkinColorApply;
+import com.vies.viesmachines.network.server.machine.gui.customize.primaryskin.color.MessageHelperGuiMachineMenuCustomizePrimarySkinColorDefault;
+import com.vies.viesmachines.network.server.machine.gui.customize.secondaryskin.MessageGuiMachineMenuCustomizeSecondarySkinTexture;
+import com.vies.viesmachines.network.server.machine.gui.customize.secondaryskin.color.MessageGuiMachineMenuCustomizeSecondarySkinColor;
+import com.vies.viesmachines.network.server.machine.gui.customize.secondaryskin.color.MessageHelperGuiMachineMenuCustomizeSecondarySkinColorApply;
+import com.vies.viesmachines.network.server.machine.gui.customize.secondaryskin.color.MessageHelperGuiMachineMenuCustomizeSecondarySkinColorDefault;
+import com.vies.viesmachines.network.server.machine.gui.main.MessageHelperGuiMachineMenuMainArmed;
+import com.vies.viesmachines.network.server.machine.gui.main.MessageHelperGuiMachineMenuMainAutorun;
+import com.vies.viesmachines.network.server.machine.gui.main.MessageHelperGuiMachineMenuMainCompress;
+import com.vies.viesmachines.network.server.machine.gui.main.MessageHelperGuiMachineMenuMainCompressClientAll;
+import com.vies.viesmachines.network.server.machine.gui.main.MessageHelperGuiMachineMenuMainPowered;
+import com.vies.viesmachines.network.server.machine.gui.main.name.MessageGuiMachineMenuChangeName;
+import com.vies.viesmachines.network.server.machine.gui.main.name.MessageHelperGuiMachineMenuChangeName;
+import com.vies.viesmachines.network.server.machine.gui.main.name.MessageHelperGuiMachineMenuChangeNameColor;
+import com.vies.viesmachines.network.server.machine.gui.main.name.MessageHelperGuiMachineMenuChangeNameUndo;
+import com.vies.viesmachines.network.server.machine.gui.main.projectile.MessageGuiMachineMenuSelectProjectile;
+import com.vies.viesmachines.network.server.machine.gui.main.projectile.MessageHelperGuiMachineMenuSelectProjectileBulletConsume;
+import com.vies.viesmachines.network.server.machine.gui.main.projectile.MessageHelperGuiMachineMenuSelectProjectileBulletElectrical;
+import com.vies.viesmachines.network.server.machine.gui.main.projectile.MessageHelperGuiMachineMenuSelectProjectileBulletExplosive;
+import com.vies.viesmachines.network.server.machine.gui.main.projectile.MessageHelperGuiMachineMenuSelectProjectileBulletNormal;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageGuiMachineMenuSelectMusic;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageHelperGuiMachineMusicPlay;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageHelperGuiMachineMusicPlayArea;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageHelperGuiMachineMusicRandom;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageHelperGuiMachineMusicSet;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageHelperGuiMachineMusicStop;
+import com.vies.viesmachines.network.server.machine.gui.main.song.MessageHelperGuiMachineMusicStopArea;
+import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuCustomize;
+import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuMain;
+import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuStats;
+import com.vies.viesmachines.network.server.tileentity.MessageGuiExtractorSyncServerOn;
+import com.vies.viesmachines.network.server.world.PlayerMessageAutorunDisabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageAutorunEnabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageMachineBroken;
+import com.vies.viesmachines.network.server.world.PlayerMessageNameColor;
+import com.vies.viesmachines.network.server.world.PlayerMessagePoweredOnDisabled;
+import com.vies.viesmachines.network.server.world.PlayerMessagePoweredOnEnabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualPrimaryColorSelected;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualPrimaryTextureSelected;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualPrimaryTransparentDisabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualPrimaryTransparentEnabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualSecondaryColorSelected;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualSecondaryTextureSelected;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualSecondaryTransparentDisabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageVisualSecondaryTransparentEnabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageWeaponSystemDisabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageWeaponSystemEnabled;
+import com.vies.viesmachines.network.server.world.PlayerMessageWeaponSystemError;
+import com.vies.viesmachines.network.server.world.PlayerMessageWeaponSystemOutOfAmmo;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -30,20 +83,117 @@ public class NetworkHandler {
 		
 		register(MessageConfig.class, MessageConfig.class, Side.SERVER);
 		
-		register(MessageMachineGuiMenuMain.class, MessageMachineGuiMenuMain.class, Side.SERVER);
-		register(MessageMachineGuiMenuSelectMusic.class, MessageMachineGuiMenuSelectMusic.class, Side.SERVER);
 		
-		register(MessageGuiMusicSet.class, MessageGuiMusicSet.class, Side.SERVER);
 		
-		//register(MessageGuiMainMenu.class, MessageGuiMainMenu.class, Side.SERVER);
+		register(MessageGuiMachineMenuMain.class, MessageGuiMachineMenuMain.class, Side.SERVER);
+		register(MessageGuiMachineMenuSelectMusic.class, MessageGuiMachineMenuSelectMusic.class, Side.SERVER);
+		register(MessageGuiMachineMenuChangeName.class, MessageGuiMachineMenuChangeName.class, Side.SERVER);
+		register(MessageGuiMachineMenuSelectProjectile.class, MessageGuiMachineMenuSelectProjectile.class, Side.SERVER);
 		
-		register(MessageGuiMusicPlay.class, MessageGuiMusicPlay.class, Side.SERVER);
-		register(MessageGuiMusicPlayArea.class, MessageGuiMusicPlayArea.class, Side.CLIENT);
+		register(MessageHelperGuiMachineMusicSet.class, MessageHelperGuiMachineMusicSet.class, Side.SERVER);
+		register(MessageHelperGuiMachineMusicPlay.class, MessageHelperGuiMachineMusicPlay.class, Side.SERVER);
+		register(MessageHelperGuiMachineMusicPlayArea.class, MessageHelperGuiMachineMusicPlayArea.class, Side.CLIENT);
+		register(MessageHelperGuiMachineMusicStop.class, MessageHelperGuiMachineMusicStop.class, Side.SERVER);
+		register(MessageHelperGuiMachineMusicStopArea.class, MessageHelperGuiMachineMusicStopArea.class, Side.CLIENT);
+		register(MessageHelperGuiMachineMusicRandom.class, MessageHelperGuiMachineMusicRandom.class, Side.SERVER);
 		
-		register(MessageGuiMusicStop.class, MessageGuiMusicStop.class, Side.SERVER);
-		register(MessageGuiMusicStopArea.class, MessageGuiMusicStopArea.class, Side.CLIENT);
+		register(MessageHelperGuiMachineMenuChangeName.class, MessageHelperGuiMachineMenuChangeName.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuChangeNameUndo.class, MessageHelperGuiMachineMenuChangeNameUndo.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuChangeNameColor.class, MessageHelperGuiMachineMenuChangeNameColor.class, Side.SERVER);
 		
-		register(MessageGuiMusicRandom.class, MessageGuiMusicRandom.class, Side.SERVER);
+		
+		register(MessageHelperGuiMachineMenuMainCompress.class, MessageHelperGuiMachineMenuMainCompress.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuMainCompressClientAll.class, MessageHelperGuiMachineMenuMainCompressClientAll.class, Side.CLIENT);
+		register(MessageHelperGuiMachineMenuMainPowered.class, MessageHelperGuiMachineMenuMainPowered.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuMainAutorun.class, MessageHelperGuiMachineMenuMainAutorun.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuMainArmed.class, MessageHelperGuiMachineMenuMainArmed.class, Side.SERVER);
+		
+		register(MessageHelperGuiMachineMenuSelectProjectileBulletConsume.class, MessageHelperGuiMachineMenuSelectProjectileBulletConsume.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuSelectProjectileBulletNormal.class, MessageHelperGuiMachineMenuSelectProjectileBulletNormal.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuSelectProjectileBulletElectrical.class, MessageHelperGuiMachineMenuSelectProjectileBulletElectrical.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuSelectProjectileBulletExplosive.class, MessageHelperGuiMachineMenuSelectProjectileBulletExplosive.class, Side.SERVER);
+		
+		
+		register(MessageGuiMachineMenuStats.class, MessageGuiMachineMenuStats.class, Side.SERVER);
+		
+		register(MessageGuiMachineMenuCustomize.class, MessageGuiMachineMenuCustomize.class, Side.SERVER);
+		
+		register(MessageHelperGuiMachineMenuCustomizePrimaryTransparent.class, MessageHelperGuiMachineMenuCustomizePrimaryTransparent.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizeSecondaryTransparent.class, MessageHelperGuiMachineMenuCustomizeSecondaryTransparent.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizePrimaryDefault.class, MessageHelperGuiMachineMenuCustomizePrimaryDefault.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizeSecondaryDefault.class, MessageHelperGuiMachineMenuCustomizeSecondaryDefault.class, Side.SERVER);
+		
+		
+		register(MessageGuiMachineMenuCustomizeActiveModels.class, MessageGuiMachineMenuCustomizeActiveModels.class, Side.SERVER);
+		register(MessageGuiMachineMenuCustomizeDisplayBanner.class, MessageGuiMachineMenuCustomizeDisplayBanner.class, Side.SERVER);
+		register(MessageGuiMachineMenuCustomizePrimarySkinTexture.class, MessageGuiMachineMenuCustomizePrimarySkinTexture.class, Side.SERVER);
+		
+		
+		register(MessageGuiMachineMenuCustomizePrimarySkinColor.class, MessageGuiMachineMenuCustomizePrimarySkinColor.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizePrimarySkinColorApply.class, MessageHelperGuiMachineMenuCustomizePrimarySkinColorApply.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizePrimarySkinColorDefault.class, MessageHelperGuiMachineMenuCustomizePrimarySkinColorDefault.class, Side.SERVER);
+		
+		
+		register(MessageGuiMachineMenuCustomizeSecondarySkinTexture.class, MessageGuiMachineMenuCustomizeSecondarySkinTexture.class, Side.SERVER);
+		
+		
+		register(MessageGuiMachineMenuCustomizeSecondarySkinColor.class, MessageGuiMachineMenuCustomizeSecondarySkinColor.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizeSecondarySkinColorApply.class, MessageHelperGuiMachineMenuCustomizeSecondarySkinColorApply.class, Side.SERVER);
+		register(MessageHelperGuiMachineMenuCustomizeSecondarySkinColorDefault.class, MessageHelperGuiMachineMenuCustomizeSecondarySkinColorDefault.class, Side.SERVER);
+		
+		
+		register(MessageHelperGuiMachineMenuCustomizeActiveModelApply.class, MessageHelperGuiMachineMenuCustomizeActiveModelApply.class, Side.SERVER);
+		
+		
+		
+		
+		
+		
+		register(MessageFlyingThunderStrike.class, MessageFlyingThunderStrike.class, Side.SERVER);
+		register(MessageMachineProjectileShoot.class, MessageMachineProjectileShoot.class, Side.SERVER);
+		
+		
+		
+		
+		
+		
+		register(PlayerMessagePoweredOnEnabled.class, PlayerMessagePoweredOnEnabled.class, Side.SERVER);
+		register(PlayerMessagePoweredOnDisabled.class, PlayerMessagePoweredOnDisabled.class, Side.SERVER);
+		
+		register(PlayerMessageWeaponSystemError.class, PlayerMessageWeaponSystemError.class, Side.SERVER);
+		register(PlayerMessageWeaponSystemEnabled.class, PlayerMessageWeaponSystemEnabled.class, Side.SERVER);
+		register(PlayerMessageWeaponSystemDisabled.class, PlayerMessageWeaponSystemDisabled.class, Side.SERVER);
+		register(PlayerMessageWeaponSystemOutOfAmmo.class, PlayerMessageWeaponSystemOutOfAmmo.class, Side.SERVER);
+		
+		register(PlayerMessageAutorunEnabled.class, PlayerMessageAutorunEnabled.class, Side.SERVER);
+		register(PlayerMessageAutorunDisabled.class, PlayerMessageAutorunDisabled.class, Side.SERVER);
+		
+		register(PlayerMessageNameColor.class, PlayerMessageNameColor.class, Side.SERVER);
+		register(PlayerMessageMachineBroken.class, PlayerMessageMachineBroken.class, Side.SERVER);
+		
+		register(PlayerMessageVisualPrimaryColorSelected.class, PlayerMessageVisualPrimaryColorSelected.class, Side.SERVER);
+		
+		
+		register(PlayerMessageVisualPrimaryTextureSelected.class, PlayerMessageVisualPrimaryTextureSelected.class, Side.SERVER);
+		register(PlayerMessageVisualPrimaryTransparentDisabled.class, PlayerMessageVisualPrimaryTransparentDisabled.class, Side.SERVER);
+		register(PlayerMessageVisualPrimaryTransparentEnabled.class, PlayerMessageVisualPrimaryTransparentEnabled.class, Side.SERVER);
+		
+		register(PlayerMessageVisualSecondaryColorSelected.class, PlayerMessageVisualSecondaryColorSelected.class, Side.SERVER);
+		
+		
+		
+		register(PlayerMessageVisualSecondaryTextureSelected.class, PlayerMessageVisualSecondaryTextureSelected.class, Side.SERVER);
+		register(PlayerMessageVisualSecondaryTransparentDisabled.class, PlayerMessageVisualSecondaryTransparentDisabled.class, Side.SERVER);
+		register(PlayerMessageVisualSecondaryTransparentEnabled.class, PlayerMessageVisualSecondaryTransparentEnabled.class, Side.SERVER);
+		
+		register(MessageHelperGuiMachineMenuCustomizeActiveModelApply.class, MessageHelperGuiMachineMenuCustomizeActiveModelApply.class, Side.SERVER);
+		
+		register(MessageGuiExtractorSyncClientOn.class, MessageGuiExtractorSyncClientOn.class, Side.CLIENT);
+		register(MessageGuiExtractorSyncServerOn.class, MessageGuiExtractorSyncServerOn.class, Side.SERVER);
+		
+		//register(.class, .class, Side.SERVER);
+		
+		
 		
 		
 		/**

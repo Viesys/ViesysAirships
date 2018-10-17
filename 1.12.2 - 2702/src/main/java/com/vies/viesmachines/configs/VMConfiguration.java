@@ -10,7 +10,7 @@ import net.minecraftforge.common.config.Configuration;
 public class VMConfiguration {
 	
 	public static Configuration config;
-	public static final String CATEGORY_VC = "Vies Machines Configuration";
+	public static final String CATEGORY_VM = "Vies Machines Configuration";
 	/**
 	public static boolean v1AirshipEnabled;
 	public static boolean v2AirshipEnabled;
@@ -112,7 +112,7 @@ public class VMConfiguration {
 	public static final String OUTSIDEMODFUEL_NAME = "Enable using other mod's fuel?";
 	public static final String OUTSIDEMODFUEL_COMMENT = "Should airships be able to use other mod's fuel?";
 	
-	public static final int MACHINEPELLETSBURNTIME_DEFAULT = 90;
+	public static final int MACHINEPELLETSBURNTIME_DEFAULT = 60;
 	public static final String MACHINEPELLETSBURNTIME_NAME = "Machine Pellets Burn Time?";
 	public static final String MACHINEPELLETSBURNTIME_COMMENT = "How long does Machine Pellets burn for in seconds? ";
 
@@ -150,7 +150,7 @@ public class VMConfiguration {
 		///////v6AirshipEnabled = config.getBoolean(TextFormatting.WHITE + V6AIRSHIPENABLED_NAME, category1, V6AIRSHIPENABLED_DEFAULT, V6AIRSHIPENABLED_COMMENT);
 		
 		//General settings
-		final String category2 = CATEGORY_VC + config.CATEGORY_SPLITTER + TextFormatting.GREEN + "General";
+		final String category2 = CATEGORY_VM + config.CATEGORY_SPLITTER + TextFormatting.GREEN + "General";
 		config.addCustomCategoryComment(category2, "General airship options.");
 		
 		//v1AirshipSpeed = config.getInt(TextFormatting.WHITE + V1AIRSHIPSPEED_NAME, category2, V1AIRSHIPSPEED_DEFAULT, 100, 400, V1AIRSHIPSPEED_COMMENT);
@@ -164,7 +164,7 @@ public class VMConfiguration {
 		recipeDismounterPlayer = config.getBoolean(TextFormatting.WHITE + RECIPEDISMOUNTERPLAYER_NAME, category2, RECIPEDISMOUNTERPLAYER_DEFAULT, RECIPEDISMOUNTERPLAYER_COMMENT);
 		
 		//Fuel settings
-		final String category3 = CATEGORY_VC + config.CATEGORY_SPLITTER + TextFormatting.AQUA + "Fuel";
+		final String category3 = CATEGORY_VM + config.CATEGORY_SPLITTER + TextFormatting.AQUA + "Fuel";
 		config.addCustomCategoryComment(category3, "Airship fuel options.");
 		
 		vanillaFuel = config.getBoolean(TextFormatting.WHITE + VANILLAFUEL_NAME, category3, VANILLAFUEL_DEFAULT, VANILLAFUEL_COMMENT);
@@ -173,7 +173,7 @@ public class VMConfiguration {
 		machinePelletsBurnTime = config.getInt(TextFormatting.WHITE + MACHINEPELLETSBURNTIME_NAME, category3, MACHINEPELLETSBURNTIME_DEFAULT, 1, 500, MACHINEPELLETSBURNTIME_COMMENT);
 		
 		//General settings
-		final String category4 = CATEGORY_VC + config.CATEGORY_SPLITTER + TextFormatting.GOLD + "Client";
+		final String category4 = CATEGORY_VM + config.CATEGORY_SPLITTER + TextFormatting.GOLD + "Client";
 		config.addCustomCategoryComment(category4, "Client airship options.");
 
 		//v1AirshipName = config.getString(TextFormatting.WHITE + V1AIRSHIPNAME_NAME, category4, V1AIRSHIPNAME_DEFAULT, V1AIRSHIPNAME_COMMENT);

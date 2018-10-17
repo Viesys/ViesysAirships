@@ -1,28 +1,21 @@
 package com.vies.viesmachines.common.entity.machines;
 
-import com.vies.viesmachines.api.EnumsVC;
+import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.LogHelper;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class EntityMachineFlying extends EntityMachineFuel {
 	
-	protected static final IAttribute MAX_ALTITUDE = (new RangedAttribute((IAttribute)null, References.MOD_ID + ".maxAltitude", 0.7D, 0.0D, 2.0D)).setDescription("Max Altitude").setShouldWatch(true);
+	//protected static final IAttribute MAX_ALTITUDE = (new RangedAttribute((IAttribute)null, References.MOD_ID + ".maxAltitude", 0.7D, 0.0D, 2.0D)).setDescription("Max Altitude").setShouldWatch(true);
     
-	
-	
 	//==================================================
     // TODO             Constructor
 	//==================================================
@@ -30,26 +23,106 @@ public class EntityMachineFlying extends EntityMachineFuel {
 	public EntityMachineFlying(World worldIn) 
 	{
 		super(worldIn);
-		
-		// Sets a base name if there isn't one:
-		if(!this.hasCustomName())
-		{
-			this.setCustomNameTag("Flying Machine");
-		}
-		
-		// Sets width and height:
-		this.setWidth = 1.5F;
-		this.setHeight = 0.75F;
-		
-		this.width = this.setWidth;
-		this.height = this.setHeight;
-		
-		this.setSize(this.width, this.height);
 	}
 	
-	public EntityMachineFlying(World worldIn, double x, double y, double z) 
+	public EntityMachineFlying(World worldIn, double x, double y, double z,
+			
+			int frameTierIn, int engineTierIn, int componentTierIn, 
+			int typeIn, float healthIn, int energyIn, 
+			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
+			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
+			int ammoAmountIn, int ammoTypeIn, 
+			int machineEnhancement1In, 
+			
+			
+			
+			int visualModelFrameIn, int visualModelEngineIn, int visualModelComponentIn, 
+			
+			int visualFrameTextureIn, 
+			boolean visualFrameTransparentIn, boolean visualFrameColorIn, 
+			int visualFrameColorRedIn, 
+			int visualFrameColorGreenIn, 
+			int visualFrameColorBlueIn, 
+			
+			int visualEngineParticleIn, 
+			int visualEngineDisplayTypeIn, 
+			int visualEngineDisplayItemstackIn, 
+			int visualEngineDisplayItemstackMetaIn, 
+			int visualEngineDisplayHeadIn, 
+			int visualEngineDisplaySupporterHeadIn, 
+			int visualEngineDisplayHolidayIn, 
+			
+			int visualComponentTextureIn, 
+			boolean visualComponentTransparentIn, boolean visualComponentColorIn, 
+			int visualComponentColorRedIn, 
+			int visualComponentColorGreenIn, 
+			int visualComponentColorBlueIn, 
+			
+    		NBTTagCompound compoundIn, String customNameIn, int customNameColorIn)
 	{
 		this(worldIn);
+        this.setPosition(x, y, z);
+        
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
+        
+        
+        this.setTierFrame(frameTierIn);
+		this.setTierEngine(engineTierIn);
+		this.setTierComponent(componentTierIn);
+		LogHelper.info("---"+ this.getTierFrame());
+		this.setType(typeIn);
+		this.setHealth(healthIn);
+		this.setEnergy(energyIn);
+		
+		this.setBroken(brokenIn);
+		this.setFuel(currentFuelIn);
+		this.setFuelTotal(totalFuelIn);
+		
+		//this.itemstackFuelItem = itemstackFuelItemIn;
+		//this.itemstackFuelSize = itemstackFuelSizeIn;
+		
+		this.setAmmoAmount(ammoAmountIn);
+		this.setAmmoType(ammoTypeIn);
+		this.setMachineEnhancement1(machineEnhancement1In);
+		
+		
+		
+		this.setVisualModelFrame(visualModelFrameIn);
+		this.setVisualModelEngine(visualModelEngineIn);
+		this.setVisualModelComponent(visualModelComponentIn);
+		
+		this.setVisualFrameTexture(visualFrameTextureIn);
+		this.setVisualFrameTransparent(visualFrameTransparentIn);
+		this.setVisualFrameColor(visualFrameColorIn);
+		this.setVisualFrameColorRed(visualFrameColorRedIn);
+		this.setVisualFrameColorGreen(visualFrameColorGreenIn);
+		this.setVisualFrameColorBlue(visualFrameColorBlueIn);
+		
+		this.setVisualEngineParticle(visualEngineParticleIn);
+		this.setVisualEngineDisplayType(visualEngineDisplayTypeIn);
+		this.setVisualEngineDisplayItemstack(visualEngineDisplayItemstackIn);
+		this.setVisualEngineDisplayItemstackMeta(visualEngineDisplayItemstackMetaIn);
+		this.setVisualEngineDisplayHead(visualEngineDisplayHeadIn);
+		this.setVisualEngineDisplaySupporterHead(visualEngineDisplaySupporterHeadIn);
+		this.setVisualEngineDisplayHoliday(visualEngineDisplayHolidayIn);
+		
+		this.setVisualComponentTexture(visualComponentTextureIn);
+		this.setVisualComponentTransparent(visualComponentTransparentIn);
+		this.setVisualComponentColor(visualComponentColorIn);
+		this.setVisualComponentColorRed(visualComponentColorRedIn);
+		this.setVisualComponentColorGreen(visualComponentColorGreenIn);
+		this.setVisualComponentColorBlue(visualComponentColorBlueIn);
+		
+        this.inventory = new ItemStackHandler(size);
+        this.inventory.deserializeNBT(compoundIn);
+        
+        this.setCustomNameTag(customNameIn);
+		this.setVisualNameColor(customNameColorIn);
 	}
 	
 	
@@ -118,18 +191,6 @@ public class EntityMachineFlying extends EntityMachineFuel {
         super.onLivingUpdate();
     }
 	
-	
-	
-	//==================================================
-    // TODO       Overrides from EntityLiving
-	//==================================================
-	
-	@Override
-    public double getMountedYOffset()
-    {
-        return 0.25D;//0.15D;
-    }
-    
     
     
 	//==================================================
@@ -137,17 +198,16 @@ public class EntityMachineFlying extends EntityMachineFuel {
 	//==================================================
     
     @Override
-    public void controlAirship()
+    public void initiateControlAirship()
     {
-    	super.controlAirship();
+    	super.initiateControlAirship();
     	
-    	
-    	
-    	if(this.isBeingRidden())
+    	if (this.isBeingRidden())
         {
 	        float f1 = 0.0F;
 	        
-	        if(this.broken)
+	        if (this.getBroken()
+	        || !this.getPoweredOn())
 			{
 	    		
 			}
@@ -159,16 +219,15 @@ public class EntityMachineFlying extends EntityMachineFuel {
 		        	// Do nothing if the elevation limit is mixed:
 		        	if (this.flyingElevationLimit())
 		        	{
-		        		LogHelper.info("Here!");
+		        		
 		        	}
 		        	else
 		        	{
-		        		
 		        		if (this.isFuelNeeded())
 						{
 							if (this.isFuelBurning())
 							{
-								f1 += this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+								f1 += this.getForwardSpeed();// * 0.5;//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
 							}
 							else
 							{
@@ -177,7 +236,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
 			    		}
 						else
 						{
-							f1 += this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+							f1 += this.getForwardSpeed();// * 0.5;//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
 						}
 		        	}
 		        }
@@ -186,7 +245,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
 		        if (this.downInputDown)
 		        {
 		        	// Stops the flying machine down input if in liquid:
-		        	if(this.status == this.status.IN_WATER
+		        	if (this.status == this.status.IN_WATER
 					|| this.status == this.status.UNDER_WATER
 					|| this.status == this.status.UNDER_FLOWING_WATER
 					|| this.status == this.status.IN_LAVA
@@ -197,13 +256,13 @@ public class EntityMachineFlying extends EntityMachineFuel {
 	        		}
 	            	else
 	            	{
-	            		f1 -= this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+	            		f1 -= this.getForwardSpeed() * 0.5;//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
 	            	}
 		        }
 			}
 	        
 	        // Stops the flying machine Y motion if in liquid or max elevation is exceeded.:
-	        if(this.status == this.status.IN_WATER
+	        if (this.status == this.status.IN_WATER
 			|| this.status == this.status.UNDER_WATER
 			|| this.status == this.status.UNDER_FLOWING_WATER
 			|| this.status == this.status.IN_LAVA
@@ -224,9 +283,10 @@ public class EntityMachineFlying extends EntityMachineFuel {
     	super.travel(strafe, vertical, forward);
     	
     	// Machine downward motion while in the air:
-    	if(this.broken)
+    	if (this.getBroken()
+        || !this.getPoweredOn())
     	{
-    		if(this.status == this.status.IN_AIR)
+    		if (this.status == this.status.IN_AIR)
 			{
 				this.motionY = -0.25D;
 	    		
@@ -236,7 +296,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
     	// Machine downward motion while in above the max elevation:
     	else if (this.flyingElevationLimit())
     	{
-    		if(this.status == this.status.IN_AIR)
+    		if (this.status == this.status.IN_AIR)
 			{
 				this.motionY = -0.025D;
 	    		
@@ -244,9 +304,9 @@ public class EntityMachineFlying extends EntityMachineFuel {
 			}
     	}
     	// Machine downward motion while no being ridden:
-    	else if(!this.isBeingRidden())
+    	else if (!this.isBeingRidden())
     	{
-    		if(this.status == this.status.IN_AIR)
+    		if (this.status == this.status.IN_AIR)
 			{
 				this.motionY = -0.01D;
 	    		
@@ -254,11 +314,11 @@ public class EntityMachineFlying extends EntityMachineFuel {
 			}
     	}
     	// Machine downward motion while there is no fuel when the fuel system is enabled:
-    	else if(this.isFuelNeeded())
+    	else if (this.isFuelNeeded())
     	{
-    		if(!this.isFuelBurning())
+    		if (!this.isFuelBurning())
     		{
-    			if(this.status == this.status.IN_AIR)
+    			if (this.status == this.status.IN_AIR)
     			{
     				this.motionY = -0.01D;
     	    		
@@ -270,7 +330,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
     	
     	
     	// Machine upward motion while in water:
-    	if(this.status == this.status.UNDER_WATER
+    	if (this.status == this.status.UNDER_WATER
 		|| this.status == this.status.UNDER_FLOWING_WATER)
 		{
     		this.motionY = 0.05D;
@@ -279,7 +339,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
 		}
     	
     	// Machine upward motion while in lava:
-    	if(this.status == this.status.UNDER_LAVA
+    	if (this.status == this.status.UNDER_LAVA
 		|| this.status == this.status.UNDER_FLOWING_LAVA)
 		{
     		this.motionY = 0.015D;
@@ -321,9 +381,9 @@ public class EntityMachineFlying extends EntityMachineFuel {
     {
 		super.damageMachineByStatus();
 		
-		if(this.getHealth() > 0.0F)
+		if (this.getHealth() > 0.0F)
     	{
-			if(this.status == this.status.UNDER_WATER
+			if (this.status == this.status.UNDER_WATER
 			|| this.status == this.status.UNDER_FLOWING_WATER)
 			{
 				this.attackEntityFrom(DamageSource.DROWN, 0.5F);
@@ -331,18 +391,15 @@ public class EntityMachineFlying extends EntityMachineFuel {
     	}
     }
     
-    /**
-     * Flying elevation restrictions.
-     */
+    //--------------------------------------------------
+    
+    /** Flying elevation restrictions. */
     protected boolean flyingElevationLimit()
     {
-    	Boolean maxHeightReached;
+    	boolean maxHeightReached;
+    	int machineHeight = this.getPosition().getY();
     	
-    	int airshipHeight = this.getPosition().getY();
-    	if(airshipHeight > //EnumsVC.MainTierBalloon.byId(
-    			75//this.getMainTierBalloon()
-    			//).getMaxAltitude()
-    			)
+    	if (machineHeight > this.getMaxElevation())
     	{
     		maxHeightReached = true;
     	}
@@ -353,4 +410,32 @@ public class EntityMachineFlying extends EntityMachineFuel {
 		
 		return maxHeightReached;
     }
+    
+    /** Get the machine's max elevation based on Component Tier. */
+    public final int getMaxElevation()
+    {
+    	return EnumsVM.FlyingMachineComponentTier.byId(this.getTierComponent()).getMaxElevationModifier();
+    }
+    
+    //--------------------------------------------------
+    
+
+    
+    @Override
+	public String getCategoryName()
+	{
+		return References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.categoryflying.0");
+	}
+	
+	@Override
+	public String getComponentName()
+	{
+		return References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.componentnameflying.0");
+	}
+    
+	@Override
+	public String getComponentNameValue()
+	{
+		return References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.componentvaluenameflying.0");
+	}
 }

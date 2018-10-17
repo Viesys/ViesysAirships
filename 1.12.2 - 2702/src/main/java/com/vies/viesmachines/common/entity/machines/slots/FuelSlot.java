@@ -1,7 +1,6 @@
 package com.vies.viesmachines.common.entity.machines.slots;
 
-import com.vies.viesmachines.api.ItemsVC;
-import com.vies.viesmachines.common.entity.airships.EntityAirshipBaseVC;
+import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.common.entity.machines.EntityMachineFuel;
 
 import net.minecraft.init.Items;
@@ -22,7 +21,7 @@ public class FuelSlot extends SlotItemHandler {
     {
 		Item item = stack.getItem();
         
-		if (item == ItemsVC.MACHINE_PELLETS) return true;
+		if (item == ItemsVM.MACHINE_PELLETS) return true;
         
 		return EntityMachineFuel.isItemFuel(stack) || isBucket(stack);
     }

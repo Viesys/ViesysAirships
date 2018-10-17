@@ -3,7 +3,7 @@ package com.vies.viesmachines.client.gui;
 import java.util.ArrayList;
 
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.client.gui.machines.GuiMachineMenuMainSelectMusic;
+import com.vies.viesmachines.client.gui.machines.main.GuiMachineMenuMainSelectMusic;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;

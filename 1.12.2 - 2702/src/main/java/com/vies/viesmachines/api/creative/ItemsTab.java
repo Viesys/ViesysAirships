@@ -1,6 +1,6 @@
 package com.vies.viesmachines.api.creative;
 
-import com.vies.viesmachines.api.ItemsVC;
+import com.vies.viesmachines.api.ItemsVM;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ public class ItemsTab extends CreativeTabs {
 	@Override
 	public ItemStack getTabIconItem() 
 	{
-		return new ItemStack(ItemsVC.MACHINE_PELLETS
+		return new ItemStack(ItemsVM.LOGIC_CHIP
 				//.ITEM_AIRSHIP_CREATIVE
 				, 1);
 	}

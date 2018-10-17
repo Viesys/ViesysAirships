@@ -2,10 +2,10 @@ package com.vies.viesmachines.common.entity.machines;
 
 import javax.annotation.Nullable;
 
-import com.vies.viesmachines.api.FuelVC;
-import com.vies.viesmachines.api.ItemsVC;
-import com.vies.viesmachines.api.SoundsVC;
-import com.vies.viesmachines.api.util.LogHelper;
+import com.vies.viesmachines.api.EnumsVM;
+import com.vies.viesmachines.api.FuelVM;
+import com.vies.viesmachines.api.ItemsVM;
+import com.vies.viesmachines.api.SoundsVM;
 import com.vies.viesmachines.configs.VMConfiguration;
 
 import net.minecraft.block.Block;
@@ -20,33 +20,28 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityMachineFuel extends EntityMachineBase {
 	
 	// Data Manager:
-	/** Keeps track of the stored fuel. */
-	private static final DataParameter<Integer> STORED_FUEL = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
-	/** Keeps track of the total stored fuel. */
-	private static final DataParameter<Integer> STORED_FUEL_TOTAL = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
-	/** Keeps track of the item in the fuel slot. */
-	private static final DataParameter<Integer> ITEMSTACK_FUEL_ITEM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
-	/** Keeps track of the stack size in the fuel slot. */
-	private static final DataParameter<Integer> ITEMSTACK_FUEL_SIZE = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
-  	
-	// Fuel:
-	/** Stored fuel. */
-	public int storedFuel;
-	/** Total stored fuel. */
-	public int storedFuelTotal;
+	/** Keeps track of the fuel value. */
+	private static final DataParameter<Integer> FUEL_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the total fuel value. */
+	private static final DataParameter<Integer> FUEL_TOTAL_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the item in the fuel slot value. */
+	private static final DataParameter<Integer> ITEMSTACK_FUEL_ITEM_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the stack size in the fuel slot value. */
+	private static final DataParameter<Integer> ITEMSTACK_FUEL_SIZE_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the energy regeneration value. */
+	private static final DataParameter<Integer> ENERGY_REGEN_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the stored micro energy value. */
+	private static final DataParameter<Integer> STORED_MICRO_ENERGY_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
 	
-    /** The int ID of the item in the fuel slot. */
-    public int itemstackFuelItem;
-    /** The stack size of the itemstack in the fuel slot. */
-    public int itemstackFuelSize;
-    
 	
 	
 	//==================================================
@@ -58,9 +53,50 @@ public class EntityMachineFuel extends EntityMachineBase {
 		super(worldIn);
 	}
 	
-	public EntityMachineFuel(World worldIn, double x, double y, double z) 
+	public EntityMachineFuel(World worldIn, double x, double y, double z,
+			
+			int frameTierIn, int engineTierIn, int componentTierIn, 
+			int typeIn, float healthIn, int energyIn, 
+			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
+			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
+			int ammoAmountIn, int ammoTypeIn, 
+			int machineEnhancement1In, 
+			
+			
+			
+			int visualModelFrameIn, int visualModelEngineIn, int visualModelComponentIn, 
+			
+			int visualFrameTextureIn, 
+			boolean visualFrameTransparentIn, boolean visualFrameColorIn, 
+			int visualFrameColorRedIn, 
+			int visualFrameColorGreenIn, 
+			int visualFrameColorBlueIn, 
+			
+			int visualEngineParticleIn, 
+			int visualEngineDisplayTypeIn, 
+			int visualEngineDisplayItemstackIn, 
+			int visualEngineDisplayItemstackMetaIn, 
+			int visualEngineDisplayHeadIn, 
+			int visualEngineDisplaySupporterHeadIn, 
+			int visualEngineDisplayHolidayIn, 
+			
+			int visualComponentTextureIn, 
+			boolean visualComponentTransparentIn, boolean visualComponentColorIn, 
+			int visualComponentColorRedIn, 
+			int visualComponentColorGreenIn, 
+			int visualComponentColorBlueIn, 
+			
+    		NBTTagCompound compoundIn, String customNameIn, int customNameColorIn)
 	{
 		this(worldIn);
+        this.setPosition(x, y, z);
+        
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
 	}
     
     
@@ -74,11 +110,12 @@ public class EntityMachineFuel extends EntityMachineBase {
     {
         super.entityInit();
         
-        this.dataManager.register(STORED_FUEL, Integer.valueOf(this.storedFuel));
-        this.dataManager.register(STORED_FUEL_TOTAL, Integer.valueOf(this.storedFuelTotal));
-        
-        this.dataManager.register(ITEMSTACK_FUEL_ITEM, Integer.valueOf(this.itemstackFuelItem));
-        this.dataManager.register(ITEMSTACK_FUEL_SIZE, Integer.valueOf(this.itemstackFuelSize));
+        this.dataManager.register(FUEL_DM, Integer.valueOf(0));
+        this.dataManager.register(FUEL_TOTAL_DM, Integer.valueOf(0));
+        this.dataManager.register(ITEMSTACK_FUEL_ITEM_DM, Integer.valueOf(0));
+        this.dataManager.register(ITEMSTACK_FUEL_SIZE_DM, Integer.valueOf(0));
+        this.dataManager.register(ENERGY_REGEN_DM, Integer.valueOf(0));
+        this.dataManager.register(STORED_MICRO_ENERGY_DM, Integer.valueOf(0));
     }
 	
 	
@@ -92,21 +129,25 @@ public class EntityMachineFuel extends EntityMachineBase {
     {
 		super.writeEntityToNBT(compound);
 		
-		compound.setInteger(rf.STORED_FUEL_TAG, this.storedFuel);
-		compound.setInteger(rf.STORED_FUEL_TOTAL_TAG, this.storedFuelTotal);
-		compound.setInteger(rf.ITEMSTACK_FUEL_ITEM_TAG, this.itemstackFuelItem);
-		compound.setInteger(rf.ITEMSTACK_FUEL_SIZE_TAG, this.itemstackFuelSize);
+		compound.setInteger(rf.FUEL_TAG, this.getFuel());
+		compound.setInteger(rf.FUEL_TOTAL_TAG, this.getFuelTotal());
+		compound.setInteger(rf.ITEMSTACK_FUEL_ITEM_TAG, this.getItemstackFuelItem());
+		compound.setInteger(rf.ITEMSTACK_FUEL_SIZE_TAG, this.getItemstackFuelSize());
+		compound.setInteger(rf.ENERGY_REGEN_TAG, this.getEnergyRegen());
+		compound.setInteger(rf.STORED_MICRO_ENERGY_TAG, this.getStoredMicroEnergy());
 	}
 	
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound)
     {
 		super.readEntityFromNBT(compound);
-
-		this.storedFuel = compound.getInteger(rf.STORED_FUEL_TAG);
-		this.storedFuelTotal = compound.getInteger(rf.STORED_FUEL_TOTAL_TAG);
-		this.itemstackFuelItem = compound.getInteger(rf.ITEMSTACK_FUEL_ITEM_TAG);
-		this.itemstackFuelSize = compound.getInteger(rf.ITEMSTACK_FUEL_SIZE_TAG);
+		
+		this.setFuel(compound.getInteger(rf.FUEL_TAG));
+		this.setFuelTotal(compound.getInteger(rf.FUEL_TOTAL_TAG));
+		this.setItemstackFuelItem(compound.getInteger(rf.ITEMSTACK_FUEL_ITEM_TAG));
+		this.setItemstackFuelSize(compound.getInteger(rf.ITEMSTACK_FUEL_SIZE_TAG));
+		this.setEnergyRegen(compound.getInteger(rf.ENERGY_REGEN_TAG));
+		this.setStoredMicroEnergy(compound.getInteger(rf.STORED_MICRO_ENERGY_TAG));
     }
 	
 	
@@ -120,20 +161,42 @@ public class EntityMachineFuel extends EntityMachineBase {
     {
 		super.onUpdate();
         
+		// Implements the fuel and energy systems:
 		if (this.isFuelNeeded())
 		{
-			this.fuelSystem();
+			if (this.getPoweredOn())
+			{
+				this.initiateFuelSystem();
+				this.initiateEnergySystem();
+			}
+			
+            // Clears stored fuel if the machine is broken:
+            if (this.getBroken())
+            {
+            	this.setFuel(0);
+            }
 		}
 		
+		// Shows the Item in the fuel slot regardless of creative or survival:
+		if (!this.inventory.getStackInSlot(0).isEmpty())
+		{
+			this.setItemstackFuelItem(this.inventory.getStackInSlot(0).getItem().getIdFromItem(this.inventory.getStackInSlot(0).getItem()));
+		}
+		else
+		{
+			this.setItemstackFuelItem(0);
+		}
+		
+		// Shows the number of Items in the fuel slot:
 		if (!this.world.isRemote)
 		{
 			if (!this.inventory.getStackInSlot(0).isEmpty())
 			{
-				this.itemstackFuelSize = this.inventory.getStackInSlot(0).getCount();
+				this.setItemstackFuelSize(this.inventory.getStackInSlot(0).getCount());
 			}
 			else
 			{
-				this.itemstackFuelSize = 0;
+				this.setItemstackFuelSize(0);
 			}
 		}
     }
@@ -156,27 +219,12 @@ public class EntityMachineFuel extends EntityMachineBase {
     // TODO              Sound Events
 	//==================================================
 	
-	/**
-	 * Gets the sound to be triggered when a machine is on/powered.
-	 */
+	/** Gets the sound to be triggered when a machine is on/powered. */
 	@Nullable
-    protected SoundEvent getOnSound(DamageSource damageSourceIn)
+	@SideOnly(Side.CLIENT)
+    protected SoundEvent getOnSound()
     {
-        return SoundsVC.ENGINEON;
-    }
-	
-
-	/**
-	 * Plays the on/powered sound.
-	 */
-	protected void playOnSound(DamageSource source)
-    {
-        SoundEvent soundevent = this.getOnSound(source);
-
-        if (soundevent != null)
-        {
-            this.playSound(soundevent, this.getSoundVolume(), this.getSoundPitch());
-        }
+        return SoundsVM.ENGINEON;
     }
     
     
@@ -185,85 +233,72 @@ public class EntityMachineFuel extends EntityMachineBase {
     // TODO               Data Logic
 	//==================================================
     
-    @Override
-	protected void dataSync()
+    /** Gets the machine's fuel. */
+    public final int getFuel()
     {
-		super.dataSync();
-		
-    	if(this.world.isRemote)
-        {
-        	this.storedFuel = this.getStoredFuel();
-        	this.storedFuelTotal = this.getStoredFuelTotal();
-        	this.itemstackFuelItem = this.getItemstackFuelItem();
-        	this.itemstackFuelSize = this.getItemstackFuelSize();
-        }
-        else
-        {
-        	this.setStoredFuel(this.storedFuel);
-        	this.setStoredFuelTotal(this.storedFuelTotal);
-        	this.setItemstackFuelItem(this.itemstackFuelItem);
-        	this.setItemstackFuelSize(this.itemstackFuelSize);
-        }
+        return ((Integer)this.dataManager.get(FUEL_DM)).intValue();
     }
-	
-    
-	
-	/**
-     * Sets the machine stored fuel.
-     */
-    public void setStoredFuel(int intIn)
+	/** Sets the machine's fuel. */
+    public void setFuel(int intIn)
     {
-        this.dataManager.set(STORED_FUEL, Integer.valueOf(intIn));
-    }
-    /**
-     * Gets the machine stored fuel.
-     */
-    public int getStoredFuel()
-    {
-        return ((Integer)this.dataManager.get(STORED_FUEL)).intValue();
+        this.dataManager.set(FUEL_DM, Integer.valueOf(intIn));
     }
     
-    //--------------------------------------------------
-    
-    /**
-     * Sets the machine total stored fuel.
-     */
-    public void setStoredFuelTotal(int intIn)
+    /** Gets the machine's total fuel. */
+    public final int getFuelTotal()
     {
-        this.dataManager.set(STORED_FUEL_TOTAL, Integer.valueOf(intIn));
+        return ((Integer)this.dataManager.get(FUEL_TOTAL_DM)).intValue();
     }
-    /**
-     * Gets the machine total stored fuel.
-     */
-    public int getStoredFuelTotal()
+    /** Sets the machine's total fuel. */
+    public void setFuelTotal(int intIn)
     {
-        return ((Integer)this.dataManager.get(STORED_FUEL_TOTAL)).intValue();
+        this.dataManager.set(FUEL_TOTAL_DM, Integer.valueOf(intIn));
+    }
+    
+    /** Gets the ItemStack Fuel Item. */
+    public final int getItemstackFuelItem()
+    {
+        return ((Integer)this.dataManager.get(ITEMSTACK_FUEL_ITEM_DM)).intValue();
+    }
+    /** Sets the ItemStack Fuel Item. */
+    public void setItemstackFuelItem(int intIn)
+    {
+        this.dataManager.set(ITEMSTACK_FUEL_ITEM_DM, Integer.valueOf(intIn));
+    }
+    
+    /** Gets the ItemStack Fuel Size. */
+    public final int getItemstackFuelSize()
+    {
+        return ((Integer)this.dataManager.get(ITEMSTACK_FUEL_SIZE_DM)).intValue();
+    }
+    /** Sets the ItemStack Fuel Size. */
+    public void setItemstackFuelSize(int intIn)
+    {
+        this.dataManager.set(ITEMSTACK_FUEL_SIZE_DM, Integer.valueOf(intIn));
     }
     
     //--------------------------------------------------
-    
-    /** Sets the Itemstack Fuel Item. */
-    protected void setItemstackFuelItem(int intIn)
+
+    /** Gets the Energy Regen. */
+    public final int getEnergyRegen()
     {
-        this.dataManager.set(ITEMSTACK_FUEL_ITEM, Integer.valueOf(intIn));
+        return ((Integer)this.dataManager.get(ENERGY_REGEN_DM)).intValue();
     }
-    /** Gets the Itemstack Fuel Item. */
-    protected int getItemstackFuelItem()
+    /** Sets the Energy Regen. */
+    public void setEnergyRegen(int intIn)
     {
-        return ((Integer)this.dataManager.get(ITEMSTACK_FUEL_ITEM)).intValue();
+        this.dataManager.set(ENERGY_REGEN_DM, Integer.valueOf(intIn));
     }
-    
-    //--------------------------------------------------
-    
-    /** Sets the Itemstack Fuel Size. */
-    protected void setItemstackFuelSize(int intIn)
+
+    /** Gets the machine stored micro energy. */
+    public final int getStoredMicroEnergy()
     {
-        this.dataManager.set(ITEMSTACK_FUEL_SIZE, Integer.valueOf(intIn));
+        return ((Integer)this.dataManager.get(STORED_MICRO_ENERGY_DM)).intValue();
     }
-    /** Gets the Itemstack Fuel Size. */
-    protected int getItemstackFuelSize()
+	/** Sets the machine stored micro energy. */
+    public void setStoredMicroEnergy(int intIn)
     {
-        return ((Integer)this.dataManager.get(ITEMSTACK_FUEL_SIZE)).intValue();
+        this.dataManager.set(STORED_MICRO_ENERGY_DM, MathHelper.clamp(intIn, 0, this.getMaxEnergyRegen()));
     }
     
     
@@ -272,22 +307,20 @@ public class EntityMachineFuel extends EntityMachineBase {
     // TODO              Fuel Logic
 	//==================================================
     
-    /**
-     * Core fuel logic responsible for machine movement.
-     */
-	public void fuelSystem()
+    /** Core fuel logic responsible for machine movement. */
+	public void initiateFuelSystem()
     {
     	boolean flag = this.isFuelBurning();
         boolean flag1 = false;
         
         // Sets burn time to 0 so a fraction isn't left:
-        if(this.storedFuel <= this.getBaseFuelTick())
+        if (this.getFuel() <= this.getBaseFuelTick())
         {
-        	this.storedFuel = 0;
+        	this.setFuel(0);
         }
         
         // Handles how stored fuel is ticked down:
-        if(this.isFuelBurning())
+        if (this.isFuelBurning())
         {
         	// Creative players don't consume fuel:
         	if (this.getControllingPassenger() instanceof EntityPlayer)
@@ -300,55 +333,49 @@ public class EntityMachineFuel extends EntityMachineBase {
         		}
             	else 
             	{
-            		this.storedFuel = this.storedFuel - this.getBaseFuelTick();
+            		this.setFuel(this.getFuel() - this.getBaseFuelTick());
             	}
         	}
         	else 
         	{
-        		this.storedFuel = this.storedFuel - this.getBaseFuelTick();
+        		this.setFuel(this.getFuel() - this.getBaseFuelTick());
         	}
         }
         
         // Handles when the airship is off:
-        if(!this.isFuelBurning())
+        if (!this.isFuelBurning())
         {
-        	this.storedFuel = 0;
-        }
-        
-        // Clears stored fuel if the machine is broken:
-        if (this.broken)
-        {
-        	this.storedFuel = 0;
+        	this.setFuel(0);
         }
         
         // Server side fuel logic:
-        if(!this.world.isRemote)
+        if (!this.world.isRemote)
         {
         	ItemStack fuelSlot = this.inventory.getStackInSlot(0);
         	
 	        // Core fuel slot logic:
-	        if(this.isFuelBurning() || !fuelSlot.isEmpty())
+	        if (this.isFuelBurning() || !fuelSlot.isEmpty())
 	        {
-	            if(!this.isFuelBurning()
+	            if (!this.isFuelBurning()
 	            && this.getControllingPassenger() != null)
 	            {
-	                this.storedFuel = getItemBurnTime(fuelSlot);
-	                this.storedFuelTotal = getItemBurnTime(fuelSlot);
+	                this.setFuel(getItemBurnTime(fuelSlot));
+	                this.setFuelTotal(getItemBurnTime(fuelSlot));
 	                
-	                if(this.isFuelBurning())
+	                if (this.isFuelBurning())
 	                {
 	                    flag1 = true;
 	                    
 	                    // Consumes the fuel item:
-	                    if(!fuelSlot.isEmpty())
+	                    if (!fuelSlot.isEmpty())
 	                    {
-	                    	if (!this.broken)
+	                    	if (!this.getBroken())
 	                    	{
-	                    		this.itemstackFuelItem = this.inventory.getStackInSlot(0).getItem().getIdFromItem(this.inventory.getStackInSlot(0).getItem());
+	                    		this.setItemstackFuelItem(this.inventory.getStackInSlot(0).getItem().getIdFromItem(this.inventory.getStackInSlot(0).getItem()));
 	                    		
 	                    		this.inventory.extractItem(0, 1, false);
 	                    		
-	                    		this.itemstackFuelSize = this.inventory.getStackInSlot(0).getCount();
+	                    		this.setItemstackFuelSize(this.inventory.getStackInSlot(0).getCount());
 	                    	}
 	                    }
 	                }
@@ -356,51 +383,53 @@ public class EntityMachineFuel extends EntityMachineBase {
 	        }
         }
         
-        if(flag != this.isFuelBurning())
+        if (flag != this.isFuelBurning())
         {
             flag1 = true;
         }
         
         if (!this.world.isRemote
         && this.isFuelBurning()
-        && !this.broken
+        && !this.getBroken()
         //&& this.engineOnSoundSpeed > 0 
         && this.ticksExisted % 5 == 0)
         {
-        	this.playOnSound(null);
+        	this.playSound(this.getOnSound(), 0.25F, 1.0F);
+        	//this.getOnSound();
         }
+        
+        //this.getOnSound();
     }
     
-    /**
-     * Is the machine burning fuel?
-     */
+    /** Is the machine burning fuel? */
 	@Override
     public boolean isFuelBurning()
     {
-		if (this.getControllingPassenger() instanceof EntityPlayer)
-    	{
-    		EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
-    		
-    		if (player.isCreative())
-    		{
-    			return true;
-    		}
-    	}
-    	
-    	if(this.storedFuel > 0)
-    	{
-    		return true;
-    	}
+		if (this.getPoweredOn())
+		{
+			if (this.getControllingPassenger() instanceof EntityPlayer)
+	    	{
+	    		EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
+	    		
+	    		if (player.isCreative())
+	    		{
+	    			return true;
+	    		}
+	    	}
+	    	
+	    	if (this.getFuel() > 0)
+	    	{
+	    		return true;
+	    	}
+		}
     	
     	return super.isFuelBurning();
     }
     
-    /**
-     * Returns the number of ticks that the supplied item will keep the machine on for, or 0 if the item isn't fuel.
-     */
+    /** Returns the number of ticks that the supplied item will keep the machine on for, or 0 if the item isn't fuel. */
     public static int getItemBurnTime(ItemStack stack)
     {
-        if(stack.isEmpty())
+        if (stack.isEmpty())
         {
             return 0;
         }
@@ -411,45 +440,42 @@ public class EntityMachineFuel extends EntityMachineBase {
             //KEEP FOR ENERGY SYSTEM EVENTUALLY:
             //DualEnergyStorageVC cap = (DualEnergyStorageVC) stack.getCapability(DualEnergyStorageVC.CAPABILITY_HOLDER , null);
             
-            if(VMConfiguration.vanillaFuel)
+            if (VMConfiguration.vanillaFuel)
     		{
-	            if(item instanceof ItemBlock && Block.getBlockFromItem(item) != Blocks.AIR)
+	            if (item instanceof ItemBlock && Block.getBlockFromItem(item) != Blocks.AIR)
 	            {
 	                Block block = Block.getBlockFromItem(item);
 	                
-	                if(block == Blocks.WOODEN_SLAB)
+	                if (block == Blocks.WOODEN_SLAB)
 	                {
-	                    return FuelVC.wooden_slab;
+	                    return FuelVM.wooden_slab;
 	                }
 	                
-	                if(block.getDefaultState().getMaterial() == Material.WOOD)
+	                if (block.getDefaultState().getMaterial() == Material.WOOD)
 	                {
-	                    return FuelVC.wood_block_material;
+	                    return FuelVM.wood_block_material;
 	                }
 	                
-	                if(block == Blocks.COAL_BLOCK)
+	                if (block == Blocks.COAL_BLOCK)
 	                {
-	                    return FuelVC.coal_block;
+	                    return FuelVM.coal_block;
 	                }
 	            }
 	            
-	            if(item == Items.STICK) return FuelVC.stick;
-	            if(item == Item.getItemFromBlock(Blocks.SAPLING)) return FuelVC.sapling;
-	            if(item == Items.COAL) return FuelVC.coal;
-	            if(item == Items.BLAZE_ROD) return FuelVC.blaze_rod;
+	            if (item == Items.STICK) return FuelVM.stick;
+	            if (item == Item.getItemFromBlock(Blocks.SAPLING)) return FuelVM.sapling;
+	            if (item == Items.COAL) return FuelVM.coal;
+	            if (item == Items.BLAZE_ROD) return FuelVM.blaze_rod;
 	            
-	            if(item == Items.LAVA_BUCKET) return 20000;
+	            if (item == Items.LAVA_BUCKET) return 20000;
     		}
             
-            if(item == ItemsVC.MACHINE_PELLETS) return (VMConfiguration.machinePelletsBurnTime * 20
-            		//ViesCraftConfig.viesolineBurnTime
-            		//* 20
-            		);
+            if (item == ItemsVM.MACHINE_PELLETS) return (VMConfiguration.machinePelletsBurnTime * 20);
             
             //KEEP FOR ENERGY SYSTEM EVENTUALLY:
             //if (item == InitItemsVC.airship_battery) return cap.getEnergyStored();
             
-            if(VMConfiguration.outsideModFuel)
+            if (VMConfiguration.outsideModFuel)
     		{
             	return net.minecraftforge.fml.common.registry.GameRegistry.getFuelValue(stack);
     		}
@@ -460,49 +486,13 @@ public class EntityMachineFuel extends EntityMachineBase {
         }
     }
     
-    /**
-     * Simple check to see if an item is fuel.
-     */
+    /** Simple check to see if an item is fuel. */
     public static boolean isItemFuel(ItemStack stack)
     {
         return getItemBurnTime(stack) > 0;
     }
     
-    /**
-     * Calculates total fuel burn time by stack size for GUI.
-     *
-    public void getTotalFuelSlotBurnTime()
-    {
-    	if(this.getControllingPassenger() != null)
-    	{
-    		if(this.isFuelBurning())
-            {
-    			ItemStack itemFuel = this.inventory.getStackInSlot(0);
-    			
-    			if(!itemFuel.isEmpty())
-    			{
-    				this.fuelItemStackSize = this.inventory.getStackInSlot(0).getCount();
-    					
-    				this.fuelItemStack = this.fuelItemStackSize * this.getItemBurnTime(this.inventory.getStackInSlot(0));
-    			}
-    			else
-    			{
-    				this.fuelItemStack = 0;
-    				this.fuelItemStackSize = 0;
-    			}
-            }
-    		else
-    		{
-    			this.fuelItemStack = 0;
-    			this.fuelItemStackSize = 0;
-    		}
-    	}
-    }
-    
-    /**
-     * This calculates how much fuel is used per tick.
-     * This is just currently 1 and can change in the future.
-     */
+    /** This calculates how much fuel is used per tick. This is just currently 1 and can change in the future. */
     protected int getBaseFuelTick()
     {
     	int fuelTick;
@@ -514,39 +504,69 @@ public class EntityMachineFuel extends EntityMachineBase {
     
     
     
+    //==================================================
+    // TODO             Energy Logic
+	//==================================================
+    
+    /** Core energy logic responsible for machine energy regen while burning fuel. */
+    public void initiateEnergySystem()
+    {
+    	if(!this.world.isRemote)
+		{
+    		//If the machine is burning fuel and not a max energy, increase the micro energy count.
+	    	if(this.isFuelBurning()
+	    	&& this.getEnergy() <= this.getMaxEnergy())
+	    	{
+	    		this.setStoredMicroEnergy(this.getStoredMicroEnergy() + 1);
+	    	}
+	    	
+	    	//When micro energy gets high enough, 1 energy is added.
+	    	if (this.getStoredMicroEnergy() >= this.getMaxEnergyRegen())
+	    	{
+	    		this.setEnergy(this.getEnergy() + 1);
+	    		this.setStoredMicroEnergy(0);
+	    		
+	    	}
+		}
+    }
+    
+    /** Gets the max energy regen value of a machine. */
+    private int getMaxEnergyRegen()
+    {
+        return EnumsVM.FlyingMachineEngineTier.byId(this.getTierEngine()).getEnergyRegenModifier();
+    }
+    
+    
+    
 	//==================================================
     // TODO              GUI Logic
 	//==================================================
 	
-    /**
-     * Set variables to pass through fields, used in the CLIENT GUI.
-     */
+    /** Set variables to pass through fields, used in the CLIENT GUI. */
     public void setField(int id, int value)
     {
         switch (id)
         {
         	case 0:
-                this.storedFuel = value;
+                this.setFuel(value);
                 break;
             case 1:
-            	this.storedFuelTotal = value;
+            	this.setFuelTotal(value);
                 break;
             default:
             	break;
         }
     }
     
-    /**
-     * Gets variables to pass through fields, used in the CLIENT GUI.
-     */
+    /** Gets variables to pass through fields, used in the CLIENT GUI. */
     public int getField(int id)
     {
         switch (id)
         {
             case 0:
-                return this.storedFuel;
+                return this.getFuel();
             case 1:
-                return this.storedFuelTotal;
+                return this.getFuelTotal();
             default:
                 return 0;
         }

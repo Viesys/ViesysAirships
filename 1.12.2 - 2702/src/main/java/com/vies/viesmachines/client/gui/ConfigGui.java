@@ -14,7 +14,7 @@ public class ConfigGui extends GuiConfig {
 	
 	public ConfigGui(GuiScreen screen) 
 	{
-		super(screen, new ConfigElement(VMConfiguration.config.getCategory(VMConfiguration.CATEGORY_VC)).getChildElements(), References.MOD_NAME, true, true, GuiConfig.getAbridgedConfigPath(VMConfiguration.config.toString()));
+		super(screen, new ConfigElement(VMConfiguration.config.getCategory(VMConfiguration.CATEGORY_VM)).getChildElements(), References.MOD_NAME, true, true, GuiConfig.getAbridgedConfigPath(VMConfiguration.config.toString()));
 	}
 	
 	@Override

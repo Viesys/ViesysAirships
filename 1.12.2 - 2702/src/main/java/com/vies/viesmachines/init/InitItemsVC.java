@@ -3,7 +3,7 @@ package com.vies.viesmachines.init;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.vies.viesmachines.api.ItemsVC;
+import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.api.References;
 
 import net.minecraft.item.Item;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.registries.IForgeRegistry;
 
 @ObjectHolder(References.MOD_ID)
-public class InitItemsVC extends ItemsVC {
+public class InitItemsVC extends ItemsVM {
 	
 	public static void registerItemTEMP()
 	{
@@ -40,13 +40,15 @@ public class InitItemsVC extends ItemsVC {
 		public static void registerItems(final RegistryEvent.Register<Item> event) 
 		{
 			final Item[] items = {
-					GUIDEBOOK,
+					//GUIDEBOOK,
+					//ADAPTIVE_CIRCUIT,
+					//ENERGIZED_CORE,
 					
+					CHARGED_SHARD,
 					MACHINE_PELLETS,
+					MACHINE_AMMO,
 					
 					LOGIC_CHIP,
-					ADAPTIVE_CIRCUIT,
-					
 					MACHINE_FRAME,
 					MACHINE_ENGINE,
 					
@@ -54,7 +56,7 @@ public class InitItemsVC extends ItemsVC {
 					MACHINE_COMPONENT_WATER,
 					MACHINE_COMPONENT_FLYING,
 					
-					
+					//--------------------------------------------------
 					
 					UPGRADE_FRAME_TIER1,
 					UPGRADE_FRAME_TIER2,
@@ -68,12 +70,47 @@ public class InitItemsVC extends ItemsVC {
 					UPGRADE_COMPONENT_TIER2,
 					UPGRADE_COMPONENT_TIER3,
 					
+					//--------------------------------------------------
 					
+					KIT_RAW,
+					KIT_HEALTH_2,
+					KIT_HEALTH_8,
+					
+					KIT_HEALTH_MAX,
+					KIT_ENERGY_25,
+					KIT_ENERGY_100,
+					
+					KIT_ENERGY_MAX,
+					KIT_UPGRADE_MAX,
+					KIT_MACHINE_MAX,
+					
+					//--------------------------------------------------
+					
+					ITEM_MACHINE_GROUND_HOVERCRAFT,
+					ITEM_MACHINE_GROUND_2,
+					ITEM_MACHINE_GROUND_3,
+					
+					ITEM_MACHINE_WATER_SUBMARINE,
+					ITEM_MACHINE_WATER_2,
+					ITEM_MACHINE_WATER_3,
+					
+					ITEM_MACHINE_FLYING_AIRSHIP,
+					ITEM_MACHINE_FLYING_HELICOPTER,
+					ITEM_MACHINE_FLYING_3,
+					
+					//--------------------------------------------------
 					
 					TOOL_DISMOUNTING,
-					TOOL_COMPRESSING,
-					TOOL_REPAIRING,
 					
+					//--------------------------------------------------
+					//--------------------------------------------------
+					//--------------------------------------------------
+					
+					PARTICLE_BULLET_NORMAL,
+					PARTICLE_BULLET_ELECTRICAL,
+					PARTICLE_BULLET_EXPLOSIVE,
+					
+					PARTICLE_STATIC_CHARGE,
 					
 					/**
 					

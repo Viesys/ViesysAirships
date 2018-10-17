@@ -1,6 +1,6 @@
 package com.vies.viesmachines.client.sound;
 
-import com.vies.viesmachines.api.EnumsVC;
+import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
 
 import net.minecraft.client.Minecraft;
@@ -36,7 +36,7 @@ public class JukeboxMovingSoundVC extends MovingSound {
     	SoundHandler soundHandler = Minecraft.getMinecraft().getSoundHandler();
     	
     	if (this.airship.isDead
-    	|| this.airship.broken)
+    	|| this.airship.getBroken())
         {
         	this.donePlaying = true;
     		Minecraft.getMinecraft().gameSettings.setSoundLevel(SoundCategory.MUSIC, 1.0F);

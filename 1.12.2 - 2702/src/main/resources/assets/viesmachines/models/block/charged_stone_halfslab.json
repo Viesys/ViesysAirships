@@ -1,0 +1,8 @@
+{
+    "parent": "block/half_slab",
+    "textures": {
+        "bottom": "viesmachines:blocks/charged_stone_slab_bottom",
+        "top": "viesmachines:blocks/charged_stone_slab_top",
+        "side": "viesmachines:blocks/charged_stone_slab_side"
+    }
+}

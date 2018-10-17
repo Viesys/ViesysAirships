@@ -49,7 +49,7 @@ public class ViesMachines {
 		
 		this.proxy.preInit(event);
 		LogHelper.info("<<==============================>>");
-		LogHelper.info("        Pre Init Complete.        ");
+		LogHelper.info("        Pre-Init Complete.        ");
 		LogHelper.info("<<==============================>>");
 	}
 	

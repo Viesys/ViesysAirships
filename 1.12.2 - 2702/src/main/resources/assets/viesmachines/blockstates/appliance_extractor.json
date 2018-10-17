@@ -1,0 +1,10 @@
+{
+    "variants": 
+    {
+        "facing=north": { "model": "viesmachines:appliance_extractor" },
+        "facing=south": { "model": "viesmachines:appliance_extractor", "y": 180 },
+        "facing=west":  { "model": "viesmachines:appliance_extractor", "y": 270 },
+        "facing=east":  { "model": "viesmachines:appliance_extractor", "y": 90 },
+        "normal": { "model": "viesmachines:appliance_extractor" }
+    }
+}

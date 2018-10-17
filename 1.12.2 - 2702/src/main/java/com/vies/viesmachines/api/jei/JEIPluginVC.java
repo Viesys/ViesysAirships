@@ -1,9 +1,5 @@
 package com.vies.viesmachines.api.jei;
 
-import com.vies.viesmachines.api.BlocksVC;
-import com.vies.viesmachines.api.ItemsVC;
-import com.vies.viesmachines.common.tileentity.ContainerAirshipWorkbench;
-
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -11,10 +7,7 @@ import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 @JEIPlugin
 public class JEIPluginVC implements IModPlugin {
@@ -29,13 +22,13 @@ public class JEIPluginVC implements IModPlugin {
 		//itemBlacklist.addIngredientToBlacklist(new ItemStack(ItemsVC.ITEM_ENTITY_AIRSHIP, 1, OreDictionary.WILDCARD_VALUE));
 		
 		//Adds my Airship Workbench to the list with the vanilla crafting table.
-		registry.addRecipeCatalyst(new ItemStack(BlocksVC.AIRSHIP_WORKBENCH), VanillaRecipeCategoryUid.CRAFTING);
+		//registry.addRecipeCatalyst(new ItemStack(BlocksVC.AIRSHIP_WORKBENCH), VanillaRecipeCategoryUid.CRAFTING);
 		
 		//Adds the recipe transfer handlers.
 		IRecipeTransferRegistry recipeTranferRegistry = registry.getRecipeTransferRegistry();
 		
 		//Adds "+" sign capability.
-		recipeTranferRegistry.addRecipeTransferHandler(ContainerAirshipWorkbench.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
+		//recipeTranferRegistry.addRecipeTransferHandler(ContainerAirshipWorkbench.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
 		
 		//Adds all recipes in the crafting manager. Not used since VC 5.0.0
         //registry.addRecipes(CraftingManagerVC.getInstance().getRecipeList());

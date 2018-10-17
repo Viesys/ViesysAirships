@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "viesmachines:items/item_upgrade_component_tier1"
-    }
-}

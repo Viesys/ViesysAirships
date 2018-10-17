@@ -1,18 +1,28 @@
 package com.vies.viesmachines.client;
 
-import com.vies.viesmachines.api.ItemsVC;
+import com.vies.viesmachines.api.ItemsVM;
+import com.vies.viesmachines.client.entity.machines.flying.renderers.airship.RenderEntityMachineFlyingAirship;
+import com.vies.viesmachines.client.entity.machines.ground.RenderEntityMachineGround;
+import com.vies.viesmachines.client.entity.machines.water.RenderEntityMachineWater;
 import com.vies.viesmachines.client.entity.model.frame.ModelFrame0;
 import com.vies.viesmachines.client.entity.model.frame.ModelFrame1;
-import com.vies.viesmachines.client.entity.render.RenderEntityMachineFlying;
-import com.vies.viesmachines.client.entity.render.RenderEntityMachineGround;
-import com.vies.viesmachines.client.entity.render.RenderEntityMachineWater;
-import com.vies.viesmachines.common.entity.machines.EntityMachineFlying;
+import com.vies.viesmachines.client.entity.particles.renderers.RenderBulletElectrical;
+import com.vies.viesmachines.client.entity.particles.renderers.RenderBulletExplosive;
+import com.vies.viesmachines.client.entity.particles.renderers.RenderBulletNormal;
+import com.vies.viesmachines.client.entity.particles.renderers.RenderStaticCharge;
+import com.vies.viesmachines.client.entity.thrown.RenderThrownMachineFlying;
 import com.vies.viesmachines.common.entity.machines.EntityMachineGround;
 import com.vies.viesmachines.common.entity.machines.EntityMachineWater;
+import com.vies.viesmachines.common.entity.machines.types.EntityMachineFlyingAirship;
+import com.vies.viesmachines.common.entity.particles.EntityBulletElectrical;
+import com.vies.viesmachines.common.entity.particles.EntityBulletExplosive;
+import com.vies.viesmachines.common.entity.particles.EntityBulletNormal;
+import com.vies.viesmachines.common.entity.particles.EntityStaticCharge;
+import com.vies.viesmachines.common.entity.thrown.EntityThrownMachineFlyingAirship;
 
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
-public final class InitEntityVCRender extends ItemsVC {
+public final class InitEntityVCRender extends ItemsVM {
 	
 	public static void registerEntityRender()
 	{
@@ -22,11 +32,25 @@ public final class InitEntityVCRender extends ItemsVC {
 		
 		//RenderingRegistry.registerEntityRenderingHandler(EntityThrownAirship.class, renderManager -> new RenderThrownAirship(renderManager));
 		
+		RenderingRegistry.registerEntityRenderingHandler(EntityBulletNormal.class, renderManager -> new RenderBulletNormal(renderManager));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBulletElectrical.class, renderManager -> new RenderBulletElectrical(renderManager));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBulletExplosive.class, renderManager -> new RenderBulletExplosive(renderManager));
+		
+		RenderingRegistry.registerEntityRenderingHandler(EntityStaticCharge.class, renderManager -> new RenderStaticCharge(renderManager));
+		
+		
+		
+		RenderingRegistry.registerEntityRenderingHandler(EntityThrownMachineFlyingAirship.class, renderManager -> new RenderThrownMachineFlying(renderManager));
+		
 		RenderingRegistry.registerEntityRenderingHandler(EntityMachineGround.class, renderManager -> new RenderEntityMachineGround(renderManager, new ModelFrame0(), 1));
 		RenderingRegistry.registerEntityRenderingHandler(EntityMachineWater.class, renderManager -> new RenderEntityMachineWater(renderManager, new ModelFrame1(), 1));
-		RenderingRegistry.registerEntityRenderingHandler(EntityMachineFlying.class, renderManager -> new RenderEntityMachineFlying(renderManager, new ModelFrame0(), 1));
+		//RenderingRegistry.registerEntityRenderingHandler(EntityMachineFlying.class, renderManager -> new RenderEntityMachineFlyingAirship(renderManager, new ModelFrame0(), 1));
 		
 		//===========================================
+		
+		RenderingRegistry.registerEntityRenderingHandler(EntityMachineFlyingAirship.class, renderManager -> new RenderEntityMachineFlyingAirship(renderManager, new ModelFrame0(), 1));
+		
+		
 		
 		//RenderingRegistry.registerEntityRenderingHandler(EntityAirshipCore.class, renderManager -> new RenderAirship(renderManager));
 		

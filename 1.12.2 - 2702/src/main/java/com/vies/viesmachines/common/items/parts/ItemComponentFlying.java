@@ -12,15 +12,16 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemComponentFlying extends Item {
 	
-	public ItemComponentFlying() 
+	public ItemComponentFlying(String unlocalizedNameIn) 
 	{
-		ItemHelper.setItemName(this, "item_machine_component_flying");
+		ItemHelper.setItemName(this, unlocalizedNameIn);
 		
 		this.setMaxStackSize(64);
 		this.setCreativeTab(ViesMachines.tabItems);
@@ -30,8 +31,12 @@ public class ItemComponentFlying extends Item {
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
-		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		TextFormatting color = TextFormatting.GOLD;
+		
+		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(" ");
+		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.3"));
 	}
 	
 	@Override

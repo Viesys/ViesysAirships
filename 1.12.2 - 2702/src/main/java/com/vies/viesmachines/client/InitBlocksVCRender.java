@@ -3,16 +3,19 @@ package com.vies.viesmachines.client;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.vies.viesmachines.api.BlocksVC;
+import com.vies.viesmachines.api.BlocksVM;
 import com.vies.viesmachines.api.References;
+import com.vies.viesmachines.common.tileentity.TileEntityExtractor;
 import com.vies.viesmachines.init.InitBlocksVC;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fluids.Fluid;
@@ -21,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = References.MOD_ID)
-public final class InitBlocksVCRender extends BlocksVC {
+public final class InitBlocksVCRender extends BlocksVM {
 	
 	public static final InitBlocksVCRender INSTANCE = new InitBlocksVCRender();
 	
@@ -87,6 +90,14 @@ public final class InitBlocksVCRender extends BlocksVC {
 	{
 		Item item = Item.getItemFromBlock(block);
 		itemsRegistered.add(item);
+		//ForgeHooksClient.registerTESRItemStack(item, 0, TileEntityExtractor.class);
+		//BlocksVM.EXTRACTOR.setTileEntityItemStackRenderer(new TileEntityExtractor());
+		//TEItemTest.instance.renderByItem(new ItemStack(item));
+		
+		//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(block), 0, new ModelResourceLocation(item.getRegistryName().toString(), "inventory"));
+		//ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(block), 0, TileEntityExtractor.class);
+
+		
 		ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName().toString(), "inventory"));
 	}
 	

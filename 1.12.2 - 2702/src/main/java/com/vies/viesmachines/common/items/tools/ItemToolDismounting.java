@@ -10,7 +10,9 @@ import com.vies.viesmachines.common.items.ItemHelper;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -38,6 +40,12 @@ public class ItemToolDismounting extends Item {
     }
 	
 	@Override
+	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+    {
+		return true;
+    }
+	
+	@Override
     public boolean itemInteractionForEntity(ItemStack itemstack, net.minecraft.entity.player.EntityPlayer player, EntityLivingBase entity, net.minecraft.util.EnumHand hand)
     {
         if (entity.world.isRemote)
@@ -62,8 +70,11 @@ public class ItemToolDismounting extends Item {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
-		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
-		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(TextFormatting.WHITE + References.localNameVC(this.getUnlocalizedName() + ".tt.1") 
+		+ " " + TextFormatting.GRAY + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.3"));
+		tooltip.add("");
+		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.4"));
 	}
 	
 	@Override

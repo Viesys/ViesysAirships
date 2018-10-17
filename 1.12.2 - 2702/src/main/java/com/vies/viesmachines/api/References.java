@@ -3,8 +3,11 @@ package com.vies.viesmachines.api;
 import java.util.Calendar;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,27 +33,71 @@ public class References {
 	
 	
 	
+	public static final String CUSTOM_NAME_TAG = "CustomName";
 	public static final String MACHINE_SLOTS_TAG = "Slots";
 	
-	public static final String MACHINE_POINTS_TAG = "MachinePoints";
-	public static final String BROKEN_MACHINE_TAG = "BrokenMachine";
-	public static final String AUTORUN_MACHINE_TAG = "AutorunMachine";
+	public static final String POWERED_ON_TAG = "PoweredOn";
+	public static final String TYPE_TAG = "Type";
+	public static final String FORWARD_SPEED_TAG = "ForwardSpeed";
+	public static final String TURN_SPEED_TAG = "TurnSpeed";
+	
+	public static final String HEALTH_TAG = "Health";
+	public static final String ENERGY_TAG = "Energy";
+	public static final String BROKEN_TAG = "Broken";
+	public static final String AUTORUN_TAG = "Autorun";
+	public static final String ARMED_TAG = "Armed";
+	public static final String AMMO_AMOUNT_TAG = "AmmoAmount";
+	public static final String AMMO_TYPE_TAG = "AmmoType";
 	public static final String SELECTED_SONG_TAG = "SelectedSong";
 	
-	public static final String STORED_FUEL_TAG = "StoredFuel";
-	public static final String STORED_FUEL_TOTAL_TAG = "StoredFuelTotal";
-	
-	public static final String FRAME_TIER_TAG = "FrameTier";
-	public static final String ENGINE_TIER_TAG = "EngineTier";
-	public static final String COMPONENT_TIER_TAG = "ComponentTier";
-	
+	public static final String FUEL_TAG = "Fuel";
+	public static final String FUEL_TOTAL_TAG = "FuelTotal";
 	public static final String ITEMSTACK_FUEL_ITEM_TAG = "ItemstackFuelItem";
 	public static final String ITEMSTACK_FUEL_SIZE_TAG = "ItemstackFuelSize";
+	public static final String STORED_MICRO_ENERGY_TAG = "StoredMicroEnergy";
+	public static final String ENERGY_REGEN_TAG = "EnergyRegen";
 	
-	public static final String ACTIVE_ABILITY_TAG = "ActiveAbility";
+	public static final String TIER_FRAME_TAG = "TierFrame";
+	public static final String TIER_ENGINE_TAG = "TierEngine";
+	public static final String TIER_COMPONENT_TAG = "TierComponent";
+	
+	
+	public static final String MACHINE_ENHANCEMENT_1_TAG = "MachineEnhancement1";
+	
+	public static final String PRIMED_FOR_LIGHTNING_STRIKE_TAG = "PrimedForLightningStrike";
+	public static final String EVENT_TRIGGER_TAG = "EventTrigger";
 	
 	
 	
+	public static final String VISUAL_MODEL_FRAME_TAG = "VisualModelFrame";
+	public static final String VISUAL_MODEL_ENGINE_TAG = "VisualModelEngine";
+	public static final String VISUAL_MODEL_COMPONENT_TAG = "VisualModelComponent";
+	
+	public static final String VISUAL_FRAME_TEXTURE_TAG = "VisualFrameTexture";
+	public static final String VISUAL_FRAME_TRANSPARENT_TAG = "VisualFrameTransparent";
+	public static final String VISUAL_FRAME_COLOR_TAG = "VisualFrameColor";
+	public static final String VISUAL_FRAME_COLOR_RED_TAG = "VisualFrameColorRed";
+	public static final String VISUAL_FRAME_COLOR_GREEN_TAG = "VisualFrameColorGreen";
+	public static final String VISUAL_FRAME_COLOR_BLUE_TAG = "VisualFrameColorBlue";
+	
+	public static final String VISUAL_ENGINE_PARTICLE_TAG = "VisualEngineParticle";
+	public static final String VISUAL_ENGINE_DISPLAY_TYPE_TAG = "VisualEngineDisplayType";
+	public static final String VISUAL_ENGINE_DISPLAY_ITEMSTACK_TAG = "VisualEngineDisplayItemstack";
+	public static final String VISUAL_ENGINE_DISPLAY_ITEMSTACK_META_TAG = "VisualEngineDisplayItemstackMeta";
+	public static final String VISUAL_ENGINE_DISPLAY_HEAD_TAG = "VisualEngineDisplayHead";
+	public static final String VISUAL_ENGINE_DISPLAY_SUPPORTER_HEAD_TAG = "VisualEngineDisplaySupporterHead";
+	public static final String VISUAL_ENGINE_DISPLAY_HOLIDAY_TAG = "VisualEngineDisplayHoliday";
+	
+	public static final String VISUAL_COMPONENT_TEXTURE_TAG = "VisualComponentTexture";
+	public static final String VISUAL_COMPONENT_TRANSPARENT_TAG = "VisualComponentTransparent";
+	public static final String VISUAL_COMPONENT_COLOR_TAG = "VisualComponentColor";
+	public static final String VISUAL_COMPONENT_COLOR_RED_TAG = "VisualComponentColorRed";
+	public static final String VISUAL_COMPONENT_COLOR_GREEN_TAG = "VisualComponentColorGreen";
+	public static final String VISUAL_COMPONENT_COLOR_BLUE_TAG = "VisualComponentColorBlue";
+	
+	public static final String VISUAL_NAME_COLOR_TAG = "VisualNameColor";
+	
+	/**
 	//=============================
 	public static final String CUSTOM_NAME_TAG = "CustomName";
 	
@@ -120,7 +167,7 @@ public class References {
 	public static final String SELECTED_MODULE_FUELINFINITE_TAG = "SelectedModuleFuelInfinite";
 	public static final String LEARNED_MODULE_BOMB_TAG = "LearnedModuleBomb";
 	public static final String SELECTED_MODULE_BOMB_TAG = "SelectedModuleBomb";
-	
+	*/
 	public static net.minecraft.util.text.translation.I18n Old_I18n;
 	
 	/**
@@ -283,4 +330,64 @@ public class References {
 		new ResourceLocation(Reference.MOD_ID, "textures/models/screens/module_jukebox.png"),
 		new ResourceLocation(Reference.MOD_ID, "textures/models/screens/module_cruise_control.png")
 	};*/
+	
+	
+	
+	
+	//For Render<Entity>
+	protected TextFormatting getPrimaryLabelColor(int stack)
+	{
+		TextFormatting stringColorLabel;
+		
+		switch(stack)
+		{
+			case 0:
+				return stringColorLabel = TextFormatting.GRAY;
+			case 1:
+				return stringColorLabel = TextFormatting.WHITE;
+			case 2:
+				return stringColorLabel = TextFormatting.YELLOW;
+			case 3:
+				return stringColorLabel = TextFormatting.AQUA;
+			case 4:
+				return stringColorLabel = TextFormatting.LIGHT_PURPLE;
+			case 5:
+				return stringColorLabel = TextFormatting.RED;
+			default:
+				return stringColorLabel = TextFormatting.GRAY;
+		}
+	}
+	
+
+    
+    
+    
+    protected FontRenderer getFontRenderer()
+    {
+        return Minecraft.getMinecraft().fontRenderer;
+    }
+    
+
+  	public static final ResourceLocation STEVE_TEXTURES = new ResourceLocation("textures/entity/steve.png");
+    public static final ResourceLocation ALEX_TEXTURES = new ResourceLocation("textures/entity/alex.png");
+    public static final ResourceLocation CHICKEN_TEXTURES = new ResourceLocation("textures/entity/chicken.png");
+    public static final ResourceLocation PIG_TEXTURES = new ResourceLocation("textures/entity/pig/pig.png");
+    public static final ResourceLocation COW_TEXTURES = new ResourceLocation("textures/entity/cow/cow.png");
+    public static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("textures/entity/zombie/zombie.png");
+    public static final ResourceLocation SKELETON_TEXTURES = new ResourceLocation("textures/entity/skeleton/skeleton.png");
+    public static final ResourceLocation SPIDER_TEXTURES = new ResourceLocation("textures/entity/spider/spider.png");
+    public static final ResourceLocation CREEPER_TEXTURES = new ResourceLocation("textures/entity/creeper/creeper.png");
+    public static final ResourceLocation WITHER_SKELETON_TEXTURES = new ResourceLocation("textures/entity/skeleton/wither_skeleton.png");
+    public static final ResourceLocation DRAGON_TEXTURES = new ResourceLocation("textures/entity/enderdragon/dragon.png");
+    public static final ResourceLocation HEROBRINE_TEXTURES = new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/herobrine.png");
+    
+    public static final ResourceLocation SUPPORTER_VIES_TEXTURES = new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/supporters/vies.png");
+    public static final ResourceLocation SUPPORTER_SOULFORGE7_TEXTURES = new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/supporters/soulforge7.png");
+    public static final ResourceLocation SUPPORTER_NEMANOR_TEXTURES = new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/supporters/nemanor.png");
+    public static final ResourceLocation SUPPORTER_VELOURVAULTSUIT_TEXTURES = new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/supporters/velourvaultsuit.png");
+    
+    
+	
+	
+	
 }

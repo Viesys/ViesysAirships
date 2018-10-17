@@ -9,6 +9,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class EntityMachineGround extends EntityMachineFuel {
 	
@@ -45,9 +46,92 @@ public class EntityMachineGround extends EntityMachineFuel {
 		
 	}
 	
-	public EntityMachineGround(World worldIn, double x, double y, double z) 
+	public EntityMachineGround(World worldIn, double x, double y, double z,
+			
+			int frameTierIn, int engineTierIn, int componentTierIn,
+			float currentHPIn, int currentEPIn, 
+			int currentFuelIn, int totalFuelIn,
+			int itemstackFuelItemIn, int itemstackFuelSizeIn,
+			boolean brokenIn, int machineEnhancement1In,
+			
+			int ammoAmountIn, int ammoTypeIn,
+			
+			int visualTypeModelIn, int visualVariantModelIn,
+			
+			int visualFrameTextureIn, 
+			boolean visualFrameTransparentIn, boolean visualFrameColorIn,
+			int visualFrameColorRedIn, 
+			int visualFrameColorGreenIn, 
+			int visualFrameColorBlueIn,
+			
+			int visualEngineParticleIn,
+			int visualEngineDisplayTypeIn,
+			int visualEngineDisplayItemstackIn,
+			int visualEngineDisplayItemstackMetaIn,
+			int visualEngineDisplayHeadIn,
+			int visualEngineDisplaySupporterHeadIn,
+			int visualEngineDisplayHolidayIn,
+			
+			int visualComponentTextureIn, 
+			boolean visualComponentTransparentIn, boolean visualComponentColorIn,
+			int visualComponentColorRedIn, 
+			int visualComponentColorGreenIn, 
+			int visualComponentColorBlueIn,
+			
+    		NBTTagCompound compoundIn, String customNameIn, int visualNameColorIn) 
 	{
 		this(worldIn);
+        this.setPosition(x, y, z);
+        
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
+		
+		this.frameTier = frameTierIn;
+		this.engineTier = engineTierIn;
+		this.componentTier = componentTierIn;
+		this.setHealth(currentHPIn);
+		this.storedEnergy = currentEPIn;
+		this.storedFuel = currentFuelIn;
+		this.storedFuelTotal = totalFuelIn;
+		this.itemstackFuelItem = itemstackFuelItemIn;
+		this.itemstackFuelSize = itemstackFuelSizeIn;
+		this.broken = brokenIn;
+		this.machineEnhancement1 = machineEnhancement1In;
+		
+		this.visualTypeModel = visualTypeModelIn;
+		this.visualVariantModel = visualVariantModelIn;
+		
+		this.visualFrameTexture = visualFrameTextureIn;
+		this.visualFrameTransparent = visualFrameTransparentIn;
+		this.visualFrameColor = visualFrameColorIn;
+		this.visualFrameColorRed = visualFrameColorRedIn;
+		this.visualFrameColorGreen = visualFrameColorGreenIn;
+		this.visualFrameColorBlue = visualFrameColorBlueIn;
+		
+		this.visualEngineParticle = visualEngineParticleIn;
+		this.visualEngineDisplayType = visualEngineDisplayTypeIn;
+		this.visualEngineDisplayItemstack = visualEngineDisplayItemstackIn;
+		this.visualEngineDisplayItemstackMeta = visualEngineDisplayItemstackMetaIn;
+		this.visualEngineDisplayHead = visualEngineDisplayHeadIn;
+		this.visualEngineDisplaySupporterHead = visualEngineDisplaySupporterHeadIn;
+		this.visualEngineDisplayHoliday = visualEngineDisplayHolidayIn;
+		
+		this.visualComponentTexture = visualComponentTextureIn;
+		this.visualComponentTransparent = visualComponentTransparentIn;
+		this.visualComponentColor = visualComponentColorIn;
+		this.visualComponentColorRed = visualComponentColorRedIn;
+		this.visualComponentColorGreen = visualComponentColorGreenIn;
+		this.visualComponentColorBlue = visualComponentColorBlueIn;
+		
+        this.inventory = new ItemStackHandler(size);
+        this.inventory.deserializeNBT(compoundIn);
+        
+        this.setCustomNameTag(customNameIn);
+		this.visualNameColor = visualNameColorIn;
 	}
 	
 	
@@ -128,6 +212,12 @@ public class EntityMachineGround extends EntityMachineFuel {
         return 0.15D;
     }
     
+	@Override
+	protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
+    {
+        
+    }
+    
     
     
 	//==================================================
@@ -139,7 +229,8 @@ public class EntityMachineGround extends EntityMachineFuel {
     {
     	super.controlAirship();
     	
-    	if (this.isBeingRidden())
+    	if (this.isBeingRidden()
+    	&& this.machineTurnedOn)
     	{
     		if (Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown())
         	{
@@ -166,9 +257,11 @@ public class EntityMachineGround extends EntityMachineFuel {
 			}
     	}
     	
-    	if(this.isBeingRidden())
+    	if(this.machineTurnedOn)//.isBeingRidden())
     	{
-	    	if(this.isFuelNeeded())
+	    	
+    		
+    		if(this.isFuelNeeded())
 	    	{
 	    		if(this.isFuelBurning())
 	    		{
@@ -185,10 +278,19 @@ public class EntityMachineGround extends EntityMachineFuel {
 	    	    		
 	    	    		this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 	    	    	}
+	    			
+	    			if (!this.isBeingRidden())
+	    			{
+	    				this.motionY -= 0.005F;
+	    	    		
+	    	    		this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+	    			}
 	    		}
 	    		else
 	    		{
-	    			
+	    			this.motionY = -0.25D;
+    	    		
+    	    		this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 	    		}
 	    	}
 	    	else

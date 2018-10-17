@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import com.vies.viesmachines.api.BlocksVC;
+import com.vies.viesmachines.api.BlocksVM;
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.common.tileentity.TileEntityAirshipWorkbench;
+import com.vies.viesmachines.common.tileentity.TileEntityExtractor;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.registries.IForgeRegistry;
 
 @ObjectHolder(References.MOD_ID)
-public class InitBlocksVC extends BlocksVC {
+public class InitBlocksVC extends BlocksVM {
 	
 	public static void registerBlockTEMP()
 	{
@@ -50,7 +50,29 @@ public class InitBlocksVC extends BlocksVC {
 			final IForgeRegistry<Block> registry = event.getRegistry();
 
 			final Block[] blocks = {
+					EXTRACTOR,
+					KIT_FABRICATOR,
+					MACHINE_TRANSMOGRIFIER,
+					MACHINE_BEACON,
+					//MACHINE_CHARGE_STATION,
+					//MACHINE_TRANSMOGRIFIER,
+					//MACHINE_BEACON,
+					
+					
+					
 					//AIRSHIP_WORKBENCH
+					
+					
+					//CHARGED_STONE_BASIC,
+					//CHARGED_STONE_DOUBLESLAB,
+					//CHARGED_STONE_HALFSLAB,
+					//CHARGED_STONE_STAIRS,
+					//CHARGED_STONE_FENCE,
+					//CHARGED_STONE_GATE,
+					//CHARGED_STONE_WALL,
+					//CHARGED_STONE_TORCH,
+					//CHARGED_STONE_LADDER,
+					//CHARGED_STONE_PILLAR,
 			};
 			
 			registry.registerAll(blocks);
@@ -79,7 +101,25 @@ public class InitBlocksVC extends BlocksVC {
 		public static void registerItemBlocks(RegistryEvent.Register<Item> event) 
 		{
 			final ItemBlock[] items = {
-					new ItemBlock(AIRSHIP_WORKBENCH)
+					new ItemBlock(EXTRACTOR),
+					new ItemBlock(KIT_FABRICATOR),
+					new ItemBlock(MACHINE_TRANSMOGRIFIER),
+					new ItemBlock(MACHINE_BEACON),
+					//new ItemBlock(MACHINE_CHARGE_STATION),
+					//new ItemBlock(MACHINE_TRANSMOGRIFIER),
+					//new ItemBlock(MACHINE_BEACON),
+					
+					//new ItemBlock(CHARGED_STONE_BASIC),
+					//new ItemBlock(CHARGED_STONE_DOUBLESLAB),
+					//new ItemBlock(CHARGED_STONE_HALFSLAB),
+					//new ItemBlock(CHARGED_STONE_STAIRS),
+					//new ItemBlock(CHARGED_STONE_FENCE),
+					//new ItemBlock(CHARGED_STONE_GATE),
+					//new ItemBlock(CHARGED_STONE_WALL),
+					//new ItemBlock(CHARGED_STONE_TORCH),
+					///new ItemBlock(CHARGED_STONE_LADDER),
+					//new ItemBlock(CHARGED_STONE_PILLAR),
+					//new ItemBlock(AIRSHIP_WORKBENCH)
 				/**	new ItemBlock(WATER_GRASS),
 					new ItemBlock(LARGE_COLLISION_TEST),
 					new ItemBlock(RIGHT_CLICK_TEST),
@@ -124,7 +164,9 @@ public class InitBlocksVC extends BlocksVC {
 				ITEM_BLOCKS.add(item);
 			}
 
-			registerTileEntities();
+			//registerTileEntities();
+			
+			
 			//for (final ItemBlock item : items) {
 			//	registry.register(item.setRegistryName(item.getBlock().getRegistryName()));
 			//	ITEM_BLOCKS.add(item);
@@ -134,7 +176,10 @@ public class InitBlocksVC extends BlocksVC {
 
 	public static void registerTileEntities() 
 	{
-		registerTileEntity(TileEntityAirshipWorkbench.class, "container_airship_workbench");
+		//registerTileEntity(TileEntityExtractor.class, "container_extractor");
+		//registerTileEntity(TileEntityAirshipWorkbench.class, "container_airship_workbench");
+		
+		
 		//registerTileEntity(TileEntityFluidTank.class, "fluid_tank", "FluidTank");
 		//registerTileEntity(TileEntityColoredRotatable.class, "colored_rotatable", "ColoredRotatable");
 		//registerTileEntity(TileEntityColoredMultiRotatable.class, "colored_multi_rotatable", "ColoredMultiRotatable");

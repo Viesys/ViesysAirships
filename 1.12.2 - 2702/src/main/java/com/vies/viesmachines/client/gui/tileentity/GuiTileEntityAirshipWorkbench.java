@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.Keybinds;
-import com.vies.viesmachines.common.tileentity.ContainerAirshipWorkbench;
 import com.vies.viesmachines.common.tileentity.TileEntityAirshipWorkbench;
+import com.vies.viesmachines.common.tileentity.containers.ContainerAirshipWorkbench;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -51,7 +51,7 @@ public class GuiTileEntityAirshipWorkbench extends GuiContainer {
 	protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
 		if (keyCode == 1 
-        ||	keyCode == Keybinds.vcInventory.getKeyCode()
+        //||	keyCode == Keybinds.vcInventory.getKeyCode()
         || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode))
         {
             this.mc.player.closeScreen();

@@ -1,6 +1,6 @@
 package com.vies.viesmachines.api.creative;
 
-import com.vies.viesmachines.api.BlocksVC;
+import com.vies.viesmachines.api.BlocksVM;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -20,6 +20,8 @@ public class BlocksTab extends CreativeTabs {
 	@Override
 	public ItemStack getTabIconItem() 
 	{
-		return new ItemStack(Item.getItemFromBlock(BlocksVC.AIRSHIP_WORKBENCH));
+		return new ItemStack(Item.getItemFromBlock(BlocksVM.EXTRACTOR
+				//.CHARGED_STONE_BASIC
+				));
 	}
 }

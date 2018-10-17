@@ -18,6 +18,7 @@ public class Keybinds {
 	public static KeyBinding moveUp;
 	public static KeyBinding moveDown;
 	public static KeyBinding openGuiMenu;
+	public static KeyBinding shootProjectile;
 	public static KeyBinding toggleAbility;
 	
 	public static void init() 
@@ -29,6 +30,7 @@ public class Keybinds {
 		moveUp = new KeyBinding(References.MOD_ID + ".key.moveup", Keyboard.KEY_SPACE, References.MOD_ID + ".movement.keys");
 		moveDown = new KeyBinding(References.MOD_ID + ".key.movedown", Keyboard.KEY_X, References.MOD_ID + ".movement.keys");
 		openGuiMenu = new KeyBinding(References.MOD_ID + ".key.openguimenu", Keyboard.KEY_R, References.MOD_ID + ".gameplay.keys");
+		shootProjectile = new KeyBinding(References.MOD_ID + ".key.shootprojectile", Keyboard.KEY_Z, References.MOD_ID + ".gameplay.keys");
 		toggleAbility = new KeyBinding(References.MOD_ID + ".key.toggleability", Keyboard.KEY_C, References.MOD_ID + ".gameplay.keys");
 		
 		//Register KeyBingings
@@ -39,6 +41,7 @@ public class Keybinds {
 		ClientRegistry.registerKeyBinding(moveUp);
 		ClientRegistry.registerKeyBinding(moveDown);
 		ClientRegistry.registerKeyBinding(openGuiMenu);
+		ClientRegistry.registerKeyBinding(shootProjectile);
 		ClientRegistry.registerKeyBinding(toggleAbility);
 	}
 }

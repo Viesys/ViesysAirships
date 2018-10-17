@@ -21,7 +21,7 @@ public class ItemAirshipBattery extends Item {
 		
 		this.setMaxDamage(capacity);
 		this.setMaxStackSize(1);
-		this.setCreativeTab(ViesMachines.tabViesCraftItems);
+		//this.setCreativeTab(ViesMachines.tabViesCraftItems);
 		
 	}
 	/**

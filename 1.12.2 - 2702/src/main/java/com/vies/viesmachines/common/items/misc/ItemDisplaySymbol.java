@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vies.viesmachines.api.EnumsVC;
+import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.common.items.ItemHelper;
 
@@ -38,7 +38,7 @@ public class ItemDisplaySymbol extends Item {
         }
         else
         {
-        	itemName = EnumsVC.MainDisplaySymbol.byId(this.getMetadata(stack)).getLocalizedName();
+        	itemName = EnumsVM.MainDisplaySymbol.byId(this.getMetadata(stack)).getLocalizedName();
         }
 		
 		return itemName;
@@ -50,7 +50,7 @@ public class ItemDisplaySymbol extends Item {
 	{
 		if (isInCreativeTab(tab)) 
 		{
-			final List<ItemStack> items = Stream.of(EnumsVC.MainDisplaySymbol.values())
+			final List<ItemStack> items = Stream.of(EnumsVM.MainDisplaySymbol.values())
 					.map(enumType -> new ItemStack(this, 1, enumType.getMetadata()))
 					.collect(Collectors.toList());
 

@@ -2,7 +2,7 @@ package com.vies.viesmachines.client.gui.machines;
 
 import java.awt.Color;
 
-import com.vies.viesmachines.api.EnumsVC;
+import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.LogHelper;
 import com.vies.viesmachines.common.entity.machines.EntityMachineFlying;
@@ -129,7 +129,7 @@ public class GuiMachineHUD extends Gui {
 				//}
 				//else
 				{
-					int fuelbarwidth1 = (int)(((float) this.flyingMachine.getStoredFuel() / (this.flyingMachine.getStoredFuelTotal())) * 101);
+					int fuelbarwidth1 = (int)(((float) this.flyingMachine.getFuel() / (this.flyingMachine.getFuelTotal())) * 101);
 					
 					drawTexturedModalRect(hudXDefault, hudYDefault + 9, 128, 9, fuelbarwidth1, 10);
 				}
@@ -183,31 +183,34 @@ public class GuiMachineHUD extends Gui {
 				
 				this.renderHUDMachineHP(hudXDefault, hudYDefault);
 				
-				this.renderHUDMachineMP(hudXDefault, hudYDefault);
+				this.renderHUDMachineEP(hudXDefault, hudYDefault);
 				
 				//
-				this.drawItemStack(Item.getItemById(this.flyingMachine.itemstackFuelItem).getDefaultInstance(), hudXDefault, hudYDefault);
+				this.drawItemStack(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance(), hudXDefault, hudYDefault);
 				
 				
-				
-				GlStateManager.pushMatrix();
+				//Shows the Item in the fuel slot regardless of creative or survival.
+				if (!this.flyingMachine.inventory.getStackInSlot(0).isEmpty())
 				{
-					GlStateManager.translate(hudXDefault+88, hudYDefault+2.5, 0);
-					GlStateManager.scale(0.5, 0.5, 0.5);
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault+88, hudYDefault+2.5, 0);
+						GlStateManager.scale(0.5, 0.5, 0.5);
+						
+						this.drawCenteredString(fontRenderer, "x", 0, 0, Color.WHITE.getRGB());
+					}
+					GlStateManager.popMatrix();
 					
-					this.drawCenteredString(fontRenderer, "x", 0, 0, Color.WHITE.getRGB());
-				}
-				GlStateManager.popMatrix();
-				
-				
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXDefault+95, hudYDefault+3, 0);
-					GlStateManager.scale(0.5, 0.5, 0.5);
 					
-					this.drawCenteredString(fontRenderer, Integer.toString(this.flyingMachine.itemstackFuelSize), 0, 0, Color.WHITE.getRGB());
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault+95, hudYDefault+3, 0);
+						GlStateManager.scale(0.5, 0.5, 0.5);
+						
+						this.drawCenteredString(fontRenderer, Integer.toString(this.flyingMachine.getItemstackFuelSize()), 0, 0, Color.WHITE.getRGB());
+					}
+					GlStateManager.popMatrix();
 				}
-				GlStateManager.popMatrix();
 				
 				//GlStateManager.pushMatrix();
 				//{
@@ -363,119 +366,119 @@ public class GuiMachineHUD extends Gui {
 	
 	private void drawModuleIcon(int metaIn)
 	{
-		if(metaIn == EnumsVC.ModuleType.ALTITUDE_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.ALTITUDE_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 0, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.ALTITUDE_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.ALTITUDE_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 8, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.ALTITUDE_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.ALTITUDE_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 16, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.SPEED_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.SPEED_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 24, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.SPEED_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.SPEED_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 32, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.SPEED_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.SPEED_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 40, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.STORAGE_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.STORAGE_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 48, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.STORAGE_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.STORAGE_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 56, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.STORAGE_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.STORAGE_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 64, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.FUEL_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.FUEL_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 72, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.FUEL_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.FUEL_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 80, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.FUEL_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.FUEL_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 88, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.MUSIC_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.MUSIC_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 96, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.MUSIC_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.MUSIC_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 104, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.MUSIC_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.MUSIC_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 112, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.CRUISE_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.CRUISE_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 120, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.CRUISE_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.CRUISE_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 128, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.CRUISE_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.CRUISE_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 136, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.WATER_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.WATER_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 144, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.WATER_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.WATER_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 152, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.WATER_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.WATER_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 160, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.INFINITE_FUEL_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 168, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.INFINITE_FUEL_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.INFINITE_FUEL_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 176, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 184, 248, 8, 8);
 		}
 		
-		if(metaIn == EnumsVC.ModuleType.BOMB_LESSER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.BOMB_LESSER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 192, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.BOMB_NORMAL.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.BOMB_NORMAL.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 200, 248, 8, 8);
 		}
-		if(metaIn == EnumsVC.ModuleType.BOMB_GREATER.getMetadata())
+		if(metaIn == EnumsVM.ModuleType.BOMB_GREATER.getMetadata())
 		{
 			this.drawTexturedModalRect(0, 0, 208, 248, 8, 8);
 		}
@@ -648,14 +651,14 @@ public class GuiMachineHUD extends Gui {
 		
 		timer = 0;
 				
-		if(this.flyingMachine.storedFuel > 0)
+		if(this.flyingMachine.getFuel() > 0)
 		{
 			timer = 
 					(int) ((
 							//(float)(this.flyingMachine.storedFuel) / 
-							(float)(this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.itemstackFuelItem).getDefaultInstance()))
+							(float)(this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance()))
 							/
-							(float)(this.flyingMachine.storedFuel)
+							(float)(this.flyingMachine.getFuel())
 					)*100);
 		}
 		
@@ -697,14 +700,14 @@ public class GuiMachineHUD extends Gui {
 		
 		LogHelper.info(
 				
-				this.flyingMachine.storedFuel 
+				this.flyingMachine.getFuel() 
 				+ "  -  " +
-				this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.itemstackFuelItem).getDefaultInstance())
+				this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance())
 				+ "  -  " +
 				
 				(
-						(float)this.flyingMachine.storedFuel / 
-						(float)this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.itemstackFuelItem).getDefaultInstance())
+						(float)this.flyingMachine.getFuel() / 
+						(float)this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance())
 				)*100
 				
 				+ "  -  " +
@@ -776,22 +779,30 @@ public class GuiMachineHUD extends Gui {
 		
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(hudXIn + 10, hudYIn + 3, 0);
+			GlStateManager.translate(hudXIn + 7, hudYIn + 3, 0);
 			GlStateManager.scale(0.5, 0.5, 0.5);
 			
-			this.drawCenteredString(fontRenderer, Integer.toString((int)this.flyingMachine.getHealth()), 0, 0, HPcolor);
+			this.drawCenteredString(fontRenderer, Integer.toString((int)this.flyingMachine.getHealth())
+					, 0, 0, HPcolor);
 		}
 		GlStateManager.popMatrix();
 	}
 	
-	private void renderHUDMachineMP(int hudXIn, int hudYIn)
+	private void renderHUDMachineEP(int hudXIn, int hudYIn)
 	{
+		int EPcolor = Color.CYAN.getRGB();
+		
+		if ((int)this.flyingMachine.getHealth() < (int)this.flyingMachine.getMaxHealth())
+		{
+			EPcolor = Color.YELLOW.getRGB();
+		}
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(hudXIn + 22, hudYIn + 3, 0);
+			GlStateManager.translate(hudXIn + 19.5, hudYIn + 3, 0);
 			GlStateManager.scale(0.5, 0.5, 0.5);
 			
-			this.drawCenteredString(fontRenderer, Integer.toString((int)this.flyingMachine.machinePoints), 0, 0, 60155);
+			this.drawCenteredString(fontRenderer, Integer.toString((int)this.flyingMachine.getEnergy())
+					, 0, 0, EPcolor);
 		}
 		GlStateManager.popMatrix();
 	}
