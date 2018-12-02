@@ -193,6 +193,45 @@ public class GuiVM {
 	public static GuiButton buttonTexture18;
 	public static GuiButton buttonTexture19;
 	public static GuiButton buttonTexture20;
+	public static GuiButton buttonTexture21;
+	public static GuiButton buttonTexture22;
+	public static GuiButton buttonTexture23;
+	public static GuiButton buttonTexture24;
+	public static GuiButton buttonTexture25;
+	public static GuiButton buttonTexture26;
+	public static GuiButton buttonTexture27;
+	public static GuiButton buttonTexture28;
+	public static GuiButton buttonTexture29;
+	public static GuiButton buttonTexture30;
+	public static GuiButton buttonTexture31;
+	public static GuiButton buttonTexture32;
+	public static GuiButton buttonTexture33;
+	public static GuiButton buttonTexture34;
+	public static GuiButton buttonTexture35;
+	public static GuiButton buttonTexture36;
+	public static GuiButton buttonTexture37;
+	public static GuiButton buttonTexture38;
+	public static GuiButton buttonTexture39;
+	public static GuiButton buttonTexture40;
+	public static GuiButton buttonTexture41;
+	public static GuiButton buttonTexture42;
+	public static GuiButton buttonTexture43;
+	public static GuiButton buttonTexture44;
+	public static GuiButton buttonTexture45;
+	public static GuiButton buttonTexture46;
+	public static GuiButton buttonTexture47;
+	public static GuiButton buttonTexture48;
+	public static GuiButton buttonTexture49;
+	public static GuiButton buttonTexture50;
+	public static GuiButton buttonTexture51;
+	public static GuiButton buttonTexture52;
+	public static GuiButton buttonTexture53;
+	public static GuiButton buttonTexture54;
+	public static GuiButton buttonTexture55;
+	public static GuiButton buttonTexture56;
+	public static GuiButton buttonTexture57;
+	public static GuiButton buttonTexture58;
+	public static GuiButton buttonTexture59;
 	
 	
 	

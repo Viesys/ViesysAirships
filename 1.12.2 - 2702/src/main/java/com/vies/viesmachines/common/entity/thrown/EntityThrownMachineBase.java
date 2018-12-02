@@ -15,6 +15,7 @@ public class EntityThrownMachineBase extends EntityThrowable {
     protected int type;
     protected float health;
     protected int energy;
+    protected int durability;
     
     protected boolean broken;
     protected int fuel;

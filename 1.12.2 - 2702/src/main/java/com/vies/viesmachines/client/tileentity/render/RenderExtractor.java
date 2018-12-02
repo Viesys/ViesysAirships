@@ -24,9 +24,9 @@ import net.minecraft.util.text.TextFormatting;
 
 public class RenderExtractor extends TileEntitySpecialRenderer<TileEntityExtractor> {
 	
-	private final ResourceLocation texture = new ResourceLocation(References.MOD_ID + ":" + "textures/models/model_extractor.png");
-	private final ResourceLocation texture_on = new ResourceLocation(References.MOD_ID + ":" + "textures/models/model_extractor_on.png");
-	private final ResourceLocation texture_off = new ResourceLocation(References.MOD_ID + ":" + "textures/models/model_extractor_off.png");
+	private final ResourceLocation texture = new ResourceLocation(References.MOD_ID + ":" + "textures/blocks/appliances/model_extractor.png");
+	private final ResourceLocation texture_on = new ResourceLocation(References.MOD_ID + ":" + "textures/blocks/appliances/model_extractor_on.png");
+	private final ResourceLocation texture_off = new ResourceLocation(References.MOD_ID + ":" + "textures/blocks/appliances/model_extractor_off.png");
 	private ModelExtractor model;
 	private ModelExtractorPowered modelpowered;
 	
@@ -89,23 +89,24 @@ public class RenderExtractor extends TileEntitySpecialRenderer<TileEntityExtract
 			GL11.glRotatef(270F, 0F, 1F, 0F);
 		}
 		
+		//GlStateManager.color(0, 0, 0, 0);
 		// Binds the texture to use:
-		this.bindTexture(texture);
+		//this.bindTexture(texture);
 		// Render the model:
-		this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
+		//this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
 		
 		if (te.isOn)
 		{
 			// Binds the texture to use:
-			this.bindTexture(texture_on);
+			//this.bindTexture(texture_on);
 		}
 		else
 		{
 			// Binds the texture to use:
-			this.bindTexture(texture_off);
+			//this.bindTexture(texture_off);
 		}
 		// Render the model:
-		this.modelpowered.render(te, 0, 0, 0, 0, 0, 0.0625F);
+		//this.modelpowered.render(te, 0, 0, 0, 0, 0, 0.0625F);
 		
 		// Turn semi-transparent texture use bck off:
     	GlStateManager.disableBlend();
@@ -127,7 +128,7 @@ public class RenderExtractor extends TileEntitySpecialRenderer<TileEntityExtract
 			
 			if (d <= 50)
 			{
-				InitParticlesVCRender.generateRunicWorkbenchParticles(te);
+				InitParticlesVCRender.generateParticlesExtractor(te);
 			}
 		}
 		
@@ -353,7 +354,7 @@ public class RenderExtractor extends TileEntitySpecialRenderer<TileEntityExtract
 	/** Renders the item the Extractor is looking for. */
 	private void renderItemToFind(TileEntityExtractor te, double x, double y, double z, float partialTicks, int destroyStage)
     {
-        ItemStack itemstack = new ItemStack(ItemsVM.CHARGED_SHARD);
+        ItemStack itemstack = new ItemStack(ItemsVM.XEGONITE);
         //InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, te.gemstoneMeta
         
         if(itemstack.isEmpty())
@@ -369,22 +370,23 @@ public class RenderExtractor extends TileEntitySpecialRenderer<TileEntityExtract
         
         if (te.getBlockMetadata() == 2)
 		{
-        	GlStateManager.translate(0.0F, -0.525F, -0.8145F);
+        	GlStateManager.translate(0.0F, -0.665F, -0.875F);
+        	//GlStateManager.translate(0.0F, -0.525F, -0.8145F);
             GlStateManager.rotate(180F, 0F, 1F, 0F);
 		}
 		if (te.getBlockMetadata() == 5)
 		{
-			GlStateManager.translate(0.8145F, -0.525F, 0.0F);
+			GlStateManager.translate(0.875F, -0.665F, 0.0F);
 	        GlStateManager.rotate(90F, 0F, 1F, 0F);
 		}
 		if (te.getBlockMetadata() == 3)
 		{
-			GlStateManager.translate(0.0F, -0.525F, 0.8145F);
+			GlStateManager.translate(0.0F, -0.665F, 0.875F);
             GlStateManager.rotate(0F, 0F, 1F, 0F);
 		}
 		if (te.getBlockMetadata() == 4)
 		{
-			GlStateManager.translate(-0.8145F, -0.525F, 0.0F);
+			GlStateManager.translate(-0.875F, -0.665F, 0.0F);
 	        GlStateManager.rotate(270F, 0F, 1F, 0F);
 		}
         
@@ -411,11 +413,11 @@ public class RenderExtractor extends TileEntitySpecialRenderer<TileEntityExtract
         if(itemstack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemstack.getItem()) != Blocks.AIR)
         {
             Block block = Block.getBlockFromItem(itemstack.getItem());
-            GL11.glTranslatef(0, - 0.85f, 0);
+            GL11.glTranslatef(0, - 0.925f, 0);
         }
         else
         {
-        	GL11.glTranslatef(0, - 0.725f, 0);
+        	GL11.glTranslatef(0, - 0.8f, 0);
             GlStateManager.scale(0.5F, 0.5F, 0.5F);
         }
         

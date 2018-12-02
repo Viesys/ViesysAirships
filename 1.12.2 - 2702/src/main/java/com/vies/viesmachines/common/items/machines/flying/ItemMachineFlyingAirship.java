@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import com.vies.viesmachines.ViesMachines;
 import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.api.util.LogHelper;
 import com.vies.viesmachines.common.entity.thrown.EntityThrownMachineFlyingAirship;
 import com.vies.viesmachines.common.items.ItemHelper;
 import com.vies.viesmachines.common.items.machines.ItemMachineBase;
@@ -56,6 +55,8 @@ public class ItemMachineFlyingAirship extends ItemMachineBase {
 		this.type = 0;
 		this.health = (float) EnumsVM.FlyingMachineFrameTier.byId(this.frameTier).getMaxHealthModifier();
 		this.energy = 0;
+		this.durability = EnumsVM.FlyingMachineFrameTier.byId(this.frameTier).getMaxDurabilityModifier();
+		
 		
 		this.broken = false;
 		this.fuel = 0;
@@ -112,6 +113,7 @@ public class ItemMachineFlyingAirship extends ItemMachineBase {
         		this.type = itemstack.getTagCompound().getInteger(rf.TYPE_TAG);
         		this.health = itemstack.getTagCompound().getFloat(rf.HEALTH_TAG);
         		this.energy = itemstack.getTagCompound().getInteger(rf.ENERGY_TAG);
+        		this.durability = itemstack.getTagCompound().getInteger(rf.DURABILITY_TAG);
         		
         		this.broken = itemstack.getTagCompound().getBoolean(rf.BROKEN_TAG);
         		this.fuel = itemstack.getTagCompound().getInteger(rf.FUEL_TAG);
@@ -172,8 +174,8 @@ public class ItemMachineFlyingAirship extends ItemMachineBase {
 			{
 				EntityThrownMachineFlyingAirship entityairship = new EntityThrownMachineFlyingAirship(worldIn, playerIn, 
 						
-						this.frameTier, this.engineTier, this.componentTier, 
-	    				this.type, this.health, this.energy, 
+						this.frameTier, this.engineTier, this.componentTier, this.type, 
+						this.health, this.energy, this.durability,
 	    				this.broken, this.fuel, this.fuelTotal, 
 	    				//this.itemstackFuelItem, this.itemstackFuelSize, 
 	    				this.ammoAmount, this.ammoType, 
@@ -221,61 +223,31 @@ public class ItemMachineFlyingAirship extends ItemMachineBase {
 	@Override
 	public String getItemStackDisplayName(ItemStack stack)
     {
-		String colorName = " ";
+		String colorName = TextFormatting.WHITE + "";
+		String itemName = References.Old_I18n.translateToLocal("item.viesmachines:machines/item_machine_flying_airship.name");
+		String isBroken = "";
 		
-		String itemName = References.localNameVC("item.viesmachines:item_machine_flying_airship.name");
-				//this.getUnlocalizedName() + ".name";
-		
-		
-		this.customName = "Airship";
-		
-		if(stack.hasTagCompound())
+		if (stack.hasTagCompound())
     	{
-    		this.customName = stack.getTagCompound().getString(rf.CUSTOM_NAME_TAG);
+			colorName = EnumsVM.SelectColor.byId(stack.getTagCompound().getInteger(rf.VISUAL_NAME_COLOR_TAG)).getTextColor() + "";
     	}
 		
-		if(stack.getMetadata() == 0)
-		{
-			colorName = TextFormatting.GRAY + this.customName;
-		}
-		if(stack.getMetadata() == 1)
-		{
-			colorName = TextFormatting.WHITE + this.customName;
-		}
-		if(stack.getMetadata() == 2)
-		{
-			colorName = TextFormatting.YELLOW + this.customName;
-		}
-		if(stack.getMetadata() == 3)
-		{
-			colorName = TextFormatting.AQUA + this.customName;
-		}
-		if(stack.getMetadata() == 4)
-		{
-			colorName = TextFormatting.LIGHT_PURPLE + this.customName;
-		}
-		if(stack.getMetadata() == 5)
-		{
-			colorName = TextFormatting.RED + this.customName;
-		}
+		if (stack.hasTagCompound())
+    	{
+			itemName = stack.getTagCompound().getString(rf.CUSTOM_NAME_TAG);
+    	}
 		
 		if (stack.hasTagCompound())
 		{
 			this.broken = stack.getTagCompound().getBoolean(rf.BROKEN_TAG);
 		}
 		
-		String isBroken = "";
 		if (this.broken)
 		{
-			isBroken = "Broken";
+			isBroken = TextFormatting.RED + "("+ TextFormatting.DARK_RED + "Broken" + TextFormatting.RED + ")";
 		}
 		
-		
-		return 
-				itemName
-				//this.getPrimaryLabelColor(stack.getMetadata()) + References.Old_I18n.translateToLocalFormatted("vc.main.airship") + TextFormatting.GREEN + " - \'" + colorName + TextFormatting.GREEN + "\'" 
-		
-		+ " " + isBroken;
+		return colorName + "\"" + itemName + "\"" + " " + isBroken;
     }
 	
 	@SideOnly(Side.CLIENT)
@@ -284,73 +256,161 @@ public class ItemMachineFlyingAirship extends ItemMachineBase {
     {
 		GameSettings gameSettingsIn = Minecraft.getMinecraft().gameSettings;
 		
-		int mainTierCoreInfo = stack.getMetadata();
-		int mainTierFrameInfo = 0;
-		int mainTierEngineInfo = 0;
-		int mainTierBalloonInfo = 0;
+		float healthInfo = 8.0F;
+		int energyInfo = 0;
+		int durabilityInfo = 100;
 		
-		int currentRedstoneInfo = 0;
-		int currentModuleSlot1Info = 0;
+		int frameInfo = 0;
+		int engineInfo = 0;
+		int componentInfo = 0;
 		
-		if(stack.hasTagCompound())
+		if (stack.hasTagCompound())
     	{
-			//mainTierFrameInfo = stack.getTagCompound().getInteger(rf.MAIN_TIER_FRAME_TAG);
-    		//mainTierEngineInfo = stack.getTagCompound().getInteger(rf.MAIN_TIER_ENGINE_TAG);
-    		//mainTierBalloonInfo = stack.getTagCompound().getInteger(rf.MAIN_TIER_BALLOON_TAG);
-    		//currentRedstoneInfo = stack.getTagCompound().getInteger(rf.STORED_REDSTONE_TAG);
-    		//currentModuleSlot1Info = stack.getTagCompound().getInteger(rf.MODULE_ACTIVE_SLOT1_TAG);
+			healthInfo = stack.getTagCompound().getFloat(rf.HEALTH_TAG);
+			energyInfo = stack.getTagCompound().getInteger(rf.ENERGY_TAG);
+			durabilityInfo = stack.getTagCompound().getInteger(rf.DURABILITY_PERCENT_TAG);
+			
+			frameInfo = stack.getTagCompound().getInteger(rf.TIER_FRAME_TAG);
+			engineInfo = stack.getTagCompound().getInteger(rf.TIER_ENGINE_TAG);
+			componentInfo = stack.getTagCompound().getInteger(rf.TIER_COMPONENT_TAG);
     	}
+		
+		String healthInfoDisplay = "";
+		
+		if (healthInfo >= 10)
+		{
+			healthInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||"
+			+ TextFormatting.RED + (int)healthInfo
+			+ TextFormatting.BLACK + "||||||||||"+ "||";
+		}
+		else if (healthInfo >= 1)
+		{
+			healthInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||||"
+			+ TextFormatting.RED + (int)healthInfo
+			+ TextFormatting.BLACK + "||||||||||"+ "|||";
+		}
+		else if (healthInfo == 0)
+		{
+			healthInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||"
+			+ TextFormatting.DARK_RED + (int)healthInfo
+			+ TextFormatting.BLACK + "||||||||||"+ "||";
+		}
+		
+		String energyInfoDisplay = "";
+		
+		if (energyInfo >= 100)
+		{
+			energyInfoDisplay = TextFormatting.BLACK + "||||||||||"
+			+ TextFormatting.YELLOW + (int)energyInfo
+			+ TextFormatting.BLACK + "||||||||||"+ "|";
+		}
+		else if (energyInfo >= 10)
+		{
+			energyInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||"
+			+ TextFormatting.YELLOW + (int)energyInfo
+			+ TextFormatting.BLACK + "||||||||||"+ "||";
+		}
+		else if (energyInfo <= 9)
+		{
+			energyInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||||"
+			+ TextFormatting.YELLOW + (int)energyInfo
+			+ TextFormatting.BLACK + "||||||||||"+ "|||";
+		}
+		
+		String durabilityInfoDisplay = "";
+		
+		if (durabilityInfo >= 100)
+		{
+			durabilityInfoDisplay = TextFormatting.BLACK + "||||||||||"
+			+ TextFormatting.GREEN + (int)durabilityInfo + "%"
+			+ TextFormatting.BLACK + "||||||||";
+		}
+		else if (durabilityInfo >= 10)
+		{
+			durabilityInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "|"
+			+ TextFormatting.GREEN + (int)durabilityInfo + "%"
+			+ TextFormatting.BLACK + "||||||||||";
+		}
+		else if (durabilityInfo >= 1)
+		{
+			durabilityInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||"
+			+ TextFormatting.GREEN + (int)durabilityInfo + "%"
+			+ TextFormatting.BLACK + "||||||||||"+ "||";
+		}
+		else if (durabilityInfo == 0)
+		{
+			durabilityInfoDisplay = TextFormatting.BLACK + "||||||||||"+ "||"
+			+ TextFormatting.DARK_RED + (int)durabilityInfo + "%"
+			+ TextFormatting.BLACK + "||||||||||"+ "||";
+		}
+		
+		
+		
+		tooltip.add(TextFormatting.BLUE + "Flying Machine - Airship");
 		
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
 		
-		//[Hold Shift + Right-Click] to throw this
-		tooltip.add(TextFormatting.GREEN + References.localNameVC("vc.item.tt.airship.1") + this.getSecondaryLabelColor(stack.getMetadata()) + " " + References.localNameVC("vc.item.tt.airship.2"));
-		//item and unleash the airship within.
-		tooltip.add(this.getSecondaryLabelColor(stack.getMetadata()) + References.localNameVC("vc.item.tt.airship.3"));
+		tooltip.add(TextFormatting.DARK_GREEN + "||" + healthInfoDisplay + TextFormatting.DARK_GREEN + "|" + energyInfoDisplay + TextFormatting.DARK_GREEN + "|" + durabilityInfoDisplay + TextFormatting.DARK_GREEN + "||");
+		
+		tooltip.add(TextFormatting.DARK_GREEN + "================================");
+		
+		
 		
 		if(gameSettingsIn.isKeyDown(gameSettingsIn.keyBindSneak))
 		{
-			tooltip.add(TextFormatting.DARK_GREEN + "================================");
-			//Core : 
-			//tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.core") + TextFormatting.DARK_BLUE + " : " + TextFormatting.GRAY + "(" + this.getPrimaryLabelColor(mainTierCoreInfo) + EnumsVC.MainTierCore.byId(mainTierCoreInfo).getLocalizedName() + TextFormatting.GRAY + ")"
-			//		+ TextFormatting.GREEN + " - "+ TextFormatting.BLUE + References.localNameVC("vc.main.redstone") + TextFormatting.DARK_BLUE + " : "
-			//		+ this.getPrimaryLabelColor(mainTierCoreInfo) + EnumsVC.MainTierCore.byId(mainTierCoreInfo).getStoredRedstone());
-			////Frame : 
-			//tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.frame") + TextFormatting.DARK_BLUE + " : " + TextFormatting.GRAY + "(" + this.getPrimaryLabelColor(mainTierFrameInfo) + EnumsVC.MainTierFrame.byId(mainTierFrameInfo).getLocalizedName() + TextFormatting.GRAY + ")"
-			//		+ TextFormatting.GREEN + " - "+ TextFormatting.BLUE + References.localNameVC("vc.main.speed") + TextFormatting.DARK_BLUE + " : "
-			//		+ this.getPrimaryLabelColor(mainTierFrameInfo) + "+" + mainTierFrameInfo);
-			//Engine : 
-			//tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.engine") + TextFormatting.DARK_BLUE + " : " + TextFormatting.GRAY + "(" + this.getPrimaryLabelColor(mainTierEngineInfo) + EnumsVC.MainTierEngine.byId(mainTierEngineInfo).getLocalizedName() + TextFormatting.GRAY + ")"
-			//		+ TextFormatting.GREEN + " - "+ TextFormatting.BLUE + References.localNameVC("vc.main.fuel") + TextFormatting.DARK_BLUE + " : "
-			//		+ this.getPrimaryLabelColor(mainTierEngineInfo) + EnumsVC.MainTierEngine.byId(mainTierEngineInfo).getFuelPerTick());
-			//Balloon : 
-			////tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.balloon") + TextFormatting.DARK_BLUE + " : " + TextFormatting.GRAY + "(" + this.getPrimaryLabelColor(mainTierBalloonInfo) + EnumsVC.MainTierBalloon.byId(mainTierBalloonInfo).getLocalizedName() + TextFormatting.GRAY + ")"
-			//		+ TextFormatting.GREEN + " - "+ TextFormatting.BLUE + References.localNameVC("vc.main.altitude") + TextFormatting.DARK_BLUE + " : " + this.getPrimaryLabelColor(mainTierBalloonInfo) + EnumsVC.MainTierBalloon.byId(mainTierBalloonInfo).getMaxAltitude());
+			String frameInfoDisplay = TextFormatting.GRAY + "None";
+			String engineInfoDisplay = TextFormatting.GRAY + "None";
+			String componentInfoDisplay = TextFormatting.GRAY + "None";
 			
-			tooltip.add("");
-			//Stored Redstone : 
-			if(currentRedstoneInfo == 0)
+			if (frameInfo == 3)
 			{
-				tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.storedredstone") + TextFormatting.DARK_BLUE + " : " + TextFormatting.GRAY + currentRedstoneInfo);
+				frameInfoDisplay = TextFormatting.LIGHT_PURPLE + "Tier " + frameInfo;
 			}
-			else
+			else if (frameInfo == 2)
 			{
-				tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.storedredstone") + TextFormatting.DARK_BLUE + " : " + TextFormatting.GREEN + currentRedstoneInfo);
+				frameInfoDisplay = TextFormatting.AQUA + "Tier " + frameInfo;
 			}
-			//Current Module : 
-			if(currentModuleSlot1Info == 0)
+			else if (frameInfo == 1)
 			{
-				tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.current") + " " + References.localNameVC("vc.item.module.#") + TextFormatting.DARK_BLUE + " : " + this.getPrimaryLabelColor(currentRedstoneInfo) + "None");
+				frameInfoDisplay = TextFormatting.YELLOW + "Tier " + frameInfo;
 			}
-			else
+			
+			if (engineInfo == 3)
 			{
-				tooltip.add(TextFormatting.BLUE + References.localNameVC("vc.main.current") + " " + References.localNameVC("vc.item.module.#") + TextFormatting.DARK_BLUE + " : " + this.getPrimaryLabelColor(currentRedstoneInfo) + TextFormatting.GREEN + EnumsVM.ModuleType.byId(currentModuleSlot1Info).getLocalizedName());
+				engineInfoDisplay = TextFormatting.LIGHT_PURPLE + "Tier " + engineInfo;
 			}
+			else if (engineInfo == 2)
+			{
+				engineInfoDisplay = TextFormatting.AQUA + "Tier " + engineInfo;
+			}
+			else if (engineInfo == 1)
+			{
+				engineInfoDisplay = TextFormatting.YELLOW + "Tier " + engineInfo;
+			}
+			
+			if (componentInfo == 3)
+			{
+				componentInfoDisplay = TextFormatting.LIGHT_PURPLE + "Tier " + componentInfo;
+			}
+			else if (componentInfo == 2)
+			{
+				componentInfoDisplay = TextFormatting.AQUA + "Tier " + componentInfo;
+			}
+			else if (componentInfo == 1)
+			{
+				componentInfoDisplay = TextFormatting.YELLOW + "Tier " + componentInfo;
+			}
+			
+			tooltip.add(TextFormatting.BLUE + "Frame : " + frameInfoDisplay);
+			tooltip.add(TextFormatting.BLUE + "Engine : " + engineInfoDisplay);
+			tooltip.add(TextFormatting.BLUE + "Component : " + componentInfoDisplay);
+			//tooltip.add(TextFormatting.DARK_GREEN + "--------------------------------");
+			//tooltip.add(TextFormatting.BLUE + "Ammo Type : ");
+			//tooltip.add(TextFormatting.BLUE + "Ammo Amount : ");
 		}
 		else
 		{
-			tooltip.add(TextFormatting.DARK_GREEN + "================================");
-			tooltip.add(TextFormatting.GREEN + References.localNameVC("vc.item.tt.shifthelper.0"));
+			tooltip.add(TextFormatting.WHITE + "Hold [Shift] for more info.");
 		}
 		
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");

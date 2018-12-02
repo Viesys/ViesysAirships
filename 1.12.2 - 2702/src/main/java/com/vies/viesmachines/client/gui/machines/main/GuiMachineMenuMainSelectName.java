@@ -27,7 +27,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 
@@ -106,8 +108,8 @@ public class GuiMachineMenuMainSelectName extends GuiContainerVC {
     	this.buttonList.add(GuiVM.buttonMM1);
 		this.buttonList.add(GuiVM.buttonMM2);
 		this.buttonList.add(GuiVM.buttonMM3);
-		this.buttonList.add(GuiVM.buttonMM4);
-		this.buttonList.add(GuiVM.buttonMM5);
+		//this.buttonList.add(GuiVM.buttonMM4);
+		//this.buttonList.add(GuiVM.buttonMM5);
 		
 		this.buttonList.add(GuiVM.buttonUndo);
 		this.buttonList.add(GuiVM.buttonApply);
@@ -175,6 +177,9 @@ public class GuiMachineMenuMainSelectName extends GuiContainerVC {
 	{
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		
+		// Draws a gray box behind the main background texture:
+		this.drawRect(this.guiLeft + 8, this.guiTop + 8, this.guiLeft + 168, this.guiTop + 126, Color.BLACK.getRGB());
+				
 		// Binds the texture to use:
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(TEXTURE);
@@ -209,16 +214,6 @@ public class GuiMachineMenuMainSelectName extends GuiContainerVC {
 		else
 		{
 			GuiVM.buttonUndo.enabled = false;
-		}
-        
-        // Checks to see if the apply button can be pressed:
-        if(!this.machine.getCustomNameTag().equals(this.textName.getText()))
-        {
-        	GuiVM.buttonApply.enabled = true;
-        }
-		else
-		{
-			GuiVM.buttonApply.enabled = false;
 		}
         
         // Select Color label:
@@ -361,11 +356,38 @@ public class GuiMachineMenuMainSelectName extends GuiContainerVC {
 	public void updateScreen()
     {
 		super.updateScreen();
+
+		
+
+		// Handles when the 'Apply' button is enabled:
+		if (this.machine.getControllingPassenger() instanceof EntityPlayer)
+    	{
+    		EntityPlayer player = (EntityPlayer) this.machine.getControllingPassenger();
+    		
+	        // Checks to see if the apply button can be pressed:
+	        if(this.machine.getCustomNameTag().equals(this.textName.getText()))
+	        {
+	        	GuiVM.buttonApply.enabled = false;
+	        }
+	        else if (player.isCreative())
+			{
+	        	GuiVM.buttonApply.enabled = true;
+			}
+	        else if (this.machine.getEnergy() < CostsVM.COST_NAME_CHANGE)
+			{
+	        	GuiVM.buttonApply.enabled = false;
+			}
+	        else
+	        {
+	        	GuiVM.buttonApply.enabled = true;
+	        }
+    	}
         
         this.textName.updateCursorCounter();
         
         this.enableAllButtons();
         this.colorButtonToDisable();
+        
     }
 	
 	@Override

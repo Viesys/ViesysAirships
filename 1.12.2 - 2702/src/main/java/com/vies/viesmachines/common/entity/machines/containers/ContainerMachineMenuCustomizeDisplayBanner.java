@@ -1,7 +1,7 @@
 package com.vies.viesmachines.common.entity.machines.containers;
 
 import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
-import com.vies.viesmachines.common.entity.machines.slots.FuelSlot;
+import com.vies.viesmachines.common.entity.machines.slots.DisplayBlockItemSlot;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -23,7 +23,7 @@ public class ContainerMachineMenuCustomizeDisplayBanner extends ContainerVC {
 		
 		
 		//Slot 0 - Fuel
-		this.addSlotToContainer(new FuelSlot(this.machine.inventory, 0, 141, 38));
+		this.addSlotToContainer(new DisplayBlockItemSlot(this.machine.inventory, 2, 26, 100));
 		
 		
 		//if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata()

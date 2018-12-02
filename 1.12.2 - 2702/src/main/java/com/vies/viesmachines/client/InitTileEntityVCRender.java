@@ -1,5 +1,6 @@
 package com.vies.viesmachines.client;
 
+import com.vies.viesmachines.api.BlocksVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.client.tileentity.render.RenderExtractor;
 import com.vies.viesmachines.client.tileentity.render.RenderKitFabricator;
@@ -10,8 +11,13 @@ import com.vies.viesmachines.common.tileentity.TileEntityKitFabricator;
 import com.vies.viesmachines.common.tileentity.TileEntityMachineBeacon;
 import com.vies.viesmachines.common.tileentity.TileEntityMachineTransmogrifier;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public final class InitTileEntityVCRender {
@@ -37,11 +43,16 @@ public final class InitTileEntityVCRender {
 		ClientRegistry.registerTileEntity(classIn, References.MOD_ID + ":" + nameIn, renderItem);
 		ClientRegistry.bindTileEntitySpecialRenderer(classIn, renderItem);
 		
-		//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(BlocksVM.EXTRACTOR), 0, new ModelResourceLocation(Item.getItemFromBlock(BlocksVM.EXTRACTOR).getRegistryName().toString(), "inventory"));
+		//ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(BlocksVM.EXTRACTOR), 2, TileEntityExtractor.class);
+		
+		//Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(Item.getItemFromBlock(BlocksVM.EXTRACTOR), 2, new ModelResourceLocation(Item.getItemFromBlock(BlocksVM.EXTRACTOR).getRegistryName().toString(), "inventory"));
 		//ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(BlocksVM.EXTRACTOR), 0, TileEntityExtractor.class);
 		
 		
 		
-		//ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlocksVM.EXTRACTOR), 0, new ModelResourceLocation(Item.getItemFromBlock(BlocksVM.EXTRACTOR).getRegistryName().toString(), "inventory"));
+		//ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(BlocksVM.EXTRACTOR), 2, new ModelResourceLocation(Item.getItemFromBlock(BlocksVM.EXTRACTOR).getRegistryName().toString(), "inventory"));
+		
+		
+		
 	}
 }

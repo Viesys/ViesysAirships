@@ -1,21 +1,31 @@
 package com.vies.viesmachines.common.utils.events;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
+import com.vies.viesmachines.api.BlocksVM;
+import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.LogHelper;
 import com.vies.viesmachines.network.NetworkHandler;
 import com.vies.viesmachines.network.client.MessageConfig;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.stats.RecipeBook;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 
 public class EventHandlerConfig {
 	
@@ -31,81 +41,107 @@ public class EventHandlerConfig {
 		{
 			NetworkHandler.sendToClient(new MessageConfig(), (EntityPlayerMP)event.player);
 			
-			//RecipeBook book = new RecipeBook();
+			ForgeRegistry<IRecipe> recipeRegistry = (ForgeRegistry<IRecipe>)ForgeRegistries.RECIPES;
+			ArrayList<IRecipe> recipes = Lists.newArrayList(recipeRegistry.getValuesCollection());
+			ArrayList<IRecipe> recipesVM = Lists.newArrayList();
 			
-			//for (IRecipe irecipe : ForgeRegistries.RECIPES) {
-			//	book.unlock(irecipe);
-				
-				
-			//}
+			recipesVM.clear();
 			
-			
-			//List<IRecipe> list = Lists.<IRecipe>newArrayList();
-
-            
-
-            //event.player.unlockRecipes(this.getRecipes());
-            
-            //IRecipe irecipe = CraftingManager.getRecipe(new ResourceLocation("vc:recipes/airship_balloon"));
-            //List<IRecipe> list = Lists.newArrayList(irecipe);
-            //event.player.unlockRecipes(list);
-            
-            
-            
-            ////////////////////////////////event.player.unlockRecipes(VC_RECIPES);
-            
-			
-			/*
-			//if ("*".equals(args[2]))
-            //{
-                if (flag)
-                {
-                    entityplayermp.unlockRecipes(this.getRecipes());
-                    notifyCommandListener(sender, this, "commands.recipe.give.success.all", new Object[] {entityplayermp.getName()});
-                }
-                else
-                {
-                    entityplayermp.resetRecipes(this.getRecipes());
-                    notifyCommandListener(sender, this, "commands.recipe.take.success.all", new Object[] {entityplayermp.getName()});
-                }
-            }
-            else
+			for (IRecipe r : recipes)
             {
-                IRecipe irecipe = CraftingManager.getRecipe(new ResourceLocation(args[2]));
-
-                if (irecipe == null)
-                {
-                    throw new CommandException("commands.recipe.unknownrecipe", new Object[] {args[2]});
-                }
-
-                if (irecipe.isDynamic())
-                {
-                    throw new CommandException("commands.recipe.unsupported", new Object[] {args[2]});
-                }
-
-                List<IRecipe> list = Lists.newArrayList(irecipe);
-
-                if (flag == entityplayermp.getRecipeBook().isUnlocked(irecipe))
-                {
-                    String s = flag ? "commands.recipe.alreadyHave" : "commands.recipe.dontHave";
-                    throw new CommandException(s, new Object[] {entityplayermp.getName(), irecipe.getRecipeOutput().getDisplayName()});
-                }
-
-                if (flag)
-                {
-                    entityplayermp.unlockRecipes(list);
-                    notifyCommandListener(sender, this, "commands.recipe.give.success.one", new Object[] {entityplayermp.getName(), irecipe.getRecipeOutput().getDisplayName()});
-                }
-                else
-                {
-                    entityplayermp.resetRecipes(list);
-                    notifyCommandListener(sender, this, "commands.recipe.take.success.one", new Object[] {irecipe.getRecipeOutput().getDisplayName(), entityplayermp.getName()});
-                }
-            }*/
-            
-			LogHelper.info("Logged in Server");
+				ItemStack output = r.getRecipeOutput();
+				
+	            if (output.getItem() == ItemsVM.MACHINE_PELLETS
+        		|| output.getItem() == ItemsVM.MACHINE_AMMO
+        		|| output.getItem() == ItemsVM.CIRCUIT_LOGIC
+				|| output.getItem() == ItemsVM.MACHINE_FRAME
+				|| output.getItem() == ItemsVM.MACHINE_ENGINE
+				|| output.getItem() == ItemsVM.MACHINE_COMPONENT_GROUND
+				|| output.getItem() == ItemsVM.MACHINE_COMPONENT_WATER
+				|| output.getItem() == ItemsVM.MACHINE_COMPONENT_FLYING
+				
+				|| output.getItem() == ItemsVM.UPGRADE_FRAME_TIER1
+				|| output.getItem() == ItemsVM.UPGRADE_FRAME_TIER2
+				|| output.getItem() == ItemsVM.UPGRADE_FRAME_TIER3
+				|| output.getItem() == ItemsVM.UPGRADE_ENGINE_TIER1
+				|| output.getItem() == ItemsVM.UPGRADE_ENGINE_TIER2
+				|| output.getItem() == ItemsVM.UPGRADE_ENGINE_TIER3
+				|| output.getItem() == ItemsVM.UPGRADE_COMPONENT_TIER1
+				|| output.getItem() == ItemsVM.UPGRADE_COMPONENT_TIER2
+				|| output.getItem() == ItemsVM.UPGRADE_COMPONENT_TIER3
+				
+				|| output.getItem() == ItemsVM.KIT_RAW
+				
+				|| output.getItem() == ItemsVM.ITEM_MACHINE_GROUND_HOVERCRAFT
+				|| output.getItem() == ItemsVM.ITEM_MACHINE_WATER_SUBMARINE
+				|| output.getItem() == ItemsVM.ITEM_MACHINE_FLYING_AIRSHIP
+	            
+	            || output.getItem() == ItemsVM.TOOL_DISMOUNTER
+	            
+        		|| output.getItem() == ItemsVM.XEGONITE_WATER
+				|| output.getItem() == ItemsVM.XEGONITE_LAVA
+				|| output.getItem() == ItemsVM.XEGONITE_ENDER
+		        
+	            
+				
+	            || output.getItem() == Item.getItemFromBlock(BlocksVM.EXTRACTOR)
+	            || output.getItem() == Item.getItemFromBlock(BlocksVM.KIT_FABRICATOR)
+	            || output.getItem() == Item.getItemFromBlock(BlocksVM.MACHINE_TRANSMOGRIFIER)
+        		|| output.getItem() == Item.getItemFromBlock(BlocksVM.MACHINE_BEACON)
+        		
+				|| output.getItem() == Item.getItemFromBlock(BlocksVM.ITEM_DISPLAY)
+        		
+				
+				
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_BASIC)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_STAIRS)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_FENCE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_GATE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_WALL)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_TORCH)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_LADDER)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_PILLAR)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.XEGONITE_CHISELED)
+                
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_BASIC)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_STAIRS)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_FENCE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_GATE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_WALL)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_TORCH)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_LADDER)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_PILLAR)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.WATER_CHISELED)
+                
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_BASIC)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_STAIRS)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_FENCE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_GATE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_WALL)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_TORCH)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_LADDER)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_PILLAR)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.LAVA_CHISELED)
+                
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_BASIC)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_STAIRS)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_FENCE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_GATE)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_WALL)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_TORCH)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_LADDER)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_PILLAR)
+                || output.getItem() == Item.getItemFromBlock(BlocksVM.ENDER_CHISELED)
+                
+                
+        		)
+	            {
+	            	recipesVM.add(r);
+	            }
+            }
+			
+			event.player.unlockRecipes(recipesVM);
 		}
-	
 	}
 	
 	@SubscribeEvent

@@ -1,6 +1,0 @@
-{
-	"parent": "block/fence_nsew",
-	"textures": {
-		"texture": "viesmachines:blocks/charged_stone_block"
-	}
-}

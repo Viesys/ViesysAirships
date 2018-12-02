@@ -22,14 +22,14 @@ public class ExtractorRecipes {
     
     public final static ItemStack[] CUT_GEM_OUTPUT = new ItemStack[] 
 	{
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1),
-		new ItemStack(ItemsVM.CHARGED_SHARD, 1)
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1),
+		new ItemStack(ItemsVM.XEGONITE, 1)
 		//new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 1),
 		//new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 2),
 		//new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 3),

@@ -61,6 +61,7 @@ public class GuiMachineMenuMainSelectMusic extends GuiContainerVC {
 		super(new ContainerMachineNoSlots(playerInv, machineIn), playerInv, machineIn);
 		
         this.songs = ClientProxy.musicListRecord;
+        this.zLevel = 0.0F;
 	}
 	
 	@Override
@@ -69,15 +70,15 @@ public class GuiMachineMenuMainSelectMusic extends GuiContainerVC {
     	super.initGui();
     	
     	int slotHeight = 35;
-        
+    	
     	for (ResourceLocation mod : songs)
         {
-            listWidth = Math.max(listWidth,getFontRenderer().getStringWidth(mod.getResourcePath())+10);
+            this.listWidth = Math.max(this.listWidth,getFontRenderer().getStringWidth(mod.getResourcePath()) + 10);
         }
     	
-    	listWidth = Math.min(listWidth, 150);
+    	this.listWidth = Math.min(this.listWidth, 150);
         
-    	this.songList = new GuiScrollingListVC(this, this.songs, listWidth, slotHeight);
+    	this.songList = new GuiScrollingListVC(this, this.songs, this.listWidth, slotHeight);
     	
     	GuiVM.button501 = new GuiButtonGeneral1VC(501, this.guiLeft + 60, this.guiTop + 197, 56, 14, References.localNameVC("gui.done"), 0);
     	this.buttonList.add(GuiVM.button501);
@@ -126,6 +127,7 @@ public class GuiMachineMenuMainSelectMusic extends GuiContainerVC {
 			References.localNameVC("item." + SoundEvent.REGISTRY.getObject(new ResourceLocation(ClientProxy.musicListRecord.get(this.machine.selectedSong).toString())).getSoundName().getResourcePath()+ ".desc")
 			, 1, false, TextFormatting.DARK_AQUA, 0)	
 			, 0, 0, Color.BLUE.getRGB());
+			
 		}
 		GlStateManager.popMatrix();
 	}

@@ -24,9 +24,9 @@ import net.minecraft.util.text.TextFormatting;
 
 public class RenderKitFabricator extends TileEntitySpecialRenderer<TileEntityKitFabricator> {
 	
-	private final ResourceLocation texture = new ResourceLocation(References.MOD_ID + ":" + "textures/models/model_extractor.png");
-	private final ResourceLocation texture_on = new ResourceLocation(References.MOD_ID + ":" + "textures/models/model_extractor_on.png");
-	private final ResourceLocation texture_off = new ResourceLocation(References.MOD_ID + ":" + "textures/models/model_extractor_off.png");
+	private final ResourceLocation texture = new ResourceLocation(References.MOD_ID + ":" + "textures/blocks/appliances/model_extractor.png");
+	private final ResourceLocation texture_on = new ResourceLocation(References.MOD_ID + ":" + "textures/blocks/appliances/model_extractor_on.png");
+	private final ResourceLocation texture_off = new ResourceLocation(References.MOD_ID + ":" + "textures/blocks/appliances/model_extractor_off.png");
 	private ModelKitFabricator model;
 	private ModelKitFabricatorPowered modelpowered;
 	
@@ -90,22 +90,22 @@ public class RenderKitFabricator extends TileEntitySpecialRenderer<TileEntityKit
 		}
 		
 		// Binds the texture to use:
-		this.bindTexture(texture);
+		//this.bindTexture(texture);
 		// Render the model:
-		this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
+		//this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
 		
 		if (te.isOn)
 		{
 			// Binds the texture to use:
-			this.bindTexture(texture_on);
+			//this.bindTexture(texture_on);
 		}
 		else
 		{
 			// Binds the texture to use:
-			this.bindTexture(texture_off);
+			//this.bindTexture(texture_off);
 		}
 		// Render the model:
-		this.modelpowered.render(te, 0, 0, 0, 0, 0, 0.0625F);
+		//this.modelpowered.render(te, 0, 0, 0, 0, 0, 0.0625F);
 		
 		// Turn semi-transparent texture use bck off:
     	GlStateManager.disableBlend();
@@ -353,7 +353,20 @@ public class RenderKitFabricator extends TileEntitySpecialRenderer<TileEntityKit
 	/** Renders the item the KitFabricator is looking for. */
 	private void renderItemToFind(TileEntityKitFabricator te, double x, double y, double z, float partialTicks, int destroyStage)
     {
-        ItemStack itemstack = new ItemStack(ItemsVM.CHARGED_SHARD);
+		ItemStack[] stack = new ItemStack[]
+		{
+			new ItemStack(ItemsVM.KIT_HEALTH_2, 1),
+			new ItemStack(ItemsVM.KIT_HEALTH_8, 1),
+			new ItemStack(ItemsVM.KIT_HEALTH_MAX, 1),
+			new ItemStack(ItemsVM.KIT_ENERGY_25, 1),
+			new ItemStack(ItemsVM.KIT_ENERGY_100, 1),
+			new ItemStack(ItemsVM.KIT_ENERGY_MAX, 1),
+			new ItemStack(ItemsVM.KIT_DURABILITY_50, 1),
+			new ItemStack(ItemsVM.KIT_DURABILITY_200, 1),
+			new ItemStack(ItemsVM.KIT_DURABILITY_MAX, 1)
+		};
+		
+        ItemStack itemstack = stack[te.itemToFindMeta];
         //InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, te.gemstoneMeta
         
         if(itemstack.isEmpty())
@@ -365,26 +378,27 @@ public class RenderKitFabricator extends TileEntitySpecialRenderer<TileEntityKit
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
         //GlStateManager.translate(0.0F, -0.525F, -0.8145F);
         //GlStateManager.rotate(180F, 0F, 1F, 0F);
-        
+
         
         if (te.getBlockMetadata() == 2)
 		{
-        	GlStateManager.translate(0.0F, -0.525F, -0.8145F);
+        	GlStateManager.translate(0.0F, -0.665F, -0.875F);
+        	//GlStateManager.translate(0.0F, -0.525F, -0.8145F);
             GlStateManager.rotate(180F, 0F, 1F, 0F);
 		}
 		if (te.getBlockMetadata() == 5)
 		{
-			GlStateManager.translate(0.8145F, -0.525F, 0.0F);
+			GlStateManager.translate(0.875F, -0.665F, 0.0F);
 	        GlStateManager.rotate(90F, 0F, 1F, 0F);
 		}
 		if (te.getBlockMetadata() == 3)
 		{
-			GlStateManager.translate(0.0F, -0.525F, 0.8145F);
+			GlStateManager.translate(0.0F, -0.665F, 0.875F);
             GlStateManager.rotate(0F, 0F, 1F, 0F);
 		}
 		if (te.getBlockMetadata() == 4)
 		{
-			GlStateManager.translate(-0.8145F, -0.525F, 0.0F);
+			GlStateManager.translate(-0.875F, -0.665F, 0.0F);
 	        GlStateManager.rotate(270F, 0F, 1F, 0F);
 		}
         
@@ -399,7 +413,7 @@ public class RenderKitFabricator extends TileEntitySpecialRenderer<TileEntityKit
 	/** Renders the item the KitFabricator is deconstructing. */
 	private void renderItemToProcess(TileEntityKitFabricator te, double x, double y, double z, float partialTicks, int destroyStage)
     {
-        ItemStack itemstack = te.inventory.getStackInSlot(0);
+        ItemStack itemstack = te.inventory.getStackInSlot(1);
         
         if(itemstack.isEmpty())
 		{
@@ -411,11 +425,11 @@ public class RenderKitFabricator extends TileEntitySpecialRenderer<TileEntityKit
         if(itemstack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemstack.getItem()) != Blocks.AIR)
         {
             Block block = Block.getBlockFromItem(itemstack.getItem());
-            GL11.glTranslatef(0, - 0.85f, 0);
+            GL11.glTranslatef(0, - 0.70f, 0);
         }
         else
         {
-        	GL11.glTranslatef(0, - 0.725f, 0);
+        	GL11.glTranslatef(0, - 0.80f, 0);
             GlStateManager.scale(0.5F, 0.5F, 0.5F);
         }
         

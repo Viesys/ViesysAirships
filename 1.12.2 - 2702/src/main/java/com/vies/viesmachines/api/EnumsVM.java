@@ -2,8 +2,12 @@ package com.vies.viesmachines.api;
 
 import com.vies.viesmachines.client.InitSoundEventsVC;
 
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -15,30 +19,30 @@ public class EnumsVM {
     // TODO            Main Machine Logic
 	//==================================================
     
-	/**
-     * Flying Machine Frame Tier enum - Dictates registry name, localized name, max health, max energy.
-     */
+	/** Flying Machine Frame Tier enum - Dictates registry name, localized name, max health, max energy, max durability. */
 	public static enum FlyingMachineFrameTier
     {
-    	//STRING(meta, registry name, localized name, max health, max energy)
-		BASE(0, "tierbase", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), 8.0F, 100),
-		ONE(1, "tier1", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.1"), 16.0F, 200),
-		TWO(2, "tier2", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.2"), 24.0F, 300),
-		THREE(3, "tier3", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.3"), 32.0F, 500);
+    	// STRING(meta, registry name, localized name, max health, max energy, max durability):
+		BASE(0, "tierbase", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), 8.0F, 100, 250),
+		ONE(1, "tier1", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.1"), 16.0F, 200, 500),
+		TWO(2, "tier2", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.2"), 24.0F, 300, 750),
+		THREE(3, "tier3", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.3"), 32.0F, 500, 1000);
 		
 		private final int metadata;
         private final String registryName;
         private final String localizedName;
         private final float maxHealth;
         private final int maxEnergy;
+        private final int maxDurability;
         
-        private FlyingMachineFrameTier(int metadataIn, String registryNameIn, String localizedNameIn, float maxHealthIn, int maxEnergyIn)
+        private FlyingMachineFrameTier(int metadataIn, String registryNameIn, String localizedNameIn, float maxHealthIn, int maxEnergyIn, int maxDurabilityIn)
         {
         	this.metadata = metadataIn;
             this.registryName = registryNameIn;
             this.localizedName = localizedNameIn;
             this.maxHealth = maxHealthIn;
             this.maxEnergy = maxEnergyIn;
+            this.maxDurability = maxDurabilityIn;
         }
         
         public int getMetadata()
@@ -66,9 +70,12 @@ public class EnumsVM {
             return this.maxEnergy;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        public int getMaxDurabilityModifier()
+        {
+            return this.maxDurability;
+        }
+        
+        /** Get type by it's enum ordinal. */
         public static EnumsVM.FlyingMachineFrameTier byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -93,32 +100,32 @@ public class EnumsVM {
         }
     }
 	
-	/**
-     * Flying Machine Engine Tier enum - Dictates registry name, localized name, forward speed, turn speed, energy regen.
-     */
+	/** Flying Machine Engine Tier enum - Dictates registry name, localized name, forward speed, turn speed, energy increase, durability decrease. */
 	public static enum FlyingMachineEngineTier
     {
-    	//STRING(meta, registry name, localized name, forward speed, turn speed, energy regen in ticks)
-		BASE(0, "tierbase", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), 0.005F, 0.1F, 2400),//2 minutes
-		ONE(1, "tier1", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.1"), 0.010F, 0.2F, 1800),//1 minute 30 seconds
-		TWO(2, "tier2", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.2"), 0.015F, 0.3F, 1200),//1 minute
-		THREE(3, "tier3", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.3"), 0.020F, 0.4F, 600);//30 seconds
+    	// STRING(meta, registry name, localized name, forward speed, turn speed, energy increase in ticks, durability decrease in ticks):
+		BASE(0, "tierbase", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), 0.005F, 0.1F, 2400, 600),//2 minutes, 30 seconds
+		ONE(1, "tier1", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.1"), 0.010F, 0.2F, 1800, 1200),   //1 minute 30 seconds, 1 minute
+		TWO(2, "tier2", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.2"), 0.015F, 0.3F, 1200, 1800),   //1 minute, 1 minute 30 seconds
+		THREE(3, "tier3", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.3"), 0.020F, 0.4F, 600, 2400);  //30 seconds, 2 minutes
 		
 		private final int metadata;
         private final String registryName;
         private final String localizedName;
         private final float fowardSpeed;
         private final float turnSpeed;
-        private final int energyRegen;
+        private final int energyIncrease;
+        private final int durabilityDecrease;
         
-        private FlyingMachineEngineTier(int metadataIn, String registryNameIn, String localizedNameIn, float fowardSpeedIn, float turnSpeedIn, int energyRegenIn)
+        private FlyingMachineEngineTier(int metadataIn, String registryNameIn, String localizedNameIn, float fowardSpeedIn, float turnSpeedIn, int energyIncreaseIn, int durabilityDecreaseIn)
         {
         	this.metadata = metadataIn;
             this.registryName = registryNameIn;
             this.localizedName = localizedNameIn;
             this.fowardSpeed = fowardSpeedIn;
             this.turnSpeed = turnSpeedIn;
-            this.energyRegen = energyRegenIn;
+            this.energyIncrease = energyIncreaseIn;
+            this.durabilityDecrease = durabilityDecreaseIn;
         }
         
         public int getMetadata()
@@ -146,14 +153,17 @@ public class EnumsVM {
             return this.turnSpeed;
         }
         
-        public int getEnergyRegenModifier()
+        public int getEnergyIncreaseModifier()
         {
-            return this.energyRegen;
+            return this.energyIncrease;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        public int getDurabilityDecreaseModifier()
+        {
+            return this.durabilityDecrease;
+        }
+        
+        /** Get type by it's enum ordinal. */
         public static EnumsVM.FlyingMachineEngineTier byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -178,12 +188,10 @@ public class EnumsVM {
         }
     }
 	
-	/**
-     * Flying Machine Component Tier enum - Dictates registry name, localized name, max ammo, special stat.
-     */
+	/** Flying Machine Component Tier enum - Dictates registry name, localized name, max ammo, special stat (max elevation). */
 	public static enum FlyingMachineComponentTier
     {
-    	//STRING(meta, registry name, localized name, max ammo, max elevation (special stat))
+    	// STRING(meta, registry name, localized name, max ammo, ?firing cooldown?, special stat (max elevation)):
 		BASE(0, "tierbase", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), 100, 75),
 		ONE(1, "tier1", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.1"), 200, 125),
 		TWO(2, "tier2", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.2"), 300, 200),
@@ -229,9 +237,7 @@ public class EnumsVM {
             return this.maxElevation;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        /** Get type by it's enum ordinal. */
         public static EnumsVM.FlyingMachineComponentTier byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -255,6 +261,109 @@ public class EnumsVM {
             return values()[0];
         }
     }
+	
+	
+	
+	//==================================================
+    // TODO            sdf
+	//==================================================
+
+    
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/** Event enum - Dictates registry name. */
+	public static enum EventTrigger
+    {
+    	// STRING(meta, registry name):
+		NONE(0, "none"),
+		FALL(1, "fall"),
+		BROKEN(2, "broken"),
+		DESTRUCTION(3, "destruction"),
+		LIGHTNING_STRIKE(4, "lightning_strike"),
+		INJURED(5, "injured"),
+		
+		HEALTH_2(11, "health_2"),
+		HEALTH_8(12, "health_8"),
+		HEALTH_MAX(13, "health_max"),
+		
+		ENERGY_25(21, "energy_25"),
+		ENERGY_100(22, "energy_100"),
+		ENERGY_MAX(23, "energy_max"),
+		
+		DURABILITY_50(31, "durability_50"),
+		DURABILITY_200(32, "durability_200"),
+		DURABILITY_MAX(33, "durability_max"),
+		
+		UPGRADE_TIER1(41, "upgrade_tier1"),
+		UPGRADE_TIER2(42, "upgrade_tier2"),
+		UPGRADE_TIER3(43, "upgrade_tier3"),
+		
+		;
+		
+		private final int metadata;
+        private final String registryName;
+        
+        private EventTrigger(int metadataIn, String registryNameIn)
+        {
+        	this.metadata = metadataIn;
+            this.registryName = registryNameIn;
+        }
+        
+        public int getMetadata()
+        {
+            return this.metadata;
+        }
+        
+        public String getRegistryName()
+        {
+            return this.registryName;
+        }
+        
+        /** Get type by it's enum ordinal. */
+        public static EnumsVM.EventTrigger byId(int id)
+        {
+            if (id < 0 || id >= values().length)
+            {
+                id = 0;
+            }
+            
+            return values()[id];
+        }
+        
+        public static EnumsVM.EventTrigger getTypeFromString(String nameIn)
+        {
+            for (int i = 0; i < values().length; ++i)
+            {
+                if (values()[i].getRegistryName().equals(nameIn))
+                {
+                    return values()[i];
+                }
+            }
+            
+            return values()[0];
+        }
+    }
     
     
 	
@@ -262,10 +371,159 @@ public class EnumsVM {
     // TODO            Visual Machine
 	//==================================================
 
-    /**
-	 * Visual Primary Skin enum - Represents various primary skin types.
-	 */
-    public static enum VisualPrimaryTexture
+    /** Visual Primary Skin enum - Represents various primary skin types. */
+ /**   public static enum VisualPrimaryTexture
+    {
+    	//STRING(meta, registry name, localized name)
+    	DEFAULT(0, "default", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.0")),
+    	
+    	//Tier 0
+    	COBBLESTONE(1, "cobblestone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.23")),
+        SANDSTONE(2, "sandstone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.22")),
+        SNOW(3, "snow", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.25")),
+        HAY_BLOCK(4, "hay_block", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.6")),
+        
+    	//Tier 1
+        PLANK_OAK(5, "plank_oak", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.7")),
+        PLANK_SPRUCE(6, "plank_spruce", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.8")),
+        PLANK_BIRCH(7, "plank_birch", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.9")),
+        PLANK_JUNGLE(8, "plank_jungle", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.10")),
+        PLANK_ACACIA(9, "plank_acacia", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.11")),
+        PLANK_DARK_OAK(10, "plank_dark_oak", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.12")),
+        
+    	LOG_OAK(11, "log_oak", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.13")),
+    	LOG_SPRUCE(12, "log_spruce", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.14")),
+    	LOG_BIRCH(13, "log_birch", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.15")),
+    	LOG_JUNGLE(14, "log_jungle", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.16")),
+    	LOG_ACACIA(15, "log_acacia", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.17")),
+    	LOG_DARK_OAK(16, "log_dark_oak", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.18")),
+        
+        PODZOL(17, "podzol", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.28")),
+        MYCELIUM(18, "mycelium", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.29")),
+        ICE(19, "ice", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.48")),
+        BRICK(20, "brick", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.36")),
+        
+        //Tier 2
+        ORE_IRON(21, "ore_iron", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.38")),
+        ORE_GOLD(22, "ore_gold", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.39")),
+        ORE_REDSTONE(23, "ore_redstone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.40")),
+        ORE_LAPIS_LAZULI(24, "ore_lapis_lazuli", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.41")),
+        ORE_DIAMOND(25, "ore_diamond", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.42")),
+        ORE_EMERALD(26, "ore_coal", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.37")),
+        
+        IRON(27, "iron", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.44")),
+        GOLD(28, "gold", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.46")),
+        REDSTONE(29, "redstone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.45")),
+        LAPIS_LAZULI(30, "lapis_lazuli", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.47")),
+        DIAMOND(31, "diamond", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.55")),
+        EMERALD(32, "emerald", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.56")),
+        
+        //Tier 3
+        SLIME(33, "slime", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.49")),
+        NETHERBRICK(34, "nether_brick", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.50")),
+        SOUL_SAND(35, "soul_sand", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.51")),
+        QUARTZ(36, "quartz", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.52")),
+        GLOWSTONE(37, "glowstone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.53")),
+        OBSIDIAN(38, "obsidian", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.54")),
+        
+        PRISMARINE(39, "prismarine", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.57")),
+        END_STONE(40, "end_stone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.58")),
+        PURPUR(41, "purpur", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.59")),
+    	WATER(42, "water", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.61")), 
+    	LAVA(43, "lava", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.62")), 
+    	ENDER(44, "ender", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.63")); 
+    	
+    	
+    	
+    	
+    	
+    	//ICEPACKED(26, "packed_ice", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.26")),
+        //GLASS(30, "glass", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.30")),
+        
+    	//COAL(43, "coal", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.43")),
+    	//STONEBRICKS(31, "stone_brick", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.31")),
+        //STONEBRICKSMOSSY(32, "stone_brick_mossy", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.32")),
+        //STONEBRICKSCRACK(33, "stone_brick_cracked", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.33")),
+        //STONEBRICKSCHISELED(34, "stone_brick_chiseled", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.34")),
+        //COBBLESTONEMOSSY(35, "cobblestone_mossy", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.35")),
+    	//DIRT(1, "dirt", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.1")),
+    	//SAND(2, "sand", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.2")),
+    	//REDSAND(3, "redsand", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.3")),
+        //GRAVEL(4, "gravel", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.4")),
+        //CLAY(5, "clay", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.5")),
+    	//NETHERSTAR(60, "netherstar", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.60")),
+    	//GRANITE(19, "granite", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.19")),
+        //DIORITE(20, "diorite", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.20")),
+        //ANDESITE(21, "andesite", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.21")),
+        //STONE(24, "stone", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.24")),
+        
+    	
+    	
+    	//Holiday
+    	//New Years
+    	//MYTHIC(61, "mythic", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.61")),
+    	//WATER(62, "water", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.62")), 
+    	//LAVA(63, "lava", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.63")), 
+    	//ENDER(64, "ender", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.64")), 
+    	//ENDER1(65, "ender1", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.65")), 
+    	//ENDER2(66, "ender2", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.66"))
+    	;
+    	
+    	private final int metadata;
+        private final String registryName;
+        private final String localizedName;
+        
+        private VisualPrimaryTexture(int metadataIn, String registryNameIn, String localizedNameIn)
+        {
+        	this.metadata = metadataIn;
+            this.registryName = registryNameIn;
+            this.localizedName = localizedNameIn;
+        }
+        
+        public int getMetadata()
+        {
+            return this.metadata;
+        }
+        
+        public String getRegistryName()
+        {
+            return this.registryName;
+        }
+        
+        public String getLocalizedName()
+        {
+            return this.localizedName;
+        }
+        
+        /**
+         * Get type by it's enum ordinal
+         *
+        public static EnumsVM.VisualPrimaryTexture byId(int id)
+        {
+            if (id < 0 || id >= values().length)
+            {
+                id = 0;
+            }
+            
+            return values()[id];
+        }
+        
+        public static EnumsVM.VisualPrimaryTexture getTypeFromString(String nameIn)
+        {
+            for (int i = 0; i < values().length; ++i)
+            {
+                if (values()[i].getRegistryName().equals(nameIn))
+                {
+                    return values()[i];
+                }
+            }
+            
+            return values()[0];
+        }
+    }
+    
+    /** Visual Secondary Skin enum - Represents various primary skin types. */
+/**    public static enum VisualSecondaryTexture
     {
     	//STRING(meta, registry name, localized name)
     	DEFAULT(0, "default", References.Old_I18n.translateToLocalFormatted("vc.enum.visualframe.0")),
@@ -366,7 +624,7 @@ public class EnumsVM {
         private final String registryName;
         private final String localizedName;
         
-        private VisualPrimaryTexture(int metadataIn, String registryNameIn, String localizedNameIn)
+        private VisualSecondaryTexture(int metadataIn, String registryNameIn, String localizedNameIn)
         {
         	this.metadata = metadataIn;
             this.registryName = registryNameIn;
@@ -390,8 +648,8 @@ public class EnumsVM {
         
         /**
          * Get type by it's enum ordinal
-         */
-        public static EnumsVM.VisualPrimaryTexture byId(int id)
+         *
+        public static EnumsVM.VisualSecondaryTexture byId(int id)
         {
             if (id < 0 || id >= values().length)
             {
@@ -401,7 +659,7 @@ public class EnumsVM {
             return values()[id];
         }
         
-        public static EnumsVM.VisualPrimaryTexture getTypeFromString(String nameIn)
+        public static EnumsVM.VisualSecondaryTexture getTypeFromString(String nameIn)
         {
             for (int i = 0; i < values().length; ++i)
             {
@@ -415,6 +673,7 @@ public class EnumsVM {
         }
     }
     
+	*/
 	
 	
 	
@@ -460,14 +719,10 @@ public class EnumsVM {
 	
 	
 	
-	
-	
-    /**
-	 * Module Type enum - Represents various Module types.
-	 */
+    /** Module Type enum - Represents various Module types. *
     public static enum ModuleType
     {
-    	//STRING(meta, registry name, localized name)
+    	// STRING(meta, registry name, localized name):
         BASE(0, "base", References.Old_I18n.translateToLocalFormatted("vc.item.enum.module.0")),
         ALTITUDE_LESSER(1, "altitude_lesser", References.Old_I18n.translateToLocalFormatted("vc.item.enum.module.1")),
         ALTITUDE_NORMAL(2, "altitude_normal", References.Old_I18n.translateToLocalFormatted("vc.item.enum.module.2")),
@@ -523,9 +778,7 @@ public class EnumsVM {
             return this.localizedName;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        /** Get type by it's enum ordinal. *
         public static EnumsVM.ModuleType byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -550,12 +803,10 @@ public class EnumsVM {
         }
     }
     
-    /**
-	 * Song enum - Represents various song types.
-	 */
+    /** Song enum - Represents various song types. */
     public static enum AirshipSong
     {
-    	//STRING(meta, localized name, soundevent)
+    	// STRING(meta, localized name, soundevent):
     	NONE(0, References.Old_I18n.translateToLocalFormatted("vc.item.enum.song.0"), SoundEvents.UI_BUTTON_CLICK),
     	RECORD11(1, References.Old_I18n.translateToLocalFormatted("vc.item.enum.song.1"), SoundEvents.RECORD_11),
         RECORD13(2, References.Old_I18n.translateToLocalFormatted("vc.item.enum.song.2"), SoundEvents.RECORD_13),
@@ -602,9 +853,7 @@ public class EnumsVM {
             return this.song;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        /** Get type by it's enum ordinal. */
         public static EnumsVM.AirshipSong byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -641,7 +890,7 @@ public class EnumsVM {
     /**
 	 * Visual Balloon Pattern enum - Represents various visual balloon pattern types.
 	 */
-    public static enum VisualBalloonPattern
+/**    public static enum VisualBalloonPattern
     {
     	//STRING(meta, registry name, localed name)
     	DEFAULT(0, "default", References.Old_I18n.translateToLocalFormatted("vc.enum.visualballoon.0")),
@@ -763,7 +1012,7 @@ public class EnumsVM {
         
         /**
          * Get type by it's enum ordinal
-         */
+         *
         public static EnumsVM.VisualBalloonPattern byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -788,7 +1037,7 @@ public class EnumsVM {
         }
     }
     
-   
+   */
     
     
     
@@ -799,7 +1048,7 @@ public class EnumsVM {
     /**
      * Bomb enum - Dictates registry name, localized name, explosion strength.
      */
-	public static enum Bombs
+/**	public static enum Bombs
     {
     	//STRING(meta, registry name, localized name, explosion strength)
 		CASING(0, "casing", References.Old_I18n.translateToLocalFormatted("vc.enum.bomb.0"), 0.0F),
@@ -842,7 +1091,7 @@ public class EnumsVM {
         
         /**
          * Get type by it's enum ordinal
-         */
+         *
         public static EnumsVM.Bombs byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -867,7 +1116,7 @@ public class EnumsVM {
         }
     }
 	
-	
+	*/
 	
 	
 	
@@ -876,7 +1125,7 @@ public class EnumsVM {
     
     /**
 	 * Achievement enum - Represents various Achievement types.
-	 */
+	 *
     public static enum Achievement
     {
     	//STRING(meta, registry name)
@@ -910,7 +1159,7 @@ public class EnumsVM {
         
         /**
          * Get type by it's enum ordinal
-         */
+         *
         public static EnumsVM.Achievement byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -934,7 +1183,7 @@ public class EnumsVM {
             return values()[0];
         }
     }
-    
+    */
     
     
     /**
@@ -1077,20 +1326,20 @@ public class EnumsVM {
     public static enum EntityHead
     {
     	//STRING(meta, registry name, localized name)
-        NONE(0, "none", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.0")),
+        NONE(0, "none", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.0")),
         
-        STEVE(1, "1", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.1")),
-        ALEX(2, "2", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.2")),
-        CHICKEN(3, "3", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.3")),
-        PIG(4, "4", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.4")),
-    	COW(5, "5", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.5")),
-    	ZOMBIE(6, "6", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.6")),
-    	SKELETON(7, "7", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.7")),
-    	SPIDER(8, "8", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.8")),
-    	CREEPER(9, "9", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.9")),
-    	WITHERSKELETON(10, "10", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.10")),
-    	DRAGON(11, "11", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.11")),
-    	HEROBRINE(12, "12", References.Old_I18n.translateToLocalFormatted("vc.enum.entityhead.12"));
+        STEVE(1, "1", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.1")),
+        ALEX(2, "2", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.2")),
+        CHICKEN(3, "3", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.3")),
+        PIG(4, "4", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.4")),
+    	COW(5, "5", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.5")),
+    	ZOMBIE(6, "6", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.6")),
+    	SKELETON(7, "7", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.7")),
+    	SPIDER(8, "8", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.8")),
+    	CREEPER(9, "9", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.9")),
+    	WITHERSKELETON(10, "10", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.10")),
+    	DRAGON(11, "11", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.11")),
+    	HEROBRINE(12, "12", References.Old_I18n.translateToLocalFormatted("viesmachines.enum.entityhead.12"));
         
     	private final int metadata;
         private final String registryName;
@@ -1150,10 +1399,12 @@ public class EnumsVM {
 	 */
     public static enum PatreonHead
     {
-    	//STRING(meta, registry name, localized name)
-        NONE(0, "none", "none"),
+    	// STRING(meta, registry name, localized name):
+        NONE(0, "none", "None"),
         VIES(1, "patreonhead_vies", "Vies"),
-        NEMANOR(2, "patreonhead_nemanor", "Nemanor");
+        SOULFORGE7(2, "patreonhead_soulforge7", "SoulForge7"),
+        NEMANOR(3, "patreonhead_nemanor", "Nemanor"),
+        VELOURVAULTSUIT(4, "patreonhead_velourvaultsuit", "VelourVaultSuit");
         
     	private final int metadata;
         private final String registryName;
@@ -1181,9 +1432,7 @@ public class EnumsVM {
             return this.localizedName;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        /** Get type by it's enum ordinal. */
         public static EnumsVM.PatreonHead byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -1380,7 +1629,7 @@ public class EnumsVM {
     
     /**
      * Default name enum - Dictates registry name and localized name.
-     */
+     *
 	public static enum MachineName
     {
     	//STRING(meta, default machine name, category, type, component special stat name, componenet special stat value name)
@@ -1444,7 +1693,7 @@ public class EnumsVM {
         
         /**
          * Get type by it's enum ordinal
-         */
+         *
         public static EnumsVM.MachineName byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -1456,12 +1705,10 @@ public class EnumsVM {
         }
     }
 	
-	/**
-     * Flying Machine Variant Name enum - Dictates localized name.
-     */
-	public static enum FlyingMachineVariantName
+	/** Flying Machine Variant Name enum - Dictates localized name. */
+	public static enum FlyingMachineAirshipVariantName
     {
-    	//STRING(meta, unlocalized name)
+    	// STRING(meta, unlocalized name):
 		STANDARD(0, References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.flyingvariant.0")),
 		HINDENBURG(1, References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.flyingvariant.1")),
 		DIRIGIBLE(2, References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.flyingvariant.2")),
@@ -1471,7 +1718,7 @@ public class EnumsVM {
 		private final int metadata;
         private final String unlocalizedName;
         
-        private FlyingMachineVariantName(int metadataIn, String unlocalizedNameIn)
+        private FlyingMachineAirshipVariantName(int metadataIn, String unlocalizedNameIn)
         {
         	this.metadata = metadataIn;
             this.unlocalizedName = unlocalizedNameIn;
@@ -1487,10 +1734,8 @@ public class EnumsVM {
             return this.unlocalizedName;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
-        public static EnumsVM.FlyingMachineVariantName byId(int id)
+        /** Get type by it's enum ordinal. */
+        public static EnumsVM.FlyingMachineAirshipVariantName byId(int id)
         {
             if (id < 0 || id >= values().length)
             {
@@ -1509,13 +1754,10 @@ public class EnumsVM {
 	
 	
 	
-	
-	/**
-     * Select Color enum - Dictates registry name and localized name.
-     */
+	/** Select Color enum - Dictates registry name and localized name. */
 	public static enum SelectColor
     {
-    	//STRING(meta, registry name, localized name, TextFormatting color)
+    	// STRING(meta, registry name, localized name, TextFormatting color):
 		BLACK(0, "BLACK", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), TextFormatting.BLACK),
 	    DARK_BLUE(1, "DARK_BLUE", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), TextFormatting.DARK_BLUE),
 	    DARK_GREEN(2, "DARK_GREEN", References.Old_I18n.translateToLocalFormatted("vc.enum.tier.0"), TextFormatting.DARK_GREEN),
@@ -1566,9 +1808,7 @@ public class EnumsVM {
             return this.textColor;
         }
         
-        /**
-         * Get type by it's enum ordinal
-         */
+        /** Get type by it's enum ordinal. */
         public static EnumsVM.SelectColor byId(int id)
         {
             if (id < 0 || id >= values().length)
@@ -1578,20 +1818,347 @@ public class EnumsVM {
             
             return values()[id];
         }
-        
-        public static EnumsVM.SelectColor getTypeFromString(String nameIn)
-        {
-            for (int i = 0; i < values().length; ++i)
-            {
-                if (values()[i].getRegistryName().equals(nameIn))
-                {
-                    return values()[i];
-                }
-            }
-            
-            return values()[0];
-        }
     }
     
     
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/** Visual Primary Texture enum - Dictates registry name. */
+	public static enum VisualPrimaryTexture
+    {
+		// STRING(meta, localized name, block, block meta):
+		DEFAULT(0, "default", BlocksVM.XEGONITE_BASIC, 0),
+    	
+    	// Tier 0:
+    	COBBLESTONE(1, "cobblestone", Blocks.COBBLESTONE, 0),
+    	SANDSTONE(2, "sandstone", Blocks.SANDSTONE, 0),
+        SNOW(3, "snow", Blocks.SNOW, 0),
+        HAY_BLOCK(4, "hay_block", Blocks.HAY_BLOCK, 0),
+        
+    	// Tier 1:
+        PLANK_OAK(5, "plank_oak", Blocks.PLANKS, 0),
+        PLANK_SPRUCE(6, "plank_spruce", Blocks.PLANKS, 1),
+        PLANK_BIRCH(7, "plank_birch", Blocks.PLANKS, 2),
+        PLANK_JUNGLE(8, "plank_jungle", Blocks.PLANKS, 3),
+        PLANK_ACACIA(9, "plank_acacia", Blocks.PLANKS, 4),
+        PLANK_DARK_OAK(10, "plank_dark_oak", Blocks.PLANKS, 5),
+        PODZOL(11, "podzol", Blocks.DIRT, 1),
+        
+    	LOG_OAK(12, "log_oak", Blocks.LOG, 0),
+    	LOG_SPRUCE(13, "log_spruce", Blocks.LOG, 1),
+    	LOG_BIRCH(14, "log_birch", Blocks.LOG, 2),
+    	LOG_JUNGLE(15, "log_jungle", Blocks.LOG, 3),
+    	LOG_ACACIA(16, "log_acacia", Blocks.LOG2, 0),
+    	LOG_DARK_OAK(17, "log_dark_oak", Blocks.LOG2, 1),
+        MYCELIUM(18, "mycelium", Blocks.MYCELIUM, 0),
+        
+        // Tier 2:
+        ORE_QUARTZ(19, "ore_quartz", Blocks.QUARTZ_ORE, 0),
+        ORE_IRON(20, "ore_iron", Blocks.IRON_ORE, 0),
+        ORE_GOLD(21, "ore_gold", Blocks.GOLD_ORE, 0),
+        ORE_REDSTONE(22, "ore_redstone", Blocks.REDSTONE_ORE, 0),
+        ORE_LAPIS_LAZULI(23, "ore_lapis_lazuli", Blocks.LAPIS_ORE, 0),
+        ORE_DIAMOND(24, "ore_diamond", Blocks.DIAMOND_ORE, 0),
+        ORE_EMERALD(25, "ore_emerald", Blocks.EMERALD_ORE, 0),
+        
+        BRICK(26, "brick", Blocks.BRICK_BLOCK, 0),
+        IRON(27, "iron", Blocks.IRON_BLOCK, 0),
+        GOLD(28, "gold", Blocks.GOLD_BLOCK, 0),
+        REDSTONE(29, "redstone", Blocks.REDSTONE_BLOCK, 0),
+        LAPIS_LAZULI(30, "lapis_lazuli", Blocks.LAPIS_BLOCK, 0),
+        DIAMOND(31, "diamond", Blocks.DIAMOND_BLOCK, 0),
+        EMERALD(32, "emerald", Blocks.EMERALD_BLOCK, 0),
+        
+        // Tier 3:
+        ICE(33, "ice", Blocks.ICE, 0),
+        SLIME(34, "slime", Blocks.SLIME_BLOCK, 0),
+        NETHER_BRICK(35, "nether_brick", Blocks.NETHER_BRICK, 0),
+        SOUL_SAND(36, "soul_sand", Blocks.SOUL_SAND, 0),
+        QUARTZ(37, "quartz", Blocks.QUARTZ_BLOCK, 0),
+        GLOWSTONE(38, "glowstone", Blocks.GLOWSTONE, 0),
+        OBSIDIAN(39, "obsidian", Blocks.OBSIDIAN, 0),
+        
+        BEDROCK(40, "bedrock", Blocks.BEDROCK, 0),
+        PRISMARINE(41, "prismarine", Blocks.PRISMARINE, 0),
+        END_STONE(42, "end_stone", Blocks.END_STONE, 0),
+        PURPUR(43, "purpur", Blocks.PURPUR_BLOCK, 0),
+    	WATER(44, "water", BlocksVM.WATER_BASIC, 0), 
+    	LAVA(45, "lava", BlocksVM.LAVA_BASIC, 0), 
+    	ENDER(46, "ender", BlocksVM.ENDER_BASIC, 0); 
+    	
+		;
+		
+		private final int metadata;
+		private final String registryName;
+        private final Block block;
+		private final int blockMetadata;
+        
+        private VisualPrimaryTexture(int metadataIn, String registryNameIn, Block blockIn, int blockMetadataIn)
+        {
+        	this.metadata = metadataIn;
+        	this.registryName = registryNameIn;
+            this.block = blockIn;
+            this.blockMetadata = blockMetadataIn;
+        }
+        
+        public int getMetadata()
+        {
+        	return this.metadata;
+        }
+        
+        public String getLocalizedName()
+        {
+        	return References.Old_I18n.translateToLocal(new ItemStack(Item.getItemFromBlock(block), 1, this.blockMetadata).getUnlocalizedName() + ".name");
+        }
+        
+        public String getRegistryName()
+        {
+            return this.registryName;
+        }
+        
+        public ItemStack getBlock()
+        {
+            return new ItemStack(Item.getItemFromBlock(block), 1, this.blockMetadata);//this.block; //Block.getBlockFromItem(new ItemStack(Items.DIAMOND, 0).getItem());
+        }
+        
+        /** Get type by it's enum ordinal. */
+        public static EnumsVM.VisualPrimaryTexture byId(int id)
+        {
+            if (id < 0 || id >= values().length)
+            {
+                id = 0;
+            }
+            
+            return values()[id];
+        }
+    }
+	
+	
+
+	/** Visual Secondary Texture enum - Dictates registry name. */
+	public static enum VisualSecondaryTexture
+    {
+		// STRING(meta, localized name, block, block meta):
+		DEFAULT(0, "default", BlocksVM.XEGONITE_BASIC, 0),
+    	
+    	// Tier 0:
+    	COBBLESTONE(1, "cobblestone", Blocks.COBBLESTONE, 0),
+    	SANDSTONE(2, "sandstone", Blocks.SANDSTONE, 0),
+        SNOW(3, "snow", Blocks.SNOW, 0),
+        HAY_BLOCK(4, "hay_block", Blocks.HAY_BLOCK, 0),
+        
+    	// Tier 1:
+        PLANK_OAK(5, "plank_oak", Blocks.PLANKS, 0),
+        PLANK_SPRUCE(6, "plank_spruce", Blocks.PLANKS, 1),
+        PLANK_BIRCH(7, "plank_birch", Blocks.PLANKS, 2),
+        PLANK_JUNGLE(8, "plank_jungle", Blocks.PLANKS, 3),
+        PLANK_ACACIA(9, "plank_acacia", Blocks.PLANKS, 4),
+        PLANK_DARK_OAK(10, "plank_dark_oak", Blocks.PLANKS, 5),
+        PODZOL(11, "podzol", Blocks.DIRT, 1),
+        
+    	LOG_OAK(12, "log_oak", Blocks.LOG, 0),
+    	LOG_SPRUCE(13, "log_spruce", Blocks.LOG, 1),
+    	LOG_BIRCH(14, "log_birch", Blocks.LOG, 2),
+    	LOG_JUNGLE(15, "log_jungle", Blocks.LOG, 3),
+    	LOG_ACACIA(16, "log_acacia", Blocks.LOG2, 0),
+    	LOG_DARK_OAK(17, "log_dark_oak", Blocks.LOG2, 1),
+        MYCELIUM(18, "mycelium", Blocks.MYCELIUM, 0),
+        
+        // Tier 2:
+        ORE_QUARTZ(19, "ore_quartz", Blocks.QUARTZ_ORE, 0),
+        ORE_IRON(20, "ore_iron", Blocks.IRON_ORE, 0),
+        ORE_GOLD(21, "ore_gold", Blocks.GOLD_ORE, 0),
+        ORE_REDSTONE(22, "ore_redstone", Blocks.REDSTONE_ORE, 0),
+        ORE_LAPIS_LAZULI(23, "ore_lapis_lazuli", Blocks.LAPIS_ORE, 0),
+        ORE_DIAMOND(24, "ore_diamond", Blocks.DIAMOND_ORE, 0),
+        ORE_EMERALD(25, "ore_emerald", Blocks.EMERALD_ORE, 0),
+        
+        BRICK(26, "brick", Blocks.BRICK_BLOCK, 0),
+        IRON(27, "iron", Blocks.IRON_BLOCK, 0),
+        GOLD(28, "gold", Blocks.GOLD_BLOCK, 0),
+        REDSTONE(29, "redstone", Blocks.REDSTONE_BLOCK, 0),
+        LAPIS_LAZULI(30, "lapis_lazuli", Blocks.LAPIS_BLOCK, 0),
+        DIAMOND(31, "diamond", Blocks.DIAMOND_BLOCK, 0),
+        EMERALD(32, "emerald", Blocks.EMERALD_BLOCK, 0),
+        
+        // Tier 3:
+        ICE(33, "ice", Blocks.ICE, 0),
+        SLIME(34, "slime", Blocks.SLIME_BLOCK, 0),
+        NETHER_BRICK(35, "nether_brick", Blocks.NETHER_BRICK, 0),
+        SOUL_SAND(36, "soul_sand", Blocks.SOUL_SAND, 0),
+        QUARTZ(37, "quartz", Blocks.QUARTZ_BLOCK, 0),
+        GLOWSTONE(38, "glowstone", Blocks.GLOWSTONE, 0),
+        OBSIDIAN(39, "obsidian", Blocks.OBSIDIAN, 0),
+        
+        BEDROCK(40, "bedrock", Blocks.BEDROCK, 0),
+        PRISMARINE(41, "prismarine", Blocks.PRISMARINE, 0),
+        END_STONE(42, "end_stone", Blocks.END_STONE, 0),
+        PURPUR(43, "purpur", Blocks.PURPUR_BLOCK, 0),
+    	WATER(44, "water", BlocksVM.WATER_BASIC, 0), 
+    	LAVA(45, "lava", BlocksVM.LAVA_BASIC, 0), 
+    	ENDER(46, "ender", BlocksVM.ENDER_BASIC, 0); 
+    	
+		;
+		
+		private final int metadata;
+		private final String registryName;
+        private final Block block;
+		private final int blockMetadata;
+        
+        private VisualSecondaryTexture(int metadataIn, String registryNameIn, Block blockIn, int blockMetadataIn)
+        {
+        	this.metadata = metadataIn;
+        	this.registryName = registryNameIn;
+            this.block = blockIn;
+            this.blockMetadata = blockMetadataIn;
+        }
+        
+        public int getMetadata()
+        {
+        	return this.metadata;
+        }
+        
+        public String getLocalizedName()
+        {
+        	return References.Old_I18n.translateToLocal(new ItemStack(Item.getItemFromBlock(block), 1, this.blockMetadata).getUnlocalizedName() + ".name");
+        }
+        
+        public String getRegistryName()
+        {
+            return this.registryName;
+        }
+        
+        public ItemStack getBlock()
+        {
+            return new ItemStack(Item.getItemFromBlock(block), 1, this.blockMetadata);//this.block; //Block.getBlockFromItem(new ItemStack(Items.DIAMOND, 0).getItem());
+        }
+        
+        /** Get type by it's enum ordinal. */
+        public static EnumsVM.VisualSecondaryTexture byId(int id)
+        {
+            if (id < 0 || id >= values().length)
+            {
+                id = 0;
+            }
+            
+            return values()[id];
+        }
+    }
+	
+	/** Visual Display Symbol enum - Dictates registry name. */
+	public static enum VisualDisplaySymbol
+    {
+		// STRING(meta, localized name, item):
+		// General:
+		SYMBOL_LOGOFORGE(0, "forge", ItemsVM.SYMBOL_LOGOFORGE),
+		SYMBOL_COINSTACK(1, "coinstack", ItemsVM.SYMBOL_COINSTACK),
+		SYMBOL_SCROLL(2, "scroll", ItemsVM.SYMBOL_SCROLL),
+		SYMBOL_WRENCH(3, "wrench", ItemsVM.SYMBOL_WRENCH),
+		SYMBOL_KEY(4, "key", ItemsVM.SYMBOL_KEY),
+		SYMBOL_PADLOCK(5, "padlock", ItemsVM.SYMBOL_PADLOCK),
+		SYMBOL_BELL(6, "bell", ItemsVM.SYMBOL_BELL),
+		SYMBOL_ANCHOR(7, "anchor", ItemsVM.SYMBOL_ANCHOR),
+		SYMBOL_BARREL(8, "barrel", ItemsVM.SYMBOL_BARREL),
+		SYMBOL_GEARS(9, "gears", ItemsVM.SYMBOL_GEARS),
+        
+        /*
+        PLANK_DARK_OAK(10, "plank_dark_oak", Blocks.PLANKS, 5),
+        PODZOL(11, "podzol", Blocks.DIRT, 1),
+        ICE(12, "ice", Blocks.ICE, 0),
+        
+    	LOG_OAK(13, "log_oak", Blocks.LOG, 0),
+    	LOG_SPRUCE(14, "log_spruce", Blocks.LOG, 1),
+    	LOG_BIRCH(15, "log_birch", Blocks.LOG, 2),
+    	LOG_JUNGLE(16, "log_jungle", Blocks.LOG, 3),
+    	LOG_ACACIA(17, "log_acacia", Blocks.LOG2, 0),
+    	LOG_DARK_OAK(18, "log_dark_oak", Blocks.LOG2, 1),
+        MYCELIUM(19, "mycelium", Blocks.MYCELIUM, 0),
+        BRICK(20, "brick", Blocks.BRICK_BLOCK, 0),
+        
+        // Tier 2:
+        ORE_IRON(21, "ore_iron", Blocks.IRON_ORE, 0),
+        ORE_GOLD(22, "ore_gold", Blocks.GOLD_ORE, 0),
+        ORE_REDSTONE(23, "ore_redstone", Blocks.REDSTONE_ORE, 0),
+        ORE_LAPIS_LAZULI(24, "ore_lapis_lazuli", Blocks.LAPIS_ORE, 0),
+        ORE_DIAMOND(25, "ore_diamond", Blocks.DIAMOND_ORE, 0),
+        ORE_EMERALD(26, "ore_emerald", Blocks.EMERALD_ORE, 0),
+        
+        IRON(27, "iron", Blocks.IRON_BLOCK, 0),
+        GOLD(28, "gold", Blocks.GOLD_BLOCK, 0),
+        REDSTONE(29, "redstone", Blocks.REDSTONE_BLOCK, 0),
+        LAPIS_LAZULI(30, "lapis_lazuli", Blocks.LAPIS_BLOCK, 0),
+        DIAMOND(31, "diamond", Blocks.DIAMOND_BLOCK, 0),
+        EMERALD(32, "emerald", Blocks.EMERALD_BLOCK, 0),
+        
+        // Tier 3:
+        SLIME(33, "slime", Blocks.SLIME_BLOCK, 0),
+        NETHER_BRICK(34, "nether_brick", Blocks.NETHER_BRICK, 0),
+        SOUL_SAND(35, "soul_sand", Blocks.SOUL_SAND, 0),
+        QUARTZ(36, "quartz", Blocks.QUARTZ_BLOCK, 0),
+        GLOWSTONE(37, "glowstone", Blocks.GLOWSTONE, 0),
+        OBSIDIAN(38, "obsidian", Blocks.OBSIDIAN, 0),
+        
+        PRISMARINE(39, "prismarine", Blocks.PRISMARINE, 0),
+        END_STONE(40, "end_stone", Blocks.END_STONE, 0),
+        PURPUR(41, "purpur", Blocks.PURPUR_BLOCK, 0),
+    	WATER(42, "water", BlocksVM.WATER_BASIC, 0), 
+    	LAVA(43, "lava", BlocksVM.LAVA_BASIC, 0), 
+    	ENDER(44, "ender", BlocksVM.ENDER_BASIC, 0); 
+    	*/
+		;
+		
+		private final int metadata;
+		private final String registryName;
+        private final Item item;
+        
+        private VisualDisplaySymbol(int metadataIn, String registryNameIn, Item itemIn)
+        {
+        	this.metadata = metadataIn;
+        	this.registryName = registryNameIn;
+            this.item = itemIn;
+        }
+        
+        public int getMetadata()
+        {
+        	return this.metadata;
+        }
+        
+        public String getLocalizedName()
+        {
+        	return References.Old_I18n.translateToLocal(new ItemStack(this.item, 1).getUnlocalizedName() + ".name");
+        }
+        
+        public String getRegistryName()
+        {
+            return this.registryName;
+        }
+        
+        public Item getItem()
+        {
+            return this.item;//this.block; //Block.getBlockFromItem(new ItemStack(Items.DIAMOND, 0).getItem());
+        }
+        
+        public ItemStack getItemStack()
+        {
+            return new ItemStack(this.item);//this.block; //Block.getBlockFromItem(new ItemStack(Items.DIAMOND, 0).getItem());
+        }
+        
+        /** Get type by it's enum ordinal. */
+        public static EnumsVM.VisualDisplaySymbol byId(int id)
+        {
+            if (id < 0 || id >= values().length)
+            {
+                id = 0;
+            }
+            
+            return values()[id];
+        }
+    }
 }

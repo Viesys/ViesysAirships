@@ -1,5 +1,7 @@
 package com.vies.viesmachines.client.particle;
 
+import com.vies.viesmachines.api.References;
+
 import net.minecraft.client.particle.ParticleFlame;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -14,7 +16,9 @@ public class EntityHealHealthFX extends ParticleFlame {
     {
         super(parWorld, parX, parY, parZ, parMotionX, parMotionY, parMotionZ);
         
+        int d1 = References.random.nextInt(240) + 1;
+        
         this.setParticleTextureIndex(65);
-        this.setRBGColorF(35, 0, 0);
+        this.setRBGColorF(d1, 0, 0);
     }
 }

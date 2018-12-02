@@ -28,12 +28,15 @@ public class ItemKitHealth extends Item {
 	
 	private int repairItem;
 	private EnumRarity rarity;
+	private String procName;
 	
 	public ItemKitHealth(String unlocalizedName, EnumRarity rarityIn, int repairItemIn) 
 	{
 		this.setMaxStackSize(64);
 		this.repairItem = repairItemIn;
 		this.rarity = rarityIn;
+		
+		this.procName = "KitHealthProc_" + this.rarity;
 		
 		ItemHelper.setItemName(this, unlocalizedName);
 		this.setCreativeTab(ViesMachines.tabItems);
@@ -42,6 +45,8 @@ public class ItemKitHealth extends Item {
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
+		float brokenHelper = 0.0F;
+		
 		if (entity instanceof EntityMachineBase)
         {
 			// If this machine is fully healed, ignore all below code:
@@ -54,6 +59,8 @@ public class ItemKitHealth extends Item {
 			if (((EntityMachineBase) entity).getBroken())
 			{
 				((EntityMachineBase) entity).setBroken(false);
+				((EntityMachineBase) entity).setHealth(1);
+				brokenHelper = 1.0F;
 			}
 			
 			// Sets the max health attribute:
@@ -62,14 +69,14 @@ public class ItemKitHealth extends Item {
 			// Heals the machine for 2 HP:
 			if(this.repairItem == 0)
 			{
-				((EntityMachineBase) entity).heal(2.0F);
+				((EntityMachineBase) entity).heal(2.0F - brokenHelper);
 		    	
 				if(!player.isCreative())
 				{
 					stack.shrink(1);
 				}
 				
-				((EntityMachineBase) entity).setEventTrigger(4);
+				((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.HEALTH_2.getMetadata());
 				
 		    	return true;
 			}
@@ -77,14 +84,14 @@ public class ItemKitHealth extends Item {
 			// Heals the machine for 8 HP:
 			if(this.repairItem == 1)
 			{
-				((EntityMachineBase) entity).heal(8.0F);
+				((EntityMachineBase) entity).heal(8.0F - brokenHelper);
 		    	
 				if(!player.isCreative())
 				{
 					stack.shrink(1);
 				}
 				
-				((EntityMachineBase) entity).setEventTrigger(4);
+				((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.HEALTH_8.getMetadata());
 				
 		    	return true;
 			}
@@ -104,7 +111,7 @@ public class ItemKitHealth extends Item {
 					stack.shrink(1);
 				}
 				
-				((EntityMachineBase) entity).setEventTrigger(4);
+				((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.HEALTH_MAX.getMetadata());
 				
 		    	return true;
 			}
@@ -125,6 +132,8 @@ public class ItemKitHealth extends Item {
 					if (((EntityMachineBase) entity.getRidingEntity()).getBroken())
 					{
 						((EntityMachineBase) entity.getRidingEntity()).setBroken(false);
+						((EntityMachineBase) entity.getRidingEntity()).setHealth(1);
+						brokenHelper = 1.0F;
 					}
 					
 					// Sets the max health attribute:
@@ -133,14 +142,14 @@ public class ItemKitHealth extends Item {
 					// Heals the machine for 2 HP:
 					if(this.repairItem == 0)
 					{
-						((EntityMachineBase) entity.getRidingEntity()).heal(2.0F);
+						((EntityMachineBase) entity.getRidingEntity()).heal(2.0F - brokenHelper);
 				    	
 						if(!player.isCreative())
 						{
 							stack.shrink(1);
 						}
 						
-						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(4);
+						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.HEALTH_2.getMetadata());
 						
 				    	return true;
 					}
@@ -148,14 +157,14 @@ public class ItemKitHealth extends Item {
 					// Heals the machine for 8 HP:
 					if(this.repairItem == 1)
 					{
-						((EntityMachineBase) entity.getRidingEntity()).heal(8.0F);
+						((EntityMachineBase) entity.getRidingEntity()).heal(8.0F - brokenHelper);
 				    	
 						if(!player.isCreative())
 						{
 							stack.shrink(1);
 						}
 						
-						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(4);
+						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.HEALTH_8.getMetadata());
 						
 				    	return true;
 					}
@@ -170,7 +179,7 @@ public class ItemKitHealth extends Item {
 							stack.shrink(1);
 						}
 						
-						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(4);
+						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.HEALTH_MAX.getMetadata());
 						
 				    	return true;
 					}
@@ -218,14 +227,20 @@ public class ItemKitHealth extends Item {
 		}
 		
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
-		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(color + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1"));
 		tooltip.add("");
-		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(color + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
 	}
 	
 	@Override
 	public EnumRarity getRarity(ItemStack stack)
     {
 		return this.rarity;
+    }
+
+    /** Return the name for this gem proc. */
+	public String getGemProcName()
+    {
+        return this.procName.toString();
     }
 }

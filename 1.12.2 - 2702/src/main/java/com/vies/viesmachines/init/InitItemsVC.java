@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.api.References;
+import com.vies.viesmachines.common.items.ItemGenericSymbol;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
@@ -44,11 +45,11 @@ public class InitItemsVC extends ItemsVM {
 					//ADAPTIVE_CIRCUIT,
 					//ENERGIZED_CORE,
 					
-					CHARGED_SHARD,
+ 					XEGONITE,
 					MACHINE_PELLETS,
 					MACHINE_AMMO,
 					
-					LOGIC_CHIP,
+					CIRCUIT_LOGIC,
 					MACHINE_FRAME,
 					MACHINE_ENGINE,
 					
@@ -72,17 +73,17 @@ public class InitItemsVC extends ItemsVM {
 					
 					//--------------------------------------------------
 					
-					KIT_RAW,
 					KIT_HEALTH_2,
 					KIT_HEALTH_8,
-					
 					KIT_HEALTH_MAX,
+					
 					KIT_ENERGY_25,
 					KIT_ENERGY_100,
-					
 					KIT_ENERGY_MAX,
-					KIT_UPGRADE_MAX,
-					KIT_MACHINE_MAX,
+					
+					KIT_DURABILITY_50,
+					KIT_DURABILITY_200,
+					KIT_DURABILITY_MAX,
 					
 					//--------------------------------------------------
 					
@@ -100,7 +101,35 @@ public class InitItemsVC extends ItemsVM {
 					
 					//--------------------------------------------------
 					
-					TOOL_DISMOUNTING,
+					TOOL_DISMOUNTER,
+					
+					//--------------------------------------------------
+					
+					XEGONITE_WATER,
+					XEGONITE_LAVA,
+					XEGONITE_ENDER,
+					
+					KIT_RAW,
+					KIT_UPGRADE_MAX,
+					KIT_MACHINE_MAX,
+					CIRCUIT_ADAPTIVE,
+					
+					//--------------------------------------------------
+					//--------------------------------------------------
+					//--------------------------------------------------
+					
+					//SYMBOL_LOGOVIESMACHINES,
+					SYMBOL_LOGOFORGE,
+					//SYMBOL_LOGOMINECRAFT,
+					SYMBOL_COINSTACK,
+					SYMBOL_SCROLL,
+					SYMBOL_WRENCH,
+					SYMBOL_KEY,
+					SYMBOL_PADLOCK,
+					SYMBOL_BELL,
+					SYMBOL_ANCHOR,
+					SYMBOL_BARREL,
+					SYMBOL_GEARS,
 					
 					//--------------------------------------------------
 					//--------------------------------------------------

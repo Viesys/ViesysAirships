@@ -90,7 +90,7 @@ public class RenderMachineTransmogrifier extends TileEntitySpecialRenderer<TileE
 		// Binds the texture to use:
 		this.bindTexture(texture);
 		// Render the model:
-		this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
+		//this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
 		
 		if (te.isOn)
 		{
@@ -351,7 +351,7 @@ public class RenderMachineTransmogrifier extends TileEntitySpecialRenderer<TileE
 	/** Renders the item the KitFabricator is looking for. */
 	private void renderItemToFind(TileEntityMachineTransmogrifier te, double x, double y, double z, float partialTicks, int destroyStage)
     {
-        ItemStack itemstack = new ItemStack(ItemsVM.CHARGED_SHARD);
+        ItemStack itemstack = new ItemStack(ItemsVM.XEGONITE);
         //InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, te.gemstoneMeta
         
         if(itemstack.isEmpty())

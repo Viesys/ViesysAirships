@@ -28,6 +28,7 @@ public class ItemUpgradeFrame extends Item {
 	
 	private EnumRarity rarity;
 	private int upgradeTier;
+	private String procName;
 	
 	public ItemUpgradeFrame(String unlocalizedNameIn, EnumRarity rarityIn, int upgradeTierIn) 
 	{
@@ -35,6 +36,8 @@ public class ItemUpgradeFrame extends Item {
 		
 		this.rarity = rarityIn;
 		this.upgradeTier = upgradeTierIn;
+		
+		this.procName = "UpgradeFrameProc";
 		
 		ItemHelper.setItemName(this, unlocalizedNameIn);
 		this.setCreativeTab(ViesMachines.tabItems);
@@ -60,7 +63,18 @@ public class ItemUpgradeFrame extends Item {
 						stack.shrink(1);
 					}
 					
-					((EntityMachineBase) entity).setEventTrigger(3);
+					if (((EntityMachineBase) entity).getTierFrame() == 1)
+					{
+						((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER1.getMetadata());
+					}
+					else if (((EntityMachineBase) entity).getTierFrame() == 2)
+					{
+						((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER2.getMetadata());
+					}
+					else if (((EntityMachineBase) entity).getTierFrame() == 3)
+					{
+						((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
+					}
 	        	}
 			}
         }
@@ -80,13 +94,23 @@ public class ItemUpgradeFrame extends Item {
 							// Adjusts the max health attribute:
 							((EntityMachineBase) entity.getRidingEntity()).getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue((double)EnumsVM.FlyingMachineFrameTier.byId(((EntityMachineBase) entity.getRidingEntity()).getTierFrame()).getMaxHealthModifier());
 							
-							
 							if (!player.isCreative())
 							{
 								stack.shrink(1);
 							}
 							
-							((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(3);
+							if (((EntityMachineBase) entity.getRidingEntity()).getTierFrame() == 1)
+							{
+								((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER1.getMetadata());
+							}
+							else if (((EntityMachineBase) entity.getRidingEntity()).getTierFrame() == 2)
+							{
+								((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER2.getMetadata());
+							}
+							else if (((EntityMachineBase) entity.getRidingEntity()).getTierFrame() == 3)
+							{
+								((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
+							}
 			        	}
 					}
 				}
@@ -133,14 +157,20 @@ public class ItemUpgradeFrame extends Item {
 		}
 		
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
-		tooltip.add(textColor + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(textColor + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1"));
 		tooltip.add("");
-		tooltip.add(textColor + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(textColor + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
 	}
 	
 	@Override
 	public EnumRarity getRarity(ItemStack stack)
     {
 		return this.rarity;
+    }
+
+    /** Return the name for this gem proc. */
+	public String getGemProcName()
+    {
+        return this.procName.toString();
     }
 }

@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.vies.viesmachines.ViesMachines;
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.common.blocks.BlockGeneric;
+import com.vies.viesmachines.common.blocks.BlockHelper;
 import com.vies.viesmachines.common.tileentity.TileEntityExtractor;
 import com.vies.viesmachines.network.GuiHandler;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -23,27 +25,36 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockExtractor extends BlockGeneric implements ITileEntityProvider {
+public class BlockExtractor extends Block implements ITileEntityProvider {
 	
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
     
 	public BlockExtractor(String unlocalizedNameIn, Material materialIn, SoundType soundTypeIn) 
 	{
-		super(unlocalizedNameIn, materialIn, soundTypeIn);
+		super(materialIn);
+		BlockHelper.setBlockName(this, unlocalizedNameIn);
 		
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         
-		this.setLightOpacity(255);
+		this.setHarvestLevel("pickaxe", 1);
+		this.setHardness(5.0F);
+		this.setResistance(10.0F);
+		this.setSoundType(soundTypeIn);
+		this.setCreativeTab(ViesMachines.tabBlocks);
+		//this.setLightOpacity(255);
 	}
 	
     @Override
@@ -158,11 +169,29 @@ public class BlockExtractor extends BlockGeneric implements ITileEntityProvider 
 	{
 		return false;
 	}
+
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer()
+    {
+        return BlockRenderLayer.CUTOUT;
+    }
 	
 	@Override
     public boolean isFullCube(IBlockState state)
     {
         return false;
+    }
+	
+	@Override
+	public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face)
+    {
+        return false;
+    }
+	
+	@Override
+    public EnumBlockRenderType getRenderType(IBlockState state) 
+	{
+        return EnumBlockRenderType.MODEL;//.ENTITYBLOCK_ANIMATED;
     }
 	
 	@Override

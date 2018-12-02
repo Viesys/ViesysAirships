@@ -4,7 +4,7 @@ import com.vies.viesmachines.ViesMachines;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.common.entity.machines.EntityMachineGround;
 import com.vies.viesmachines.common.entity.machines.EntityMachineWater;
-import com.vies.viesmachines.common.entity.machines.types.EntityMachineFlyingAirship;
+import com.vies.viesmachines.common.entity.machines.types.flying.EntityMachineFlyingAirship;
 import com.vies.viesmachines.common.entity.particles.EntityBulletElectrical;
 import com.vies.viesmachines.common.entity.particles.EntityBulletExplosive;
 import com.vies.viesmachines.common.entity.particles.EntityBulletNormal;

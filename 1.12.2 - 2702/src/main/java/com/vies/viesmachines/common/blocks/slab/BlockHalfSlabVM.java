@@ -7,9 +7,9 @@ import net.minecraft.block.material.Material;
 
 public class BlockHalfSlabVM extends BlockSlabVM {
 	
-	public BlockHalfSlabVM(String unlocalnameIn, Material materialIn, SoundType soundTypeIn) 
+	public BlockHalfSlabVM(String nameIn, Material materialIn, SoundType soundTypeIn) 
 	{
-		super(unlocalnameIn, unlocalnameIn, materialIn, soundTypeIn);
+		super(nameIn, materialIn, soundTypeIn);
 		
 		this.setCreativeTab(ViesMachines.tabBlocks);
 	}

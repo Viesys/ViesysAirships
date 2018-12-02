@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.vies.viesmachines.ViesMachines;
+import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
 import com.vies.viesmachines.common.items.ItemHelper;
@@ -26,6 +27,7 @@ public class ItemUpgradeComponent extends Item {
 	
 	private EnumRarity rarity;
 	private int upgradeTier;
+	private String procName;
 	
 	public ItemUpgradeComponent(String unlocalizedNameIn, EnumRarity rarityIn, int upgradeTierIn) 
 	{
@@ -33,6 +35,8 @@ public class ItemUpgradeComponent extends Item {
 		
 		this.rarity = rarityIn;
 		this.upgradeTier = upgradeTierIn;
+		
+		this.procName = "UpgradeComponentProc";
 		
 		ItemHelper.setItemName(this, unlocalizedNameIn);
 		this.setCreativeTab(ViesMachines.tabItems);
@@ -55,7 +59,18 @@ public class ItemUpgradeComponent extends Item {
 						stack.shrink(1);
 					}
 					
-					((EntityMachineBase) entity).setEventTrigger(3);
+					if (((EntityMachineBase) entity).getTierComponent() == 1)
+					{
+						((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER1.getMetadata());
+					}
+					else if (((EntityMachineBase) entity).getTierComponent() == 2)
+					{
+						((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER2.getMetadata());
+					}
+					else if (((EntityMachineBase) entity).getTierComponent() == 3)
+					{
+						((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
+					}
 	        	}
 			}
         }
@@ -77,7 +92,18 @@ public class ItemUpgradeComponent extends Item {
 								stack.shrink(1);
 							}
 							
-							((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(3);
+							if (((EntityMachineBase) entity.getRidingEntity()).getTierComponent() == 1)
+							{
+								((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER1.getMetadata());
+							}
+							else if (((EntityMachineBase) entity.getRidingEntity()).getTierComponent() == 2)
+							{
+								((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER2.getMetadata());
+							}
+							else if (((EntityMachineBase) entity.getRidingEntity()).getTierComponent() == 3)
+							{
+								((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
+							}
 			        	}
 					}
 				}
@@ -124,14 +150,20 @@ public class ItemUpgradeComponent extends Item {
 		}
 		
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
-		tooltip.add(textColor + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(textColor + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1"));
 		tooltip.add("");
-		tooltip.add(textColor + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(textColor + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
 	}
 	
 	@Override
 	public EnumRarity getRarity(ItemStack stack)
     {
 		return this.rarity;
+    }
+
+    /** Return the name for this gem proc. */
+	public String getGemProcName()
+    {
+        return this.procName.toString();
     }
 }

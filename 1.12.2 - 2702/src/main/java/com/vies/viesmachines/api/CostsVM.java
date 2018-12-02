@@ -14,22 +14,22 @@ public class CostsVM {
 	
 	//Visual
 
-	public static int COST_CHANGE_MODEL_FRAME = 15;
-	public static int COST_CHANGE_MODEL_ENGINE = 15;
-	public static int COST_CHANGE_MODEL_COMPONENT = 15;
+	public static int COST_CHANGE_MODEL_FRAME = 200;
+	public static int COST_CHANGE_MODEL_ENGINE = 200;
+	public static int COST_CHANGE_MODEL_COMPONENT = 200;
 	
 	public static int COST_NAME_CHANGE = 10;
 	public static int COST_NAME_COLOR = 5;
 	
-	public static int COST_FRAME_TEXTURE = 20;
-	public static int COST_FRAME_TRANSPARENCY = 25;
+	public static int COST_FRAME_TEXTURE = 25;
+	public static int COST_FRAME_TRANSPARENCY = 15;
 	public static int COST_FRAME_COLOR = 30;
 	
 	public static int COST_ENGINE_PARTICLES = 75;
-	public static int COST_ENGINE_DISPLAY_SYMBOL = 25;
+	public static int COST_ENGINE_DISPLAY_SYMBOL = 20;
 	
-	public static int COST_COMPONENT_TEXTURE = 20;
-	public static int COST_COMPONENT_TRANSPARENCY = 25;
+	public static int COST_COMPONENT_TEXTURE = 25;
+	public static int COST_COMPONENT_TRANSPARENCY = 15;
 	public static int COST_COMPONENT_COLOR = 30;
 	
 	public static int COST_MODULE_CHANGE_COST = 15;

@@ -17,7 +17,7 @@ public class References {
 	public static final String MOD_ID = "viesmachines";
 	
 	public static final String MOD_NAME = "Vies Machines";
-	public static final String MOD_VERSION_NUMBER = "1.5.9.13";
+	public static final String MOD_VERSION_NUMBER = "0.6.7-alpha";
 	public static final String MOD_VERSION_MC = "1.12.2";
 	public static final String VERSION = MOD_VERSION_NUMBER + " - MC " + MOD_VERSION_MC;
 	//public static final String website = "http://lycanitesmobs.com";
@@ -43,6 +43,9 @@ public class References {
 	
 	public static final String HEALTH_TAG = "Health";
 	public static final String ENERGY_TAG = "Energy";
+	public static final String DURABILITY_TAG = "Durability";
+	public static final String DURABILITY_PERCENT_TAG = "DurabilityPercent";
+	
 	public static final String BROKEN_TAG = "Broken";
 	public static final String AUTORUN_TAG = "Autorun";
 	public static final String ARMED_TAG = "Armed";
@@ -55,7 +58,9 @@ public class References {
 	public static final String ITEMSTACK_FUEL_ITEM_TAG = "ItemstackFuelItem";
 	public static final String ITEMSTACK_FUEL_SIZE_TAG = "ItemstackFuelSize";
 	public static final String STORED_MICRO_ENERGY_TAG = "StoredMicroEnergy";
-	public static final String ENERGY_REGEN_TAG = "EnergyRegen";
+	public static final String ENERGY_INCREASE_TAG = "EnergyIncrease";
+	public static final String STORED_MICRO_DURABILITY_TAG = "StoredMicroDurability";
+	public static final String DURABILITY_DECREASE_TAG = "DurabilityDecrease";
 	
 	public static final String TIER_FRAME_TAG = "TierFrame";
 	public static final String TIER_ENGINE_TAG = "TierEngine";
@@ -65,6 +70,7 @@ public class References {
 	public static final String MACHINE_ENHANCEMENT_1_TAG = "MachineEnhancement1";
 	
 	public static final String PRIMED_FOR_LIGHTNING_STRIKE_TAG = "PrimedForLightningStrike";
+	public static final String MACHINE_ISSUE_TAG = "MachineIssue";
 	public static final String EVENT_TRIGGER_TAG = "EventTrigger";
 	
 	
@@ -311,6 +317,28 @@ public class References {
 	
 	//=========================================
 	
+	/**
+	 * Used in Rendering Airship textures.
+	 *
+	public static final ItemStack[] ITEM_DISPLAY_SYMBOL = new ItemStack[] 
+	{
+		//new ItemStack(ItemsVM.SYMBOL_LOGOVIESMACHINES),
+		new ItemStack(ItemsVM.SYMBOL_LOGOFORGE),
+		//new ItemStack(ItemsVM.SYMBOL_LOGOMINECRAFT),
+		new ItemStack(ItemsVM.SYMBOL_COINSTACK),
+		new ItemStack(ItemsVM.SYMBOL_SCROLL),
+		new ItemStack(ItemsVM.SYMBOL_WRENCH),
+		new ItemStack(ItemsVM.SYMBOL_KEY),
+		new ItemStack(ItemsVM.SYMBOL_PADLOCK),
+		new ItemStack(ItemsVM.SYMBOL_BELL),
+		new ItemStack(ItemsVM.SYMBOL_ANCHOR),
+		new ItemStack(ItemsVM.SYMBOL_BARREL),
+		new ItemStack(ItemsVM.SYMBOL_GEARS)
+		
+		
+		
+	};
+	*/
 	
 	/**
 	 * Used in Rendering Airship textures.

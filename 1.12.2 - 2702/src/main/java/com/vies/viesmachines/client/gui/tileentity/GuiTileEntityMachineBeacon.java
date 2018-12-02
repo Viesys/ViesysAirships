@@ -205,7 +205,7 @@ public class GuiTileEntityMachineBeacon extends GuiContainer {
 			this.drawTexturedModalRect(17+9, 53, 0, 166, 16, 16);
 		}
 		
-		this.drawItemStack(new ItemStack(ItemsVM.CHARGED_SHARD, 1), 56+24, 17, "");
+		this.drawItemStack(new ItemStack(ItemsVM.XEGONITE, 1), 56+24, 17, "");
 		
 		/*
 		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, this.appliance.gemstoneMeta), 56, 17, "");

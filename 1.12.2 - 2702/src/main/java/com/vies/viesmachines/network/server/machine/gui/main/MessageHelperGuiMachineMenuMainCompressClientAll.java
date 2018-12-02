@@ -1,5 +1,6 @@
 package com.vies.viesmachines.network.server.machine.gui.main;
 
+import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.util.LogHelper;
 import com.vies.viesmachines.client.gui.GuiContainerVC;
 import com.vies.viesmachines.client.gui.machines.main.GuiMachineMenuMain;
@@ -24,7 +25,7 @@ public class MessageHelperGuiMachineMenuMainCompressClientAll extends MessageBas
 	@Override
 	public void toBytes(ByteBuf buf) 
 	{
-		buf.writeInt(GuiMachineMenuMain.machineId);
+		buf.writeInt(MessageHelperGuiMachineMenuMainCompress.machineID);
 	}
 	
 	@Override
@@ -32,6 +33,10 @@ public class MessageHelperGuiMachineMenuMainCompressClientAll extends MessageBas
 	{
 		message.machine = (EntityMachineBase) Minecraft.getMinecraft().world.getEntityByID(message.machineID);
 		
+		//LogHelper.info(message.machine);
+		
+		
+		message.machine.setEventTrigger(EnumsVM.EventTrigger.DESTRUCTION.getMetadata());
 		message.machine.isDead = true;
 	}
 	

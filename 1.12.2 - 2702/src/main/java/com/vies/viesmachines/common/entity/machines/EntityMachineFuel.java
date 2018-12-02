@@ -6,6 +6,7 @@ import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.FuelVM;
 import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.api.SoundsVM;
+import com.vies.viesmachines.api.util.LogHelper;
 import com.vies.viesmachines.configs.VMConfiguration;
 
 import net.minecraft.block.Block;
@@ -38,9 +39,13 @@ public class EntityMachineFuel extends EntityMachineBase {
 	/** Keeps track of the stack size in the fuel slot value. */
 	private static final DataParameter<Integer> ITEMSTACK_FUEL_SIZE_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
 	/** Keeps track of the energy regeneration value. */
-	private static final DataParameter<Integer> ENERGY_REGEN_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	private static final DataParameter<Integer> ENERGY_INCREASE_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
 	/** Keeps track of the stored micro energy value. */
 	private static final DataParameter<Integer> STORED_MICRO_ENERGY_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the durability degeneration value. */
+	private static final DataParameter<Integer> DURABILITY_DECREASE_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
+	/** Keeps track of the stored micro durability value. */
+	private static final DataParameter<Integer> STORED_MICRO_DURABILITY_DM = EntityDataManager.<Integer>createKey(EntityMachineFuel.class, DataSerializers.VARINT);
 	
 	
 	
@@ -55,8 +60,8 @@ public class EntityMachineFuel extends EntityMachineBase {
 	
 	public EntityMachineFuel(World worldIn, double x, double y, double z,
 			
-			int frameTierIn, int engineTierIn, int componentTierIn, 
-			int typeIn, float healthIn, int energyIn, 
+			int frameTierIn, int engineTierIn, int componentTierIn, int typeIn, 
+			float healthIn, int energyIn, int durabilityIn, 
 			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
 			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
 			int ammoAmountIn, int ammoTypeIn, 
@@ -114,8 +119,10 @@ public class EntityMachineFuel extends EntityMachineBase {
         this.dataManager.register(FUEL_TOTAL_DM, Integer.valueOf(0));
         this.dataManager.register(ITEMSTACK_FUEL_ITEM_DM, Integer.valueOf(0));
         this.dataManager.register(ITEMSTACK_FUEL_SIZE_DM, Integer.valueOf(0));
-        this.dataManager.register(ENERGY_REGEN_DM, Integer.valueOf(0));
+        this.dataManager.register(ENERGY_INCREASE_DM, Integer.valueOf(0));
         this.dataManager.register(STORED_MICRO_ENERGY_DM, Integer.valueOf(0));
+        this.dataManager.register(DURABILITY_DECREASE_DM, Integer.valueOf(0));
+        this.dataManager.register(STORED_MICRO_DURABILITY_DM, Integer.valueOf(0));
     }
 	
 	
@@ -133,8 +140,10 @@ public class EntityMachineFuel extends EntityMachineBase {
 		compound.setInteger(rf.FUEL_TOTAL_TAG, this.getFuelTotal());
 		compound.setInteger(rf.ITEMSTACK_FUEL_ITEM_TAG, this.getItemstackFuelItem());
 		compound.setInteger(rf.ITEMSTACK_FUEL_SIZE_TAG, this.getItemstackFuelSize());
-		compound.setInteger(rf.ENERGY_REGEN_TAG, this.getEnergyRegen());
+		compound.setInteger(rf.ENERGY_INCREASE_TAG, this.getEnergyIncrease());
 		compound.setInteger(rf.STORED_MICRO_ENERGY_TAG, this.getStoredMicroEnergy());
+		compound.setInteger(rf.DURABILITY_DECREASE_TAG, this.getDurabilityDecrease());
+		compound.setInteger(rf.STORED_MICRO_DURABILITY_TAG, this.getStoredMicroDurability());
 	}
 	
 	@Override
@@ -146,8 +155,10 @@ public class EntityMachineFuel extends EntityMachineBase {
 		this.setFuelTotal(compound.getInteger(rf.FUEL_TOTAL_TAG));
 		this.setItemstackFuelItem(compound.getInteger(rf.ITEMSTACK_FUEL_ITEM_TAG));
 		this.setItemstackFuelSize(compound.getInteger(rf.ITEMSTACK_FUEL_SIZE_TAG));
-		this.setEnergyRegen(compound.getInteger(rf.ENERGY_REGEN_TAG));
+		this.setEnergyIncrease(compound.getInteger(rf.ENERGY_INCREASE_TAG));
 		this.setStoredMicroEnergy(compound.getInteger(rf.STORED_MICRO_ENERGY_TAG));
+		this.setDurabilityDecrease(compound.getInteger(rf.DURABILITY_DECREASE_TAG));
+		this.setStoredMicroDurability(compound.getInteger(rf.STORED_MICRO_DURABILITY_TAG));
     }
 	
 	
@@ -168,6 +179,7 @@ public class EntityMachineFuel extends EntityMachineBase {
 			{
 				this.initiateFuelSystem();
 				this.initiateEnergySystem();
+				this.initiateDurabilitySystem();
 			}
 			
             // Clears stored fuel if the machine is broken:
@@ -220,9 +232,8 @@ public class EntityMachineFuel extends EntityMachineBase {
 	//==================================================
 	
 	/** Gets the sound to be triggered when a machine is on/powered. */
-	@Nullable
 	@SideOnly(Side.CLIENT)
-    protected SoundEvent getOnSound()
+	protected SoundEvent getOnSound()
     {
         return SoundsVM.ENGINEON;
     }
@@ -279,15 +290,15 @@ public class EntityMachineFuel extends EntityMachineBase {
     
     //--------------------------------------------------
 
-    /** Gets the Energy Regen. */
-    public final int getEnergyRegen()
+    /** Gets the Energy Increase. */
+    public final int getEnergyIncrease()
     {
-        return ((Integer)this.dataManager.get(ENERGY_REGEN_DM)).intValue();
+        return ((Integer)this.dataManager.get(ENERGY_INCREASE_DM)).intValue();
     }
-    /** Sets the Energy Regen. */
-    public void setEnergyRegen(int intIn)
+    /** Sets the Energy Increase. */
+    public void setEnergyIncrease(int intIn)
     {
-        this.dataManager.set(ENERGY_REGEN_DM, Integer.valueOf(intIn));
+        this.dataManager.set(ENERGY_INCREASE_DM, Integer.valueOf(intIn));
     }
 
     /** Gets the machine stored micro energy. */
@@ -298,7 +309,31 @@ public class EntityMachineFuel extends EntityMachineBase {
 	/** Sets the machine stored micro energy. */
     public void setStoredMicroEnergy(int intIn)
     {
-        this.dataManager.set(STORED_MICRO_ENERGY_DM, MathHelper.clamp(intIn, 0, this.getMaxEnergyRegen()));
+        this.dataManager.set(STORED_MICRO_ENERGY_DM, MathHelper.clamp(intIn, 0, this.getMaxEnergyIncrease()));
+    }
+    
+    //--------------------------------------------------
+
+    /** Gets the Durability Decrease. */
+    public final int getDurabilityDecrease()
+    {
+        return ((Integer)this.dataManager.get(DURABILITY_DECREASE_DM)).intValue();
+    }
+    /** Sets the Durability Decrease. */
+    public void setDurabilityDecrease(int intIn)
+    {
+        this.dataManager.set(DURABILITY_DECREASE_DM, Integer.valueOf(intIn));
+    }
+
+    /** Gets the machine stored micro durability. */
+    public final int getStoredMicroDurability()
+    {
+        return ((Integer)this.dataManager.get(STORED_MICRO_DURABILITY_DM)).intValue();
+    }
+	/** Sets the machine stored micro durability. */
+    public void setStoredMicroDurability(int intIn)
+    {
+        this.dataManager.set(STORED_MICRO_DURABILITY_DM, MathHelper.clamp(intIn, 0, this.getMaxDurabilityDecrease()));
     }
     
     
@@ -394,11 +429,29 @@ public class EntityMachineFuel extends EntityMachineBase {
         //&& this.engineOnSoundSpeed > 0 
         && this.ticksExisted % 5 == 0)
         {
-        	this.playSound(this.getOnSound(), 0.25F, 1.0F);
-        	//this.getOnSound();
+        	//TODO Keeps Crashing!!!
+        	//this.playSound(this.getOnSound(), 0.25F, 1.0F);
         }
         
-        //this.getOnSound();
+        
+        
+        if (this.inventory.getStackInSlot(0).isEmpty()
+        && this.getFuel() == 0)
+        {
+        	if (this.getControllingPassenger() instanceof EntityPlayer)
+        	{
+        		if (((EntityPlayer)this.getControllingPassenger()).isCreative())
+        		{
+        			this.setPoweredOn(true);
+        		}
+        	}
+        	else
+        	{
+        		
+        		
+        		this.setPoweredOn(false);
+        	}
+        }
     }
     
     /** Is the machine burning fuel? */
@@ -508,12 +561,12 @@ public class EntityMachineFuel extends EntityMachineBase {
     // TODO             Energy Logic
 	//==================================================
     
-    /** Core energy logic responsible for machine energy regen while burning fuel. */
+    /** Core energy logic responsible for machine energy increase while burning fuel. */
     public void initiateEnergySystem()
     {
     	if(!this.world.isRemote)
 		{
-    		//If the machine is burning fuel and not a max energy, increase the micro energy count.
+    		//If the machine is burning fuel and not at max energy, increase the micro energy count.
 	    	if(this.isFuelBurning()
 	    	&& this.getEnergy() <= this.getMaxEnergy())
 	    	{
@@ -521,19 +574,60 @@ public class EntityMachineFuel extends EntityMachineBase {
 	    	}
 	    	
 	    	//When micro energy gets high enough, 1 energy is added.
-	    	if (this.getStoredMicroEnergy() >= this.getMaxEnergyRegen())
+	    	if (this.getStoredMicroEnergy() >= this.getMaxEnergyIncrease())
 	    	{
 	    		this.setEnergy(this.getEnergy() + 1);
 	    		this.setStoredMicroEnergy(0);
+	    	}
+		}
+    }
+    
+    /** Gets the max energy increase value of a machine. */
+    private int getMaxEnergyIncrease()
+    {
+        return EnumsVM.FlyingMachineEngineTier.byId(this.getTierEngine()).getEnergyIncreaseModifier();
+    }
+    
+    
+    
+    //==================================================
+    // TODO           Durability Logic
+	//==================================================
+    
+    /** Core durability logic responsible for machine durability decrease while burning fuel. */
+    public void initiateDurabilitySystem()
+    {
+    	if(!this.world.isRemote)
+		{
+    		//If the machine is burning fuel and not at 0 durability, decrease the micro durability count.
+	    	if(this.isFuelBurning()
+	    	&& this.getDurability() >= 1)
+	    	{
+	    		if (this.getControllingPassenger() instanceof EntityPlayer)
+		    	{
+		    		EntityPlayer player = (EntityPlayer) this.getControllingPassenger();
+		    		
+		    		if (!player.isCreative())
+		    		{
+		    			this.setStoredMicroDurability(this.getStoredMicroDurability() + 1);
+		    		}
+		    	}
+	    	}
+	    	
+	    	//When micro durability gets high enough, 1 energy is added.
+	    	if (this.getStoredMicroDurability() >= this.getMaxDurabilityDecrease())
+	    	{
+	    		this.setDurability(this.getDurability() - 1);
+	    		this.setStoredMicroDurability(0);
 	    		
 	    	}
 		}
     }
     
-    /** Gets the max energy regen value of a machine. */
-    private int getMaxEnergyRegen()
+    /** Gets the max durability decrease value of a machine. */
+    private int getMaxDurabilityDecrease()
     {
-        return EnumsVM.FlyingMachineEngineTier.byId(this.getTierEngine()).getEnergyRegenModifier();
+        return EnumsVM.FlyingMachineEngineTier.byId(this.getTierComponent()).getDurabilityDecreaseModifier();
     }
     
     

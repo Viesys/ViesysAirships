@@ -1,5 +1,6 @@
 package com.vies.viesmachines.network.server.machine.gui.customize;
 
+import com.vies.viesmachines.api.CostsVM;
 import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
 import com.vies.viesmachines.network.packet.MessageBase;
 
@@ -31,6 +32,16 @@ public class MessageHelperGuiMachineMenuCustomizeSecondaryTransparent extends Me
 	{
 		EntityMachineBase machineIn = (EntityMachineBase) player.getRidingEntity();
 		
-		machineIn.setVisualComponentTransparent(!machineIn.getVisualComponentTransparent());
+		if (!machineIn.getVisualComponentTransparent()
+		&& machineIn.getEnergy() >= CostsVM.COST_COMPONENT_TRANSPARENCY)
+		{
+			machineIn.setVisualComponentTransparent(true);
+			machineIn.setEnergy(machineIn.getEnergy() - CostsVM.COST_COMPONENT_TRANSPARENCY);
+		}
+		else
+		{
+			machineIn.setVisualComponentTransparent(false);
+			//machineIn.setVisualFrameTransparent(!machineIn.getVisualFrameTransparent());
+		}
 	}
 }

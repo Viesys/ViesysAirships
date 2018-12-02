@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.vies.viesmachines.ViesMachines;
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.common.blocks.BlockGeneric;
+import com.vies.viesmachines.common.blocks.BlockHelper;
 import com.vies.viesmachines.common.tileentity.TileEntityKitFabricator;
 import com.vies.viesmachines.network.GuiHandler;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
@@ -33,17 +35,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockKitFabricator extends BlockGeneric implements ITileEntityProvider {
+public class BlockKitFabricator extends Block implements ITileEntityProvider {
 	
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
     
 	public BlockKitFabricator(String unlocalizedNameIn, Material materialIn, SoundType soundTypeIn) 
 	{
-		super(unlocalizedNameIn, materialIn, soundTypeIn);
+		super(materialIn);
+		BlockHelper.setBlockName(this, unlocalizedNameIn);
 		
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         
-		this.setLightOpacity(255);
+		this.setHarvestLevel("pickaxe", 1);
+		this.setHardness(5.0F);
+		this.setResistance(10.0F);
+		this.setSoundType(soundTypeIn);
+		this.setCreativeTab(ViesMachines.tabBlocks);
 	}
 	
     @Override

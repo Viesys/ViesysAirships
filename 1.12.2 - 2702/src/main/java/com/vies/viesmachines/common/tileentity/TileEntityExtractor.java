@@ -4,7 +4,19 @@ import javax.annotation.Nullable;
 
 import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.api.util.LogHelper;
+import com.vies.viesmachines.common.items.ItemGeneric;
+import com.vies.viesmachines.common.items.kits.ItemKitDurability;
+import com.vies.viesmachines.common.items.kits.ItemKitEnergy;
+import com.vies.viesmachines.common.items.kits.ItemKitHealth;
+import com.vies.viesmachines.common.items.machines.ItemMachineBase;
+import com.vies.viesmachines.common.items.misc.ItemMachinePellets;
+import com.vies.viesmachines.common.items.parts.ItemComponentFlying;
+import com.vies.viesmachines.common.items.parts.ItemComponentGround;
+import com.vies.viesmachines.common.items.parts.ItemComponentWater;
+import com.vies.viesmachines.common.items.tools.ItemToolDismounting;
+import com.vies.viesmachines.common.items.upgrades.ItemUpgradeComponent;
+import com.vies.viesmachines.common.items.upgrades.ItemUpgradeEngine;
+import com.vies.viesmachines.common.items.upgrades.ItemUpgradeFrame;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -49,7 +61,6 @@ public class TileEntityExtractor extends TileEntity implements ITickable {
     public TileEntityExtractor() 
     {
     	this.inventory = new ItemStackHandler(size);
-    	this.itemToFindMeta = 0;
     }
     
     @Override
@@ -231,7 +242,6 @@ public class TileEntityExtractor extends TileEntity implements ITickable {
             if(hasBeenCutting != cuttingSomething())
             {
                 changedCuttingState = true;
-                //BlockGrinder.changeBlockBasedOnGrindingStatus(cuttingSomething(), this.world, pos);
             }
     	}
         
@@ -270,17 +280,33 @@ public class TileEntityExtractor extends TileEntity implements ITickable {
             //GemCuttingRecipes.getRandomGem(GemCuttingRecipes.CUT_GEM_OUTPUT); //Returns a Random Gem from array.
             ItemStack itemstack1 = (ItemStack)this.inventory.getStackInSlot(1);
             
+            
+    		
+    		ItemStack[] stack = new ItemStack[]
+    		{
+    			new ItemStack(ItemsVM.XEGONITE, 1 + this.procAmount)//,
+    			//new ItemStack(ItemsVM.KIT_HEALTH_8, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_HEALTH_MAX, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_ENERGY_25, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_ENERGY_100, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_ENERGY_MAX, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_DURABILITY_50, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_DURABILITY_200, 1 + this.procAmount),
+    			//new ItemStack(ItemsVM.KIT_DURABILITY_MAX, 1 + this.procAmount)
+    		};
+    		
+    		
+    		
             if(itemstack1.isEmpty())
             {
-            	this.inventory.insertItem(1, new ItemStack(
-            			//InitItemsVG.GEMSTONE_ITEM_BASIC_V1
-            			ItemsVM.CHARGED_SHARD, 1 + this.procAmount, this.itemToFindMeta), false);
+            	this.inventory.insertItem(1, stack[this.itemToFindMeta], false);
             }
             else if(itemstack1.isItemEqual(
             		//GemCuttingRecipes.CUT_GEM_OUTPUT[this.itemToFindMeta]
-            		new ItemStack(
+            		//new ItemStack(
                 			//InitItemsVG.GEMSTONE_ITEM_BASIC_V1
-                			ItemsVM.CHARGED_SHARD, 1)
+                	//		ItemsVM.XEGONITE, 1)
+            		stack[this.itemToFindMeta]
             		))
             {
             	if(itemstack1.getCount() + this.procAmount > 64)
@@ -525,6 +551,34 @@ public class TileEntityExtractor extends TileEntity implements ITickable {
             if(item == Items.NETHER_STAR) return 350;
             if(item == Items.SHULKER_SHELL) return 350;
             if(item == Items.ELYTRA) return 400;
+            
+            if(item instanceof ItemGeneric && "GenericProc".equals(((ItemGeneric)item).getGemProcName())) return 18;
+            
+            if(item instanceof ItemKitHealth && "KitHealthProc_UNCOMMON".equals(((ItemKitHealth)item).getGemProcName())) return 33;
+            if(item instanceof ItemKitHealth && "KitHealthProc_RARE".equals(((ItemKitHealth)item).getGemProcName())) return 66;
+            if(item instanceof ItemKitHealth && "KitHealthProc_EPIC".equals(((ItemKitHealth)item).getGemProcName())) return 100;
+            
+            if(item instanceof ItemKitEnergy && "KitEnergyProc_UNCOMMON".equals(((ItemKitEnergy)item).getGemProcName())) return 33;
+            if(item instanceof ItemKitEnergy && "KitEnergyProc_RARE".equals(((ItemKitEnergy)item).getGemProcName())) return 66;
+            if(item instanceof ItemKitEnergy && "KitEnergyProc_EPIC".equals(((ItemKitEnergy)item).getGemProcName())) return 100;
+            
+            if(item instanceof ItemKitDurability && "KitDurabilityProc_UNCOMMON".equals(((ItemKitDurability)item).getGemProcName())) return 33;
+            if(item instanceof ItemKitDurability && "KitDurabilityProc_RARE".equals(((ItemKitDurability)item).getGemProcName())) return 66;
+            if(item instanceof ItemKitDurability && "KitDurabilityProc_EPIC".equals(((ItemKitDurability)item).getGemProcName())) return 100;
+            
+            if(item instanceof ItemMachinePellets && "AmmoProc".equals(((ItemMachinePellets)item).getGemProcName())) return 40;
+            
+            if(item instanceof ItemComponentGround && "ComponentGroundProc".equals(((ItemComponentGround)item).getGemProcName())) return 50;
+            if(item instanceof ItemComponentWater && "ComponentWaterProc".equals(((ItemComponentWater)item).getGemProcName())) return 50;
+            if(item instanceof ItemComponentFlying && "ComponentFlyingProc".equals(((ItemComponentFlying)item).getGemProcName())) return 50;
+            
+            if(item instanceof ItemToolDismounting && "ToolsProc".equals(((ItemToolDismounting)item).getGemProcName())) return 15;
+            
+            if(item instanceof ItemMachineBase && "ItemMachineProc".equals(((ItemMachineBase)item).getGemProcName())) return 500;
+            
+            if(item instanceof ItemUpgradeFrame && "UpgradeFrameProc".equals(((ItemUpgradeFrame)item).getGemProcName())) return 75;
+            if(item instanceof ItemUpgradeEngine && "UpgradeEngineProc".equals(((ItemUpgradeEngine)item).getGemProcName())) return 75;
+            if(item instanceof ItemUpgradeComponent && "UpgradeComponentProc".equals(((ItemUpgradeComponent)item).getGemProcName())) return 75;
             
             return 5;
         }

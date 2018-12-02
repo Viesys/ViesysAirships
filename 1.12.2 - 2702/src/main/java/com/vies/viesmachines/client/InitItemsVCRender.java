@@ -157,14 +157,14 @@ public final class InitItemsVCRender extends ItemsVM {
 	//	itemsRegistered.add(item);
 	//	ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemName, "inventory"));
 	//}
-	
+	/*
 	private void registerRenderModuleType(Item item, int meta)
 	{
 		String itemName = item.getRegistryName().toString() + "_" + EnumsVM.ModuleType.byId(meta).getRegistryName().toString().toLowerCase().replaceAll("\\s+","");
 		itemsRegistered.add(item);
 		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemName, "inventory"));
 	}
-	
+	*/
 	private void registerRenderDisplaySymbol(Item item, int meta)
 	{
 		String itemName = item.getRegistryName().toString() + "_" + EnumsVM.MainDisplaySymbol.byId(meta).getRegistryName().toString().toLowerCase().replaceAll("\\s+","");

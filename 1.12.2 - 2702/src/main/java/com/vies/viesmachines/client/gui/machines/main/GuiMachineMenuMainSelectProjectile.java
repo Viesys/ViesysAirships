@@ -55,8 +55,8 @@ public class GuiMachineMenuMainSelectProjectile extends GuiContainerVC {
     	this.buttonList.add(GuiVM.buttonMM1);
 		this.buttonList.add(GuiVM.buttonMM2);
 		this.buttonList.add(GuiVM.buttonMM3);
-		this.buttonList.add(GuiVM.buttonMM4);
-		this.buttonList.add(GuiVM.buttonMM5);
+		//this.buttonList.add(GuiVM.buttonMM4);
+		//this.buttonList.add(GuiVM.buttonMM5);
 		
 		this.buttonList.add(GuiVM.buttonBulletNormal);
 		this.buttonList.add(GuiVM.buttonBulletElectrical);
@@ -141,20 +141,38 @@ public class GuiMachineMenuMainSelectProjectile extends GuiContainerVC {
 	{
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		
+		this.zLevel = -200.0F;
+		
 		// Bullets over buttons:
 		GlStateManager.pushMatrix();
 		{
 			GlStateManager.scale(0.5F, 0.5F, 0.5F);
-			GlStateManager.translate(210, 76, 0);
+			GlStateManager.translate(218, 90, 0);
 			
 			// Normal bullet over button:
 			this.drawItemStack(new ItemStack(ItemsVM.PARTICLE_BULLET_NORMAL, 1), 0, 0, "");
+		}
+		GlStateManager.popMatrix();
+		
+		// Bullets over buttons:
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.scale(0.5F, 0.5F, 0.5F);
+			GlStateManager.translate(218+44, 90, 0);
 			
 			// Electrical bullet over button:
-			this.drawItemStack(new ItemStack(ItemsVM.PARTICLE_BULLET_ELECTRICAL, 1), 44, 0, "");
+			this.drawItemStack(new ItemStack(ItemsVM.PARTICLE_BULLET_ELECTRICAL, 1), 0, 0, "");
+			
+		}
+		GlStateManager.popMatrix();
+		// Bullets over buttons:
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.scale(0.5F, 0.5F, 0.5F);
+			GlStateManager.translate(218+44+44, 90, 0);
 			
 			// Explosive bullet over button:
-			this.drawItemStack(new ItemStack(ItemsVM.PARTICLE_BULLET_EXPLOSIVE, 1), 88, 0, "");
+			this.drawItemStack(new ItemStack(ItemsVM.PARTICLE_BULLET_EXPLOSIVE, 1), 0, 0, "");
 		}
 		GlStateManager.popMatrix();
 		
@@ -189,7 +207,7 @@ public class GuiMachineMenuMainSelectProjectile extends GuiContainerVC {
 		GlStateManager.popMatrix();
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(37, 68, 0);
+			GlStateManager.translate(37+8.5, 68+15, 0);
 			
 			if (this.machine.getAmmoType() == 0)
 			{

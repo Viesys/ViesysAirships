@@ -1,7 +1,7 @@
 package com.vies.viesmachines.common.entity.thrown;
 
 import com.vies.viesmachines.client.InitParticlesVCRender;
-import com.vies.viesmachines.common.entity.machines.types.EntityMachineFlyingAirship;
+import com.vies.viesmachines.common.entity.machines.types.flying.EntityMachineFlyingAirship;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.SoundEvents;
@@ -18,8 +18,8 @@ public class EntityThrownMachineFlyingAirship extends EntityThrownMachineBase {
     
     public EntityThrownMachineFlyingAirship(World worldIn, EntityLivingBase entityIn, 
 			
-			int frameTierIn, int engineTierIn, int componentTierIn, 
-			int typeIn, float healthIn, int energyIn, 
+			int frameTierIn, int engineTierIn, int componentTierIn, int typeIn, 
+			float healthIn, int energyIn, int durabilityIn,
 			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
 			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
 			int ammoAmountIn, int ammoTypeIn, 
@@ -60,6 +60,7 @@ public class EntityThrownMachineFlyingAirship extends EntityThrownMachineBase {
 		this.type = typeIn;
 		this.health = healthIn;
 		this.energy = energyIn;
+		this.durability = durabilityIn;
 		
 		this.broken = brokenIn;
 		this.fuel = currentFuelIn;
@@ -119,8 +120,8 @@ public class EntityThrownMachineFlyingAirship extends EntityThrownMachineBase {
         	this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 0.5F, 0.4F / .5F * 0.4F + 0.8F);
         	EntityMachineFlyingAirship spawnAirship = new EntityMachineFlyingAirship(this.world, this.posX, this.posY + 0.5F, this.posZ, 
 					
-					this.frameTier, this.engineTier, this.componentTier, 
-    				this.type, this.health, this.energy, 
+					this.frameTier, this.engineTier, this.componentTier, this.type, 
+					this.health, this.energy, this.durability,
     				this.broken, this.fuel, this.fuelTotal, 
     				//this.itemstackFuelItem, this.itemstackFuelSize, 
     				this.ammoAmount, this.ammoType, 
@@ -160,7 +161,7 @@ public class EntityThrownMachineFlyingAirship extends EntityThrownMachineBase {
         }
         else
     	{
-        	InitParticlesVCRender.generateExplosions(this);
+        	InitParticlesVCRender.generateParticlesExplosions(this);
     	}
     }
 }

@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
@@ -43,7 +44,10 @@ public class BlockMachineTransmogrifier extends BlockGeneric implements ITileEnt
 		
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         
-		this.setLightOpacity(255);
+		this.setLightOpacity(1);
+		
+		this.setHardness(5.0F);
+		this.setResistance(10.0F);
 	}
 	
     @Override
@@ -163,6 +167,12 @@ public class BlockMachineTransmogrifier extends BlockGeneric implements ITileEnt
     public boolean isFullCube(IBlockState state)
     {
         return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public BlockRenderLayer getBlockLayer()
+    {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 	
 	@Override

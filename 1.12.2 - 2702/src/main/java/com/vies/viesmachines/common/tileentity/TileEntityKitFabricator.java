@@ -49,7 +49,6 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
     public TileEntityKitFabricator() 
     {
     	this.inventory = new ItemStackHandler(size);
-    	this.itemToFindMeta = 0;
     }
     
     @Override
@@ -91,7 +90,7 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
     	super.readFromNBT(compound);
     	
     	this.inventory.deserializeNBT(compound.getCompoundTag("Slots"));
-
+    	
     	this.processTime = compound.getInteger("ProcessTime");
     	this.itemToFindMeta = compound.getInteger("ItemToFindMeta");
     	this.procChance = compound.getInteger("ProcChance");
@@ -121,6 +120,8 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
 	{
 		super.onDataPacket(net, pkt);
 		
+		this.itemToFindMeta = pkt.getNbtCompound().getInteger("ItemToFindMeta");
+		
 		this.processTime = pkt.getNbtCompound().getInteger("ProcessTime");
 		this.handleUpdateTag(pkt.getNbtCompound());
 	}
@@ -141,6 +142,7 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
 	public void update() 
 	{
 		this.cuttingLogic();
+		//LogHelper.info(this.itemToFindMeta + " - " + this.pos);
 	}
 	
 	/** Wrapper for all gem cutting logic. */
@@ -252,10 +254,25 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
         {
         	ItemStack itemstack1 = (ItemStack)this.inventory.getStackInSlot(1);
         	
+        	
         	if(itemstack1.isEmpty()) return true;
         	//if(!itemstack1.isItemEqual(GemCuttingRecipes.CUT_GEM_OUTPUT[this.itemToFindMeta])) return false;
         	
-            int result = itemstack1.getCount() + ExtractorRecipes.CUT_GEM_OUTPUT[this.itemToFindMeta].getCount();
+
+    		ItemStack[] stack = new ItemStack[]
+    		{
+    			new ItemStack(ItemsVM.KIT_HEALTH_2, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_HEALTH_8, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_HEALTH_MAX, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_ENERGY_25, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_ENERGY_100, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_ENERGY_MAX, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_DURABILITY_50, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_DURABILITY_200, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_DURABILITY_MAX, 1 + this.procAmount)
+    		};
+        	
+            int result = itemstack1.getCount() + stack[this.itemToFindMeta].getCount();
             return result <= 64 && result <= itemstack1.getMaxStackSize();
         }
     }
@@ -267,21 +284,31 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
         {
         	ItemStack itemstackIn = (ItemStack)this.inventory.getStackInSlot(0);
             ItemStack itemstackOut = ExtractorRecipes.CUT_GEM_OUTPUT[this.itemToFindMeta];
-            //GemCuttingRecipes.getRandomGem(GemCuttingRecipes.CUT_GEM_OUTPUT); //Returns a Random Gem from array.
+            
             ItemStack itemstack1 = (ItemStack)this.inventory.getStackInSlot(1);
+            
+            
+    		
+    		ItemStack[] stack = new ItemStack[]
+    		{
+    			new ItemStack(ItemsVM.KIT_HEALTH_2, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_HEALTH_8, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_HEALTH_MAX, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_ENERGY_25, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_ENERGY_100, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_ENERGY_MAX, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_DURABILITY_50, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_DURABILITY_200, 1 + this.procAmount),
+    			new ItemStack(ItemsVM.KIT_DURABILITY_MAX, 1 + this.procAmount)
+    		};
+            
+    		
             
             if(itemstack1.isEmpty())
             {
-            	this.inventory.insertItem(1, new ItemStack(
-            			//InitItemsVG.GEMSTONE_ITEM_BASIC_V1
-            			ItemsVM.CHARGED_SHARD, 1 + this.procAmount, this.itemToFindMeta), false);
+            	this.inventory.insertItem(1, stack[this.itemToFindMeta], false);
             }
-            else if(itemstack1.isItemEqual(
-            		//GemCuttingRecipes.CUT_GEM_OUTPUT[this.itemToFindMeta]
-            		new ItemStack(
-                			//InitItemsVG.GEMSTONE_ITEM_BASIC_V1
-                			ItemsVM.CHARGED_SHARD, 1)
-            		))
+            else if(itemstack1.isItemEqual(stack[this.itemToFindMeta]))
             {
             	if(itemstack1.getCount() + this.procAmount > 64)
             	{
@@ -353,180 +380,29 @@ public class TileEntityKitFabricator extends TileEntity implements ITickable {
             {
                 Block block = Block.getBlockFromItem(item);
                 
-                if(block == Blocks.REDSTONE_ORE) return 25;
-                if(block == Blocks.REDSTONE_BLOCK) return 80;
-                if(block == Blocks.COAL_ORE) return 30;
-                if(block == Blocks.COAL_BLOCK) return 90;
-                if(block == Blocks.IRON_ORE) return 75;
-                if(block == Blocks.IRON_BLOCK) return 225;
-                if(block == Blocks.QUARTZ_ORE) return 90;
-                if(block == Blocks.QUARTZ_BLOCK) return 270;
-                if(block == Blocks.GOLD_ORE) return 105;
-                if(block == Blocks.GOLD_BLOCK) return 315;
-                if(block == Blocks.LAPIS_ORE) return 115;
-                if(block == Blocks.LAPIS_BLOCK) return 350;
-                if(block == Blocks.DIAMOND_ORE) return 150;
-                if(block == Blocks.DIAMOND_BLOCK) return 450;
-                if(block == Blocks.EMERALD_ORE) return 165;
-                if(block == Blocks.EMERALD_BLOCK) return 495;
+                //if(block == Blocks.REDSTONE_ORE) return 25;
                 
-                if(block == Blocks.MYCELIUM) return 10;
-                if(block == Blocks.COBBLESTONE) return 15;
-                if(block == Blocks.LOG) return 16;
-                if(block == Blocks.LOG2) return 16;
-                if(block == Blocks.NETHERRACK) return 13;
-                if(block == Blocks.NETHER_BRICK) return 50;
-                if(block == Blocks.RED_NETHER_BRICK) return 60;
-                if(block == Blocks.OBSIDIAN) return 45;
-                if(block == Blocks.GLOWSTONE) return 95;
-                if(block == Blocks.SEA_LANTERN) return 95;
-                if(block == Blocks.PRISMARINE) return 100;
-                if(block == Blocks.END_STONE) return 110;
-                if(block == Blocks.END_BRICKS) return 110;
-                if(block == Blocks.END_ROD) return 130;
-                if(block == Blocks.PURPUR_BLOCK) return 150;
-                if(block == Blocks.PURPUR_PILLAR) return 150;
-                if(block == Blocks.PURPUR_STAIRS) return 150;
-                if(block == Blocks.PURPUR_SLAB) return 75;
-                if(block == Blocks.ENCHANTING_TABLE) return 280;
-                if(block == Blocks.ENDER_CHEST) return 415;
-                if(block == Blocks.BEACON) return 500;
-                
-                if(block.getDefaultState().getMaterial() == Material.GRASS
-                || block.getDefaultState().getMaterial() == Material.PLANTS
-                || block.getDefaultState().getMaterial() == Material.LEAVES
-                || block.getDefaultState().getMaterial() == Material.VINE
-                || block.getDefaultState().getMaterial() == Material.CACTUS
-                || block.getDefaultState().getMaterial() == Material.GOURD
-                || block.getDefaultState().getMaterial() == Material.CAKE
-                )
-                {
-                    return 5;
-                }
-                if(block.getDefaultState().getMaterial() == Material.SNOW
-                || block.getDefaultState().getMaterial() == Material.CRAFTED_SNOW
-                || block.getDefaultState().getMaterial() == Material.ICE
-                || block.getDefaultState().getMaterial() == Material.PACKED_ICE)
-                {
-                    return 8;
-                }
-                if(block.getDefaultState().getMaterial() == Material.GROUND
-                || block.getDefaultState().getMaterial() == Material.SAND
-                || block.getDefaultState().getMaterial() == Material.WEB)
-                {
-                    return 10;
-                }
-                if(block.getDefaultState().getMaterial() == Material.WOOD)
-                {
-                    return 13;
-                }
-                if(block.getDefaultState().getMaterial() == Material.CLOTH
-                || block.getDefaultState().getMaterial() == Material.CARPET
-                || block.getDefaultState().getMaterial() == Material.SPONGE)
-                {
-                    return 15;
-                }
-                if(block.getDefaultState().getMaterial() == Material.CLAY
-                || block.getDefaultState().getMaterial() == Material.CORAL)
-                {
-                    return 18;
-                }
-                if(block.getDefaultState().getMaterial() == Material.GLASS)
-                {
-                    return 20;
-                }
-                if(block.getDefaultState().getMaterial() == Material.ROCK
-                || block.getDefaultState().getMaterial() == Material.PISTON)
-                {
-                    return 25;
-                }
-                if(block.getDefaultState().getMaterial() == Material.IRON
-                || block.getDefaultState().getMaterial() == Material.ANVIL
-                || block.getDefaultState().getMaterial() == Material.CIRCUITS
-                || block.getDefaultState().getMaterial() == Material.REDSTONE_LIGHT)
-                {
-                    return 40;
-                }
-                if(block.getDefaultState().getMaterial() == Material.TNT)
-                {
-                    return 50;
-                }
-                if(block.getDefaultState().getMaterial() == Material.DRAGON_EGG)
-                {
-                    return 100;
-                }
+                //if(block.getDefaultState().getMaterial() == Material.WOOD)
+                //{
+                //    return 13;
+                //}
                 
                 return 25;
             }
             
-            if(item instanceof ItemTool && "WOOD".equals(((ItemTool)item).getToolMaterialName())) return 15;
-            if(item instanceof ItemSword && "WOOD".equals(((ItemSword)item).getToolMaterialName())) return 15;
-            if(item instanceof ItemHoe && "WOOD".equals(((ItemHoe)item).getMaterialName())) return 15;
-            if(item instanceof ItemTool && "STONE".equals(((ItemTool)item).getToolMaterialName())) return 28;
-            if(item instanceof ItemSword && "STONE".equals(((ItemSword)item).getToolMaterialName())) return 28;
-            if(item instanceof ItemHoe && "STONE".equals(((ItemHoe)item).getMaterialName())) return 28;
-            if(item instanceof ItemTool && "IRON".equals(((ItemTool)item).getToolMaterialName())) return 38;
-            if(item instanceof ItemSword && "IRON".equals(((ItemSword)item).getToolMaterialName())) return 38;
-            if(item instanceof ItemHoe && "IRON".equals(((ItemHoe)item).getMaterialName())) return 38;
-            if(item instanceof ItemTool && "GOLD".equals(((ItemTool)item).getToolMaterialName())) return 58;
-            if(item instanceof ItemSword && "GOLD".equals(((ItemSword)item).getToolMaterialName())) return 58;
-            if(item instanceof ItemHoe && "GOLD".equals(((ItemHoe)item).getMaterialName())) return 58;
-            if(item instanceof ItemTool && "DIAMOND".equals(((ItemTool)item).getToolMaterialName())) return 85;
-            if(item instanceof ItemSword && "DIAMOND".equals(((ItemSword)item).getToolMaterialName())) return 85;
-            if(item instanceof ItemHoe && "DIAMOND".equals(((ItemHoe)item).getMaterialName())) return 85;
-            if(item instanceof ItemArmor && "leather".equals(((ItemArmor)item).getArmorMaterial().getName())) return 14;
-            if(item instanceof ItemArmor && "iron".equals(((ItemArmor)item).getArmorMaterial().getName())) return 40;
-            if(item instanceof ItemArmor && "gold".equals(((ItemArmor)item).getArmorMaterial().getName())) return 60;
-            if(item instanceof ItemArmor && "chainmail".equals(((ItemArmor)item).getArmorMaterial().getName())) return 75;
-            if(item instanceof ItemArmor && "diamond".equals(((ItemArmor)item).getArmorMaterial().getName())) return 90;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 0) return 80;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 1) return 60;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 2) return 40;
             
-            if(item == Items.IRON_HORSE_ARMOR) return 40;
-            if(item == Items.GOLDEN_HORSE_ARMOR) return 60;
-            if(item == Items.DIAMOND_HORSE_ARMOR) return 90;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 3) return 80;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 4) return 60;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 5) return 40;
             
-            if(item instanceof ItemRecord) return 90;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 6) return 80;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 7) return 60;
+            if(item == ItemsVM.KIT_RAW && this.itemToFindMeta == 8) return 40;
             
-            if(item == Items.REDSTONE) return 8;
-        	if(item == Items.DYE) return 10;
-        	if(item == Items.COAL) return 10;
-        	if(item == Items.IRON_INGOT) return 25;
-        	if(item == Items.QUARTZ) return 30;
-        	if(item == Items.GOLD_INGOT) return 35;
-        	if(item == Items.DIAMOND) return 50;
-        	if(item == Items.EMERALD) return 55;
-
-        	if(item == Items.PRISMARINE_SHARD) return 75;
-        	if(item == Items.PRISMARINE_CRYSTALS) return 90;
-        	
-        	if(item instanceof ItemSeeds) return 3;
-        	
-        	if(item == Items.GOLD_NUGGET) return 4;
-        	if(item == Items.GUNPOWDER) return 10;
-            if(item == Items.BLAZE_ROD) return 15;
-            if(item == Items.BREWING_STAND) return 18;
-            if(item == Items.GLOWSTONE_DUST) return 25;
-            if(item == Items.COMPASS) return 40;
-            if(item == Items.CLOCK) return 55;
-            if(item == Items.ENDER_PEARL) return 30;
-            if(item == Items.FIRE_CHARGE) return 40;
-            if(item == Items.SHEARS) return 40;
-            if(item == Items.FIREWORK_CHARGE) return 45;
-            if(item == Items.CAULDRON) return 50;
-            if(item == Items.ENDER_EYE) return 55;
-            if(item == Items.ENCHANTED_BOOK) return 70;
-            if(item == Items.GOLDEN_APPLE) return 75;
-            if(item == Items.BUCKET) return 75;
-            if(item == Items.GHAST_TEAR) return 80;
-            if(item == Items.CHORUS_FRUIT) return 80;
-            if(item == Items.CHORUS_FRUIT_POPPED) return 85;
-            if(item == Items.LAVA_BUCKET) return 85;
-            if(item == Items.EXPERIENCE_BOTTLE) return 100;
-            if(item == Items.TOTEM_OF_UNDYING) return 300;
-            if(item == Items.NETHER_STAR) return 350;
-            if(item == Items.SHULKER_SHELL) return 350;
-            if(item == Items.ELYTRA) return 400;
-            
-            return 5;
+            return 0;
         }
     }
     

@@ -26,6 +26,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -45,15 +46,13 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 		this.modelRotationHorizontal = 160;
 		this.modelRidingEntity = false;
 		
+		this.machineColorActive = this.machine.getVisualFrameColor();
 		this.textRedNumber = this.machine.getVisualFrameColorRed();
 		this.textGreenNumber = this.machine.getVisualFrameColorGreen();
 		this.textBlueNumber = this.machine.getVisualFrameColorBlue();
 	}
 	
-	/**
-     * Adds the buttons (and other controls) to the screen in question.
-     */
-    @Override
+	@Override
     public void initGui() 
     {
     	super.initGui();
@@ -87,18 +86,17 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	GuiVM.buttonRidingPlayerFalse = new GuiButtonGeneral1VC(13, this.guiLeft + 140, this.guiTop + 66, 10, 10, "", 2);
     	GuiVM.buttonUndo = new GuiButtonGeneral2VC(11, this.guiLeft + 158, this.guiTop + 66, 10, 10, "", 1);
 		
-    	// Undo:
-    	GuiVM.button00 = new GuiButtonGeneral2VC(20, this.guiLeft + 89, this.guiTop + 81, 14, 14, "", 1);
+    	GuiVM.button00 = new GuiButtonGeneral2VC(20, this.guiLeft + 7, this.guiTop + 81, 42, 14, References.localNameVC("viesmachines.button.remove"), 0);
     	GuiVM.buttonApply = new GuiButtonGeneral1VC(21, this.guiLeft + 7, this.guiTop + 99, 42, 14, References.localNameVC("viesmachines.button.apply"), 1);
 		GuiVM.buttonBack = new GuiButtonGeneral1VC(22, this.guiLeft + 61, this.guiTop + 99, 42, 14, References.localNameVC("viesmachines.button.back"), 2);
 		
-		
+		//--------------------------------------------------
     	
-		//Red:
+		// Red:
     	GuiVM.button01 = new GuiButtonGeneral1VC(201, this.guiLeft + 25, this.guiTop + 119, 42, 14, References.localNameVC("viesmachines.item.color.114"), 0);
-    	//Green:
+    	// Green:
     	GuiVM.button02 = new GuiButtonGeneral1VC(202, this.guiLeft + 67, this.guiTop + 119, 42, 14, References.localNameVC("viesmachines.item.color.77"), 0);
-    	//Blue:
+    	// Blue:
     	GuiVM.button03 = new GuiButtonGeneral1VC(203, this.guiLeft + 109, this.guiTop + 119, 42, 14, References.localNameVC("viesmachines.item.color.10"), 0);
     	
     	// Yellow:
@@ -122,7 +120,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// White:
     	GuiVM.button12 = new GuiButtonGeneral1VC(212, this.guiLeft + 109, this.guiTop + 119 + (14 * 3), 42, 14, References.localNameVC("viesmachines.item.color.137"), 0);
     	
-		
+    	//--------------------------------------------------
 		
 		this.buttonList.add(GuiVM.button01);
 		this.buttonList.add(GuiVM.button02);
@@ -150,27 +148,23 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	this.buttonList.add(GuiVM.buttonMM1);
 		this.buttonList.add(GuiVM.buttonMM2);
 		this.buttonList.add(GuiVM.buttonMM3);
-		this.buttonList.add(GuiVM.buttonMM4);
-		this.buttonList.add(GuiVM.buttonMM5);
 		
 		GuiVM.buttonMM3.enabled = false;
     }
     
-    /**
-     * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
-     */
-	@Override
+    @Override
     protected void actionPerformed(GuiButton parButton) 
     {
 		super.actionPerformed(parButton);
 		
-		// Undo:
+		// Remove:
 		if (parButton.id == 20)
 		{
-			this.machine.setVisualFrameColor(false);
+			this.machineColorActive = false;
 			this.textRedNumber = 0;
 			this.textGreenNumber = 0;
 			this.textBlueNumber = 0;
+			
 			NetworkHandler.sendToServer(new MessageHelperGuiMachineMenuCustomizePrimarySkinColorDefault());
 		}
 		// Apply:
@@ -184,9 +178,12 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 			NetworkHandler.sendToServer(new MessageGuiMachineMenuCustomize());
 		}
 		
+		//--------------------------------------------------
+		
 		// Red:
     	if (parButton.id == 201)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 255;
 			this.textGreenNumber = 0;
 			this.textBlueNumber = 0;
@@ -194,6 +191,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Green:
     	if (parButton.id == 202)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 0;
 			this.textGreenNumber = 255;
 			this.textBlueNumber = 0;
@@ -201,6 +199,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Blue:
     	if (parButton.id == 203)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 0;
 			this.textGreenNumber = 0;
 			this.textBlueNumber = 255;
@@ -208,6 +207,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Yellow:
     	if (parButton.id == 204)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 255;
 			this.textGreenNumber = 255;
 			this.textBlueNumber = 0;
@@ -215,6 +215,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 		// Magenta:
     	if (parButton.id == 205)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 255;
 			this.textGreenNumber = 0;
 			this.textBlueNumber = 255;
@@ -222,6 +223,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Cyan:
     	if (parButton.id == 206)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 0;
 			this.textGreenNumber = 255;
 			this.textBlueNumber = 255;
@@ -229,6 +231,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Orange:
     	if (parButton.id == 207)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 255;
 			this.textGreenNumber = 165;
 			this.textBlueNumber = 0;
@@ -236,6 +239,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Purple:
     	if (parButton.id == 208)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 128;
 			this.textGreenNumber = 0;
 			this.textBlueNumber = 128;
@@ -243,6 +247,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Teal:
     	if (parButton.id == 209)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 0;
 			this.textGreenNumber = 128;
 			this.textBlueNumber = 128;
@@ -250,6 +255,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Crimson:
     	if (parButton.id == 210)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 220;
 			this.textGreenNumber = 20;
 			this.textBlueNumber = 60;
@@ -257,13 +263,15 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	// Black:
     	if (parButton.id == 211)
 	    {
-			this.textRedNumber = 0;
-			this.textGreenNumber = 0;
-			this.textBlueNumber = 0;
+    		this.machineColorActive = true;
+			this.textRedNumber = 1;
+			this.textGreenNumber = 1;
+			this.textBlueNumber = 1;
 	    }
     	// White:
     	if (parButton.id == 212)
 	    {
+    		this.machineColorActive = true;
 			this.textRedNumber = 255;
 			this.textGreenNumber = 255;
 			this.textBlueNumber = 255;
@@ -279,11 +287,18 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 	{
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		
-		// Binds the texture to use:
+		// Draws a gray box behind the main background texture:
+		this.drawRect(this.guiLeft + 108, this.guiTop + 6, this.guiLeft + 168, this.guiTop + 64, Color.GRAY.getRGB());
+		
+		// Draws a black box behind the r/g/b input boxes:
+		this.drawRect(this.guiLeft + 8, this.guiTop + 6, this.guiLeft + 108, this.guiTop + 84, Color.BLACK.getRGB());
+		
+		// Draws a black box behind the color name:
+		this.drawRect(this.guiLeft + 108, this.guiTop + 78, this.guiLeft + 168, this.guiTop + 100, Color.BLACK.getRGB());
+		
+		// Colors, binds, and draws the background texture:
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(TEXTURE);
-		
-		// Draws the background texture:
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 		
 		float red = this.textRedNumber / 255.0F;
@@ -301,9 +316,17 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
   			GlStateManager.translate(this.guiLeft + 138.25, this.guiTop + 82.5, 0);
   			GlStateManager.scale(.65, .65, .65);
       		
-  			this.centeredString(getFontRenderer(), ColorHelperVM.getColorNameFromRgb(this.textRedNumber, this.textGreenNumber, this.textBlueNumber), 0, 0, Color.WHITE.getRGB());
+  			if (this.machineColorActive)
+  			{
+  				this.centeredString(getFontRenderer(), ColorHelperVM.getColorNameFromRgb(this.textRedNumber, this.textGreenNumber, this.textBlueNumber), 0, 0, Color.WHITE.getRGB());
+  			}
+  			else
+  			{
+  				this.centeredString(getFontRenderer(), References.localNameVC("viesmachines.button.none"), 0, 0, Color.WHITE.getRGB());
+  			}
 		}
 		GlStateManager.popMatrix();
+		
         // Red label:
 		GlStateManager.pushMatrix();
   		{
@@ -365,7 +388,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	this.textGreen.drawTextBox();
     	this.textBlue.drawTextBox();
     	
-    	// Render Preview Entity of Machine:
+    	// Renders the 'Preview Entity' for the current machine:
     	this.drawEntityOnScreen(this.guiLeft + 139, this.guiTop + 58, this.modelRotationHorizontal, 11, this.machine, this.modelRidingEntity);
 	}
 	
@@ -383,23 +406,23 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 		}
 		GlStateManager.popMatrix();
 		
+		// 'Preview':
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(138.5, 10, 0);
+	        GlStateManager.scale(0.5F, 0.5F, 0.5F);
+	        
+	        this.centeredString(fontRenderer, References.localNameVC("viesmachines.main.preview"), 0, 0, Color.WHITE.getRGB());
+		}
+		GlStateManager.popMatrix();
+		
 		// Draws a black line under the machine preview options buttons:
 		this.drawRect(130, 75, 168, 76, Color.BLACK.getRGB());
 		
-		// Binds the texture to use:
+		// Colors and binds the background texture:
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(TEXTURE);
 		
-		// Undo symbol:
-		GlStateManager.pushMatrix();
-		{
-			GlStateManager.translate(92, 84, 0);
-			GlStateManager.scale(0.5F, 0.5F, 0.5F);
-			
-			this.drawTexturedModalRect(0, 0, 176, 0, 16, 16);
-		}
-		GlStateManager.popMatrix();
-
 		// Preview Left Arrow symbol:
 		GlStateManager.pushMatrix();
 		{
@@ -448,18 +471,20 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 		
 		
 		
-		//Logic for mouse-over tooltip - Turn Left
+		// Logic for mouse-over tooltip - Turn Left:
 		if (mouseX >= this.guiLeft + 110 && mouseX <= this.guiLeft + 115
 		&& mouseY >= this.guiTop + 68 && mouseY <= this.guiTop + 73)
 		{
-			if (this.isShiftKeyDown())
+			if(this.isShiftKeyDown())
 			{
 				List<String> text = new ArrayList<String>();
 				text.add(TextFormatting.YELLOW + References.localNameVC("viesmachines.gui.tt.general.previewturnleft.0"));
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = text.toString().length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -473,7 +498,9 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = text.toString().length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -483,18 +510,20 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 			
 		}
 		
-		//Logic for mouse-over tooltip - Turn Right
+		// Logic for mouse-over tooltip - Turn Right:
 		if (mouseX >= this.guiLeft + 122 && mouseX <= this.guiLeft + 127
 		&& mouseY >= this.guiTop + 68 && mouseY <= this.guiTop + 73)
 		{
-			if (this.isShiftKeyDown())
+			if(this.isShiftKeyDown())
 			{
 				List<String> text = new ArrayList<String>();
 				text.add(TextFormatting.YELLOW + References.localNameVC("viesmachines.gui.tt.general.previewturnright.0"));
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = text.toString().length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -508,7 +537,9 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = text.toString().length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -517,24 +548,78 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 			}
 		}
 		
-		//Logic for mouse-over tooltip - Apply
-		if (mouseX >= this.guiLeft + 7 && mouseX <= this.guiLeft + 48
-		&& mouseY >= this.guiTop + 99 && mouseY <= this.guiTop + 112)
+		// Logic for mouse-over tooltip - Apply:
+		if (mouseX >= this.guiLeft + 7 && mouseX <= this.guiLeft + 7+41
+		&& mouseY >= this.guiTop + 36+63 && mouseY <= this.guiTop + 36+63+13)
 		{
-			if (GuiVM.buttonApply.enabled)
-			{
-				List<String> text = new ArrayList<String>();
-				text.add(TextFormatting.YELLOW + References.localNameVC("viesmachines.gui.tt.customize.color.cost.1") + " " + CostsVM.COST_FRAME_COLOR + " " + References.localNameVC("viesmachines.gui.tt.customize.color.cost.2"));
-				
-				GlStateManager.pushMatrix();
+			List<String> text = new ArrayList<String>();
+			
+			if (this.machine.getControllingPassenger() instanceof EntityPlayer)
+        	{
+        		EntityPlayer player = (EntityPlayer) this.machine.getControllingPassenger();
+        		
+        		if (!GuiVM.buttonApply.enabled
+				&& this.machine.getEnergy() < CostsVM.COST_FRAME_COLOR
+				&& !player.isCreative())
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop - 12, 0);
-					GlStateManager.scale(0.5, 0.5, 0.5);
-					
-					this.drawHoveringText(text, 0, 0);
+					text.add(TextFormatting.DARK_RED + "" + CostsVM.COST_FRAME_COLOR + " " + References.localNameVC("viesmachines.gui.tt.customize.color.cost.4"));
 				}
-				GlStateManager.popMatrix();
+        		else if (!GuiVM.buttonApply.enabled)
+				{
+					text.add(TextFormatting.RED + References.localNameVC("viesmachines.gui.tt.customize.color.cost.0"));
+				}
+				else if (player.isCreative())
+				{
+					text.add(TextFormatting.GREEN + References.localNameVC("viesmachines.gui.tt.customize.color.cost.5"));
+				}
+        		else if (this.machineTexture == 0
+        		&& this.machineTexture != this.machine.getVisualFrameTexture())
+				{
+        			text.add(TextFormatting.YELLOW + References.localNameVC("viesmachines.gui.tt.customize.color.cost.3"));
+				}
+				else
+				{
+					text.add(TextFormatting.YELLOW + References.localNameVC("viesmachines.gui.tt.customize.color.cost.1") + " " + CostsVM.COST_FRAME_COLOR + " " + References.localNameVC("viesmachines.gui.tt.customize.color.cost.2"));
+				}
+        	}
+			
+			GlStateManager.pushMatrix();
+			{
+				int textNumber = text.toString().length();
+				
+				GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop - 13, 0);
+				GlStateManager.scale(0.5, 0.5, 0.5);
+				
+				this.drawHoveringText(text, 0, 0);
 			}
+			GlStateManager.popMatrix();
+		}
+		
+		// Logic for mouse-over tooltip - Remove:
+		if (mouseX >= this.guiLeft + 7 && mouseX <= this.guiLeft + 7+41
+		&& mouseY >= this.guiTop - 18+36+63 && mouseY <= this.guiTop - 18 +36+63+13)
+		{
+			List<String> text = new ArrayList<String>();
+			
+			if (!GuiVM.button00.enabled)
+			{
+				
+			}
+			else
+			{
+				text.add(TextFormatting.YELLOW + References.localNameVC("viesmachines.gui.tt.customize.color.cost.3"));
+			}
+			
+			GlStateManager.pushMatrix();
+			{
+				int textNumber = text.toString().length();
+				
+				GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop - 13, 0);
+				GlStateManager.scale(0.5, 0.5, 0.5);
+				
+				this.drawHoveringText(text, 0, 0);
+			}
+			GlStateManager.popMatrix();
 		}
     }
 	
@@ -561,7 +646,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
         super.updateScreen();
         
         // Fix invalid input in the Red box:
-        if(textRed.getText() != null)
+        if (textRed.getText() != null)
 		{
     		try 
 			{
@@ -581,7 +666,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 		}
         
         // Fix invalid input in the Green box:
-        if(textGreen.getText() != null)
+        if (textGreen.getText() != null)
 		{
     		try 
 			{
@@ -601,7 +686,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
 		}
         
         // Fix invalid input in the Blue box:
-        if(textBlue.getText() != null)
+        if (textBlue.getText() != null)
 		{
     		try 
 			{
@@ -626,7 +711,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
         this.textBlue.updateCursorCounter();
         
         // Deals with the Preview player buttons toggle:
-        if(!this.modelRidingEntity)
+        if (!this.modelRidingEntity)
 		{
         	GuiVM.buttonRidingPlayerTrue.enabled = true;
 			GuiVM.buttonRidingPlayerFalse.enabled = false;
@@ -657,6 +742,10 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
  		{
  			GuiVM.buttonApply.enabled = false;
  		}
+ 		else if (this.mc.player.isCreative())
+ 		{
+ 			GuiVM.buttonApply.enabled = true;
+ 		}
  		else if (CostsVM.COST_FRAME_COLOR > this.machine.getEnergy())
  		{
  			GuiVM.buttonApply.enabled = false;
@@ -664,6 +753,16 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
  		else
  		{
  			GuiVM.buttonApply.enabled = true;
+ 		}
+ 		
+ 		// Checks to see if the 'Remove' button is enabled:
+ 		if (this.machine.getVisualFrameColor())
+ 		{
+ 			GuiVM.button00.enabled = true;
+ 		}
+ 		else
+ 		{
+ 			GuiVM.button00.enabled = false;
  		}
     }
 	
@@ -687,7 +786,7 @@ public class GuiMachineMenuCustomizePrimarySkinColor extends GuiContainerVC {
     	int currentG = machineIn.getVisualFrameColorGreen();
     	int currentB = machineIn.getVisualFrameColorBlue();
     	
-		machineIn.setVisualFrameColor(true);
+		machineIn.setVisualFrameColor(this.machineColorActive);
     	machineIn.setVisualFrameColorRed(this.textRedNumber);
     	machineIn.setVisualFrameColorGreen(this.textGreenNumber);
     	machineIn.setVisualFrameColorBlue(this.textBlueNumber);

@@ -59,7 +59,7 @@ public class ItemKitAdmin extends Item {
 					stack.shrink(1);
 				}
 				
-				((EntityMachineBase) entity).setEventTrigger(3);
+				((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
 				
 		    	return true;
 			}
@@ -82,13 +82,14 @@ public class ItemKitAdmin extends Item {
 				
 				((EntityMachineBase) entity).setHealth(((EntityMachineBase) entity).getMaxHealth());
 				((EntityMachineBase) entity).setEnergy(((EntityMachineBase) entity).getMaxEnergy());
+				((EntityMachineBase) entity).setDurability(((EntityMachineBase) entity).getMaxDurability());
 				
 				if(!player.isCreative())
 				{
 					stack.shrink(1);
 				}
 				
-				((EntityMachineBase) entity).setEventTrigger(3);
+				((EntityMachineBase) entity).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
 				
 		    	return true;
 			}
@@ -114,7 +115,7 @@ public class ItemKitAdmin extends Item {
 							stack.shrink(1);
 						}
 						
-						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(3);
+						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
 						
 				    	return true;
 					}
@@ -137,13 +138,14 @@ public class ItemKitAdmin extends Item {
 						
 						((EntityMachineBase) entity.getRidingEntity()).setHealth(((EntityMachineBase) entity.getRidingEntity()).getMaxHealth());
 						((EntityMachineBase) entity.getRidingEntity()).setEnergy(((EntityMachineBase) entity.getRidingEntity()).getMaxEnergy());
+						((EntityMachineBase) entity.getRidingEntity()).setDurability(((EntityMachineBase) entity.getRidingEntity()).getMaxDurability());
 						
 						if(!player.isCreative())
 						{
 							stack.shrink(1);
 						}
 						
-						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(3);
+						((EntityMachineBase) entity.getRidingEntity()).setEventTrigger(EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata());
 						
 				    	return true;
 					}
@@ -179,9 +181,9 @@ public class ItemKitAdmin extends Item {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
-		tooltip.add(TextFormatting.DARK_RED + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
-		tooltip.add(TextFormatting.DARK_RED + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
-		tooltip.add(TextFormatting.DARK_RED + References.localNameVC(this.getUnlocalizedName() + ".tt.3"));
+		tooltip.add(TextFormatting.DARK_RED + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(TextFormatting.DARK_RED + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(TextFormatting.DARK_RED + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.3"));
 	}
 	
 	@Override
@@ -193,6 +195,6 @@ public class ItemKitAdmin extends Item {
 	@Override
 	public String getItemStackDisplayName(ItemStack stack)
     {
-		return TextFormatting.GOLD + "" + TextFormatting.BOLD + References.localNameVC(this.getUnlocalizedName() + ".name");
+		return TextFormatting.GOLD + "" + TextFormatting.BOLD + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".name");
     }
 }

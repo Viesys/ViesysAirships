@@ -19,7 +19,7 @@ public class SlotInputMachineTransmogrifier  extends SlotItemHandler {
     {
 		Item item = stack.getItem();
 		
-		if(item == ItemsVM.CHARGED_SHARD) return false;
+		if(item == ItemsVM.XEGONITE) return false;
         
 		return true;
     }

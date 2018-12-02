@@ -13,15 +13,29 @@ import com.vies.viesmachines.client.InitParticlesVCRender;
 import com.vies.viesmachines.network.NetworkHandler;
 import com.vies.viesmachines.network.server.machine.MessageFlyingThunderStrike;
 import com.vies.viesmachines.network.server.machine.MessageMachineProjectileShoot;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger01Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger02Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger04Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger05Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger11Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger12Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger13Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger21Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger22Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger23Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger31Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger32Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger33Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger41Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger42Server;
+import com.vies.viesmachines.network.server.machine.eventtrigger.MessageHelperEventTrigger43Server;
 import com.vies.viesmachines.network.server.machine.gui.navigation.MessageGuiMachineMenuMain;
-import com.vies.viesmachines.network.server.world.PlayerMessageMachineBroken;
 import com.vies.viesmachines.network.server.world.PlayerMessageWeaponSystemError;
 import com.vies.viesmachines.network.server.world.PlayerMessageWeaponSystemOutOfAmmo;
 
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,6 +47,7 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -70,6 +85,8 @@ public class EntityMachineBase extends EntityLiving {
 	// Data Manager:
     /** Keeps track of a machine's energy value. */
 	private static final DataParameter<Integer> ENERGY_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
+	/** Keeps track of a machine's durability value. */
+	private static final DataParameter<Integer> DURABILITY_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
 	
 	/** Keeps track of the frame tier value. */
 	private static final DataParameter<Integer> TIER_FRAME_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
@@ -103,15 +120,34 @@ public class EntityMachineBase extends EntityLiving {
 	
 	/** Keeps track of the primed for lightning strike in ticks. */
 	private static final DataParameter<Integer> PRIMED_FOR_LIGHTNING_STRIKE_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
+	
+	/** Keeps track of the machine issue in ticks. */
+	private static final DataParameter<Integer> MACHINE_ISSUE_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
+	
 	/**
 	 * Keeps track of the event to be triggered. <br> <br>
 	 *
 	 *  0 = No event to trigger.<br>
 	 *  1 = Trigger fall sound/particles. <br>
-	 *  2 = Trigger death sound/particles. <br>
-	 *  3 = Trigger upgrade sound/particles. <br>
-	 *  4 = Trigger heal health sound/particles. <br>
-	 *  5 = Trigger heal energy sound/particles. <br>
+	 *  2 = Trigger broken sound/particles. <br>
+	 *  3 = Trigger destruction logic. <br>
+	 *  4 = Trigger lightning strike sound/particles. <br><br>
+	 *  
+	 *  11 = Triggers 2 health heal sound/particles. <br>
+	 *  12 = Triggers 8 health heal sound/particles. <br>
+	 *  13 = Triggers MAX health heal sound/particles. <br><br>
+	 *  
+	 *  21 = Triggers 25 energy heal sound/particles. <br>
+	 *  22 = Triggers 100 energy heal sound/particles. <br>
+	 *  23 = Triggers MAX energy heal sound/particles. <br><br>
+	 *  
+	 *  31 = Triggers 50 durability heal sound/particles. <br>
+	 *  32 = Triggers 200 durability heal sound/particles. <br>
+	 *  33 = Triggers MAX durability heal sound/particles. <br><br>
+	 *  
+	 *  41 = Triggers tier 1 upgrade sound/particles. <br>
+	 *  42 = Triggers tier 2 upgrade sound/particles. <br>
+	 *  43 = Triggers tier 3 upgrade sound/particles. <br><br>
 	 */
 	private static final DataParameter<Integer> EVENT_TRIGGER_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
 	
@@ -139,7 +175,15 @@ public class EntityMachineBase extends EntityLiving {
     
     /** Keeps track of the particle texture. */
     protected static final DataParameter<Integer> VISUAL_ENGINE_PARTICLE_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
-    /** Keeps track of the display type. (Block, Item, Head, etc...) */
+    /** Keeps track of the display type. <br> <br>
+	 *
+	 *  0 = Renders Nothing. (Default) <br>
+	 *  1 = Renders Block/Item. (Default) <br>
+	 *  2 = Renders Head. (Default) <br>
+	 *  3 = Renders Supporter Head. (Default) <br>
+	 *  10+ = Renders Symbols. (Default) <br>
+     * 
+     * (Block, Item, Head, etc...) */
     protected static final DataParameter<Integer> VISUAL_ENGINE_DISPLAY_TYPE_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
     /** Keeps track of the display itemstack id. */
     protected static final DataParameter<Integer> VISUAL_ENGINE_DISPLAY_ITEMSTACK_DM = EntityDataManager.<Integer>createKey(EntityMachineBase.class, DataSerializers.VARINT);
@@ -223,8 +267,12 @@ public class EntityMachineBase extends EntityLiving {
     /** Stores previous motion, mainly for momentum.
      * NOT USED YET */
     protected double lastYd;
+    
+    protected int fallDistancePosY;
 	
-	
+    // Durability issues:
+	protected boolean engineTrouble;
+	protected boolean previouslyPoweredOn;
     
 	// Inventory:
 	/**
@@ -232,7 +280,7 @@ public class EntityMachineBase extends EntityLiving {
 	 *
 	 * Slot  0 = Fuel Slot<br>
 	 * Slot  1 = Ammo Slot <br>
-	 //* Slot  2 = Ammo Slot <br>
+	 * Slot  2 = Block/Item to Display Slot <br>
 	 //* Slot  1 = Upgrade Core <br>
 	 //* Slot  2 = Upgrade Frame <br>
 	 //* Slot  3 = Upgrade Engine <br>
@@ -240,7 +288,7 @@ public class EntityMachineBase extends EntityLiving {
 	 //* Slot 11 = Module Slot1 <br>
 	 //* Slot 12 = Module Slot2 <br>
 	 //* Slot 16 = Redstone Slot <br>
-	 * Slot 18 = Block/Item to Display <br>
+	 //* Slot 18 = Block/Item to Display <br>
 	 * Slot 20-28 = Inventory Small <br>
 	 * Slot 20-37 = Inventory Large <br>
 	 //* Slot 51 = Bomb Slot1 <br>
@@ -266,7 +314,7 @@ public class EntityMachineBase extends EntityLiving {
 	
     // To debug and fix...
 	private BlockPos homePosition = BlockPos.ORIGIN;
-    /** If -1 there is no maximum distance */
+    /** If -1 there is no maximum distance. */
     private float maximumHomeDistance = -1.0F;
     
     
@@ -290,8 +338,8 @@ public class EntityMachineBase extends EntityLiving {
 
 	public EntityMachineBase(World worldIn, double x, double y, double z,
 			
-			int frameTierIn, int engineTierIn, int componentTierIn, 
-			int typeIn, float healthIn, int energyIn, 
+			int frameTierIn, int engineTierIn, int componentTierIn, int typeIn, 
+			float healthIn, int energyIn, int durabilityIn, 
 			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
 			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
 			int ammoAmountIn, int ammoTypeIn, 
@@ -391,6 +439,8 @@ public class EntityMachineBase extends EntityLiving {
         
         this.dataManager.register(ENERGY_DM, Integer.valueOf(0));
         
+        this.dataManager.register(DURABILITY_DM, Integer.valueOf(0));
+        
         this.dataManager.register(TIER_FRAME_DM, Integer.valueOf(0));
         this.dataManager.register(TIER_ENGINE_DM, Integer.valueOf(0));
         this.dataManager.register(TIER_COMPONENT_DM, Integer.valueOf(0));
@@ -409,6 +459,7 @@ public class EntityMachineBase extends EntityLiving {
         this.dataManager.register(MACHINE_ENHANCEMENT_1_DM, Integer.valueOf(0));
         
         this.dataManager.register(PRIMED_FOR_LIGHTNING_STRIKE_DM, Integer.valueOf(0));
+        this.dataManager.register(MACHINE_ISSUE_DM, Integer.valueOf(0));
         this.dataManager.register(EVENT_TRIGGER_DM, Integer.valueOf(0));
         
         
@@ -461,6 +512,8 @@ public class EntityMachineBase extends EntityLiving {
 		
 		compound.setInteger(rf.ENERGY_TAG, this.getEnergy());
 		
+		compound.setInteger(rf.DURABILITY_TAG, this.getDurability());
+		
 		compound.setFloat(rf.TYPE_TAG, this.getType());
 		compound.setFloat(rf.FORWARD_SPEED_TAG, this.getForwardSpeed());
 		compound.setFloat(rf.TURN_SPEED_TAG, this.getTurnSpeed());
@@ -476,6 +529,7 @@ public class EntityMachineBase extends EntityLiving {
 		
 		compound.setInteger(rf.SELECTED_SONG_TAG, this.selectedSong);
 		compound.setInteger(rf.PRIMED_FOR_LIGHTNING_STRIKE_TAG, this.getPrimedForLightningStrike());
+		compound.setInteger(rf.MACHINE_ISSUE_TAG, this.getIssueTick());
 		compound.setInteger(rf.EVENT_TRIGGER_TAG, this.getEventTrigger());
 		
 		
@@ -522,6 +576,8 @@ public class EntityMachineBase extends EntityLiving {
 		
 		this.setEnergy(compound.getInteger(rf.ENERGY_TAG));
 		
+		this.setDurability(compound.getInteger(rf.DURABILITY_TAG));
+		
 		this.setType(compound.getInteger(rf.TYPE_TAG));
 		this.setForwardSpeed(compound.getFloat(rf.FORWARD_SPEED_TAG));
 		this.setTurnSpeed(compound.getFloat(rf.TURN_SPEED_TAG));
@@ -537,6 +593,7 @@ public class EntityMachineBase extends EntityLiving {
 		
 		this.selectedSong = compound.getInteger(rf.SELECTED_SONG_TAG);
 		this.setPrimedForLightningStrike(compound.getInteger(rf.PRIMED_FOR_LIGHTNING_STRIKE_TAG));
+		this.setIssueTick(compound.getInteger(rf.MACHINE_ISSUE_TAG));
 		this.setEventTrigger(compound.getInteger(rf.EVENT_TRIGGER_TAG));
 		
 		
@@ -588,7 +645,8 @@ public class EntityMachineBase extends EntityLiving {
         //	this.isDead = true;
         
 		//--------------------------------------------------
-		//LogHelper.info(this.getEventTrigger());
+		//////////LogHelper.info(this.getEventTrigger());
+		//LogHelper.info(EnumsVM.EventTrigger.DESTRUCTION.getMetadata());
         //LogHelper.info(this.getEntityId() +" - Tier Frame = " + this.getTierFrame());
         //LogHelper.info(this.getEntityId() +" - Tier Engine = " + this.getTierEngine());
         //LogHelper.info(this.getEntityId() +" - Tier Component = " + this.getTierComponent());
@@ -671,6 +729,7 @@ public class EntityMachineBase extends EntityLiving {
         this.initiateCanGetStruckByLightning();
         this.initiateWeaponFiringCooldown();
         this.initiateEventTrigger();
+        this.initiateDurabilityIssues();
     }
 	
 	/**
@@ -718,7 +777,8 @@ public class EntityMachineBase extends EntityLiving {
 	public void onLivingUpdate()
     {
         super.onLivingUpdate();
-		
+		//this.setVisualEngineDisplayType(2);
+		//this.setVisualEngineDisplayItemstack(Items.ACACIA_BOAT.getIdFromItem(Items.ACACIA_BOAT));
         // As this machine exists, update the ticks:
 		this.updateTick++;
 		
@@ -740,8 +800,11 @@ public class EntityMachineBase extends EntityLiving {
     protected boolean processInteract(EntityPlayer player, EnumHand hand)
     {
 		// Needed to fix the auto pop up machine GUI bug:
-		Keybinds.openGuiMenu.unPressAllKeys();
-    	
+		if (this.world.isRemote)
+		{
+			Keybinds.openGuiMenu.unPressAllKeys();
+		}
+		
 		super.processInteract(player, hand);
 		
 		// Saving this for a later feature???:
@@ -755,6 +818,18 @@ public class EntityMachineBase extends EntityLiving {
             {
                 player.startRiding(this);
             }
+            //else
+            //{
+            //	GlStateManager.pushMatrix();
+        	//	{
+        	//		GlStateManager.scale(0.25F, 0.25F, 0.25F);
+        			
+        	//		Minecraft.getMinecraft().ingameGUI
+        	//		//.setOverlayMessage("TEST", true);
+        	//		.displayTitle("TEST1", "This is random", 100, 100, 100);
+        	//	}
+        	//	GlStateManager.popMatrix();
+            //}
             
             return true;
         }
@@ -775,7 +850,48 @@ public class EntityMachineBase extends EntityLiving {
 		{
 			if ((this.getHealth() - amount) <= 0)
 			{
-				this.setEventTrigger(2);
+				this.setEventTrigger(EnumsVM.EventTrigger.BROKEN.getMetadata());
+				
+				if (this.getDurability() >= 250)
+				{
+					this.setDurability(this.getDurability() - 250);
+				}
+				else
+				{
+					this.setDurability(0);
+				}
+			}
+		}
+		
+		// Destroys the machine if it is out of the world:
+		if (source == DamageSource.OUT_OF_WORLD)
+		{
+			this.setEventTrigger(EnumsVM.EventTrigger.DESTRUCTION.getMetadata());
+		}
+		
+		// Destroys the machine if it is out of the world:
+		//if (source == DamageSource.LIGHTNING_BOLT)
+		//{
+			//this.setEventTrigger(EnumsVM.EventTrigger.LIGHTNING_STRIKE.getMetadata());
+		//}
+		
+		
+		
+		// Destroys the machine if it is broken and is hit with explosion damage:
+		if (this.getBroken())
+		{
+			if (source.isExplosion())
+			{
+				if (!this.world.isRemote)
+		        {
+		            if (this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot"))
+		            {
+		                boolean flag = this.recentlyHit > 0;
+		                this.dropLoot(flag, 0, source);
+		            }
+		        }
+				
+				this.setEventTrigger(EnumsVM.EventTrigger.DESTRUCTION.getMetadata());
 			}
 		}
 		
@@ -958,12 +1074,32 @@ public class EntityMachineBase extends EntityLiving {
 	@Override
 	protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
     {
+		int currentPosY = 0;
+		
+		if (this.status == Status.IN_AIR)
+		{
+			if (!this.getPoweredOn())
+			{
+				if (this.fallDistancePosY == 0)
+				{
+					this.fallDistancePosY = (int)this.posY;
+				}
+			}
+			
+			if (this.getPoweredOn())
+			{
+				this.fallDistancePosY = 0;
+			}
+		}
+		
 		if (this.status == Status.ON_LAND	
 		&& this.previousStatus == Status.IN_AIR)
 		{
-			if(!this.isFuelBurning())
+			this.fallDistancePosY = (int) (this.fallDistancePosY - this.posY);
+			
+			if(this.fallDistancePosY >= 6)
 			{
-				this.setEventTrigger(1);
+				this.setEventTrigger(EnumsVM.EventTrigger.FALL.getMetadata());
 			}
 		}
     }
@@ -989,7 +1125,7 @@ public class EntityMachineBase extends EntityLiving {
     	&& this.getControllingPassenger() != null)
 		{
     		NetworkHandler.sendToServer(new MessageGuiMachineMenuMain());
-        	Minecraft.getMinecraft().setIngameFocus();
+        	//Minecraft.getMinecraft().setIngameFocus();
         }
     }
     
@@ -1036,21 +1172,21 @@ public class EntityMachineBase extends EntityLiving {
     	if (this.status == this.status.ON_LAND
     	|| this.status == this.status.IN_AIR)
     	{
-			InitParticlesVCRender.generateParticleBrokenSmoke(this);
+			InitParticlesVCRender.generateParticlesBrokenSmoke(this);
     	}
     	
     	if (this.status == this.status.IN_WATER)
     	{
-    		InitParticlesVCRender.generateParticleBrokenSmoke(this);
-    		InitParticlesVCRender.generateParticleBrokenBubbles(this);
-    		InitParticlesVCRender.generateParticleBrokenWakes(this);
+    		InitParticlesVCRender.generateParticlesBrokenSmoke(this);
+    		InitParticlesVCRender.generateParticlesBrokenBubbles(this);
+    		InitParticlesVCRender.generateParticlesBrokenWakes(this);
     	}
     	
     	if (this.status == this.status.UNDER_WATER
     	|| this.status == this.status.UNDER_FLOWING_WATER)
     	{
-    		InitParticlesVCRender.generateParticleBrokenBubbles(this);
-    		InitParticlesVCRender.generateParticleBrokenWakes(this);
+    		InitParticlesVCRender.generateParticlesBrokenBubbles(this);
+    		InitParticlesVCRender.generateParticlesBrokenWakes(this);
     	}
     }
     
@@ -1058,11 +1194,11 @@ public class EntityMachineBase extends EntityLiving {
     
     /** Particles that spawn when a machine takes damage. */
     @SideOnly(Side.CLIENT)
-    protected void spawnHurtParticles()
+    public void spawnInjuredParticles()
     {
     	for (int i = 0; i < 20; i++)
 		{
-			InitParticlesVCRender.generateExplosions(this);
+			InitParticlesVCRender.generateParticlesExplosions(this);
 		}
     }
     
@@ -1070,18 +1206,17 @@ public class EntityMachineBase extends EntityLiving {
     
     /** Particles that spawn when a machine falls and hits the ground. */
     @SideOnly(Side.CLIENT)
-    protected void spawnFallParticles()
+    public void spawnFallParticles()
     {
     	for (int i = 0; i < 20; i++)
 		{
-			InitParticlesVCRender.generateExplosions(this);
+			InitParticlesVCRender.generateParticlesExplosions(this);
 		}
     }
     
-    
     /** Particles that spawn when a machine changes to broken. */
     @SideOnly(Side.CLIENT)
-    protected void spawnInitialBrokenParticles()
+    public void spawnInitialBrokenParticles()
     {
     	for (int i = 1; i < 80; i++)
     	{
@@ -1100,19 +1235,40 @@ public class EntityMachineBase extends EntityLiving {
     	}
     }
     
-    /** Particles that spawn when a machine is upgraded. */
+    /** Particles that spawn when a machine is struck by lightning. */
     @SideOnly(Side.CLIENT)
-    protected void spawnUpgradeParticles()
+    public void spawnLightningStrikeParticles()
     {
-    	for (int i = 0; i < 50; i++)
+    	for (int i = 0; i < 100; i++)
 		{
-			InitParticlesVCRender.generateUpgradeParticles(this);
+			InitParticlesVCRender.generateParticleStaticChargeLightningStrike(this);
+			InitParticlesVCRender.generateParticleStaticChargeLightningStrike(this);
+			InitParticlesVCRender.generateParticleStaticChargeLightningStrike(this);
+			InitParticlesVCRender.generateParticleStaticChargeLightningStrike(this);
 		}
     }
     
     /** Particles that spawn when a machine's health is healed. */
     @SideOnly(Side.CLIENT)
-    protected void spawnHealHealthParticles()
+    public void spawnHealHealthParticles1()
+    {
+    	for (int i = 0; i < 10; i++)
+		{
+    		InitParticlesVCRender.generateHealHealthParticles(this);
+		}
+    }
+    /** Particles that spawn when a machine's health is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealHealthParticles2()
+    {
+    	for (int i = 0; i < 25; i++)
+		{
+    		InitParticlesVCRender.generateHealHealthParticles(this);
+		}
+    }
+    /** Particles that spawn when a machine's health is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealHealthParticles3()
     {
     	for (int i = 0; i < 50; i++)
 		{
@@ -1122,11 +1278,87 @@ public class EntityMachineBase extends EntityLiving {
     
     /** Particles that spawn when a machine's energy is healed. */
     @SideOnly(Side.CLIENT)
-    protected void spawnHealEnergyParticles()
+    public void spawnHealEnergyParticles1()
+    {
+    	for (int i = 0; i < 10; i++)
+		{
+    		InitParticlesVCRender.generateHealEnergyParticles(this);
+		}
+    }
+    /** Particles that spawn when a machine's energy is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealEnergyParticles2()
+    {
+    	for (int i = 0; i < 25; i++)
+		{
+    		InitParticlesVCRender.generateHealEnergyParticles(this);
+		}
+    }
+    /** Particles that spawn when a machine's energy is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealEnergyParticles3()
     {
     	for (int i = 0; i < 50; i++)
 		{
     		InitParticlesVCRender.generateHealEnergyParticles(this);
+		}
+    }
+    
+    /** Particles that spawn when a machine's durability is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealDurabilityParticles1()
+    {
+    	for (int i = 0; i < 10; i++)
+		{
+    		InitParticlesVCRender.generateHealDurabilityParticles(this);
+		}
+    }
+    /** Particles that spawn when a machine's durability is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealDurabilityParticles2()
+    {
+    	for (int i = 0; i < 25; i++)
+		{
+    		InitParticlesVCRender.generateHealDurabilityParticles(this);
+		}
+    }
+    /** Particles that spawn when a machine's durability is healed. */
+    @SideOnly(Side.CLIENT)
+    public void spawnHealDurabilityParticles3()
+    {
+    	for (int i = 0; i < 50; i++)
+		{
+    		InitParticlesVCRender.generateHealDurabilityParticles(this);
+		}
+    }
+    
+    /** Particles that spawn when a machine is upgraded. */
+    @SideOnly(Side.CLIENT)
+    public void spawnUpgradeParticles1()
+    {
+    	for (int i = 0; i < 10; i++)
+		{
+			InitParticlesVCRender.generateUpgradeParticles(this);
+		}
+    }
+    
+    /** Particles that spawn when a machine is upgraded. */
+    @SideOnly(Side.CLIENT)
+    public void spawnUpgradeParticles2()
+    {
+    	for (int i = 0; i < 25; i++)
+		{
+			InitParticlesVCRender.generateUpgradeParticles(this);
+		}
+    }
+    
+    /** Particles that spawn when a machine is upgraded. */
+    @SideOnly(Side.CLIENT)
+    public void spawnUpgradeParticles3()
+    {
+    	for (int i = 0; i < 50; i++)
+		{
+			InitParticlesVCRender.generateUpgradeParticles(this);
 		}
     }
 	
@@ -1177,23 +1409,44 @@ public class EntityMachineBase extends EntityLiving {
         return SoundEvents.ENTITY_GENERIC_EXPLODE;
     }
 	
+	/** Gets the sound to be triggered when a machine is broken. */
+	protected SoundEvent getBrokenSound()
+    {
+        return SoundEvents.ENTITY_GENERIC_EXPLODE;
+    }
+	
+	/** Gets the sound to be triggered when a machine is broken. */
+	protected SoundEvent getInjuredSound()
+    {
+        return SoundEvents.ENTITY_GENERIC_EXPLODE;
+    }
+	
+	/** Gets the sound to be triggered when a machine is struck by lightning. */
+	protected SoundEvent getLightningStrikeSound()
+    {
+        return SoundEvents.ENTITY_GENERIC_EXPLODE;
+    }
+	
 	/** Gets the sound to be triggered when a machine's Tier is upgraded. */
-	@SideOnly(Side.CLIENT)
-    protected SoundEvent getUpgradeSound()
+	protected SoundEvent getUpgradeSound()
     {
         return SoundEvents.ENTITY_GENERIC_EXPLODE;
     }
 	
 	/** Gets the sound to be triggered when a machine's health is healed. */
-	@SideOnly(Side.CLIENT)
-    protected SoundEvent getHealHealthSound()
+	public SoundEvent getHealHealthSound()
     {
         return SoundEvents.ENTITY_GENERIC_EXPLODE;
     }
 	
 	/** Gets the sound to be triggered when a machine's energy is healed. */
-	@SideOnly(Side.CLIENT)
-    protected SoundEvent getHealEnergySound()
+	protected SoundEvent getHealEnergySound()
+    {
+        return SoundEvents.ENTITY_GENERIC_EXPLODE;
+    }
+	
+	/** Gets the sound to be triggered when a machine's durability is healed. */
+	protected SoundEvent getHealDurabilitySound()
     {
         return SoundEvents.ENTITY_GENERIC_EXPLODE;
     }
@@ -1231,7 +1484,7 @@ public class EntityMachineBase extends EntityLiving {
 	@Override
 	public void onDeath(DamageSource cause)
     {
-    	super.onDeath(cause);
+    	//super.onDeath(cause);
     	
     	this.setBroken(true);
     	this.setPoweredOn(false);
@@ -1248,8 +1501,35 @@ public class EntityMachineBase extends EntityLiving {
 	@Override
 	public void setDead()
     {
+		if (this.getEventTrigger() == EnumsVM.EventTrigger.DESTRUCTION.getMetadata())
+		{
+			super.setDead();
+		}
+		//this.entityDropItem(this.getItemMachine(), 1);
+		//super.setDead();
 		// Remove the thing that caused a dead entity to be removed:
         //this.isDead = true;
+		
+		//if (this.getBroken())
+		//{
+			
+		//	if (this.attackEntityFrom(DamageSource.OUT_OF_WORLD, 0.0F))
+		//	{
+		//		this.isDead = true;
+		//		LogHelper.info("DEAD!");
+		//	}
+		//}
+		
+		
+		//if (!this.world.isRemote)
+        //{
+            
+        //    if (this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot"))
+        //    {
+        //        boolean flag = this.recentlyHit > 0;
+                //this.dropLoot(flag, 0, source);
+        //    }
+        //}
     }
 	
 	
@@ -1657,6 +1937,16 @@ public class EntityMachineBase extends EntityLiving {
         super.heal(healAmount);
     }
     
+    /** Get the health in a % format. */
+    public int getHealthPercent()
+    {
+    	float total = this.getMaxHealth();
+		float current = this.getHealth();
+		float percentHealth = ((total - (total-current )) / total) * 100;
+		
+		return (int) percentHealth;
+    }
+    
     //--------------------------------------------------
     
     /** Gets the energy value of a machine. */
@@ -1691,6 +1981,62 @@ public class EntityMachineBase extends EntityLiving {
         	this.setEnergy(f + healAmount);
         }
     }
+    
+    /** Get the energy in a % format. */
+    public int getEnergyPercent()
+    {
+    	float total = this.getMaxEnergy();
+		float current = this.getEnergy();
+		float percentEnergy = ((total - (total-current )) / total) * 100;
+		
+		return (int) percentEnergy;
+    }
+    
+    //--------------------------------------------------
+    
+    /** Gets the durability value of a machine. */
+    public final int getDurability()
+    {
+        return ((Integer)this.dataManager.get(DURABILITY_DM)).intValue();
+    }
+    /** Sets the durability value of a machine. */
+    public void setDurability(int intIn)
+    {
+    	this.dataManager.set(DURABILITY_DM, MathHelper.clamp(intIn, 0, this.getMaxDurability()));
+    }
+    
+    /** Gets the max durability value of a machine. */
+    public int getMaxDurability()
+    {
+    	return EnumsVM.FlyingMachineFrameTier.byId(this.getTierFrame()).getMaxDurabilityModifier();
+    }
+    
+    /** Replenish a machine's durability points. */
+    public void replenishDurability(int healAmount)
+    {
+        if (healAmount <= 0)
+    	{
+    		return;
+    	}
+        
+        int f = this.getDurability();
+
+        if ((f + healAmount) <= this.getMaxDurability())
+        {
+        	this.setDurability(f + healAmount);
+        }
+    }
+    
+    /** Get the durability in a % format. */
+    public int getDurabilityPercent()
+    {
+    	float total = this.getMaxDurability();
+		float current = this.getDurability();
+		float percentDurability = ((total - (total-current )) / total) * 100;
+		
+		return (int) percentDurability;
+    }
+    
     
     //--------------------------------------------------
     
@@ -1880,15 +2226,41 @@ public class EntityMachineBase extends EntityLiving {
         this.dataManager.set(PRIMED_FOR_LIGHTNING_STRIKE_DM, Integer.valueOf(intIn));
     }
     
+    /** Gets the Issue Tick in ticks. */
+    public final int getIssueTick()
+    {
+        return ((Integer)this.dataManager.get(MACHINE_ISSUE_DM)).intValue();
+    }
+    /** Sets the Issue Tick in ticks. */
+    public void setIssueTick(int intIn)
+    {
+        this.dataManager.set(MACHINE_ISSUE_DM, Integer.valueOf(intIn));
+    }
+    
     /**
 	 * Keeps track of the event to be triggered. <br> <br>
 	 *
 	 *  0 = No event to trigger.<br>
 	 *  1 = Trigger fall sound/particles. <br>
-	 *  2 = Trigger death sound/particles. <br>
-	 *  3 = Trigger upgrade sound/particles. <br>
-	 *  4 = Trigger heal health sound/particles. <br>
-	 *  5 = Trigger heal energy sound/particles. <br>
+	 *  2 = Trigger broken sound/particles. <br>
+	 *  3 = Trigger destruction logic. <br>
+	 *  4 = Trigger lightning strike sound/particles. <br><br>
+	 *  
+	 *  11 = Triggers 2 health heal sound/particles. <br>
+	 *  12 = Triggers 8 health heal sound/particles. <br>
+	 *  13 = Triggers MAX health heal sound/particles. <br><br>
+	 *  
+	 *  21 = Triggers 25 energy heal sound/particles. <br>
+	 *  22 = Triggers 100 energy heal sound/particles. <br>
+	 *  23 = Triggers MAX energy heal sound/particles. <br><br>
+	 *  
+	 *  31 = Triggers 50 durability heal sound/particles. <br>
+	 *  32 = Triggers 200 durability heal sound/particles. <br>
+	 *  33 = Triggers MAX durability heal sound/particles. <br><br>
+	 *  
+	 *  41 = Triggers tier 1 upgrade sound/particles. <br>
+	 *  42 = Triggers tier 2 upgrade sound/particles. <br>
+	 *  43 = Triggers tier 3 upgrade sound/particles. <br><br>
 	 */
     public final int getEventTrigger()
     {
@@ -1899,10 +2271,25 @@ public class EntityMachineBase extends EntityLiving {
 	 *
 	 *  0 = No event to trigger.<br>
 	 *  1 = Trigger fall sound/particles. <br>
-	 *  2 = Trigger death sound/particles. <br>
-	 *  3 = Trigger upgrade sound/particles. <br>
-	 *  4 = Trigger heal health sound/particles. <br>
-	 *  5 = Trigger heal energy sound/particles. <br>
+	 *  2 = Trigger broken sound/particles. <br>
+	 *  3 = Trigger destruction logic. <br>
+	 *  4 = Trigger lightning strike sound/particles. <br><br>
+	 *  
+	 *  11 = Triggers 2 health heal sound/particles. <br>
+	 *  12 = Triggers 8 health heal sound/particles. <br>
+	 *  13 = Triggers MAX health heal sound/particles. <br><br>
+	 *  
+	 *  21 = Triggers 25 energy heal sound/particles. <br>
+	 *  22 = Triggers 100 energy heal sound/particles. <br>
+	 *  23 = Triggers MAX energy heal sound/particles. <br><br>
+	 *  
+	 *  31 = Triggers 50 durability heal sound/particles. <br>
+	 *  32 = Triggers 200 durability heal sound/particles. <br>
+	 *  33 = Triggers MAX durability heal sound/particles. <br><br>
+	 *  
+	 *  41 = Triggers tier 1 upgrade sound/particles. <br>
+	 *  42 = Triggers tier 2 upgrade sound/particles. <br>
+	 *  43 = Triggers tier 3 upgrade sound/particles. <br><br>
 	 */
     public void setEventTrigger(int intIn)
     {
@@ -2707,7 +3094,7 @@ public class EntityMachineBase extends EntityLiving {
 	protected void machineLightningStrike()
 	{
 		NetworkHandler.sendToServer(new MessageFlyingThunderStrike());
-			
+		
 		this.setPrimedForLightningStrike(0);
 	}
 	
@@ -2716,115 +3103,106 @@ public class EntityMachineBase extends EntityLiving {
     {
     	if (!this.world.isRemote)
     	{
-    		if(this.getPoweredOn())
+    		boolean badWeather = this.world.isRainingAt(this.getPosition());
+    		boolean severeWeather = this.world.isThundering();
+    		
+    		int machineHeight = this.getPosition().getY();
+    		
+    		//If the weather is bad, start ticking the lightning strike counter based on the elevation.
+    		if (badWeather || severeWeather)
     		{
-	    		boolean badWeather = this.world.isRainingAt(this.getPosition());
-	    		boolean severeWeather = this.world.isThundering();
-	    		
-	    		int machineHeight = this.getPosition().getY();
-	    		
-	    		//If the weather is bad, start ticking the lightning strike counter based on the elevation.
-	    		if (badWeather)
+    			if (machineHeight >= 200)
 	    		{
-	    			if (machineHeight >= 200)
+		    		if (References.random.nextInt(100) <= 1)
 		    		{
-			    		if (References.random.nextInt(100) <= 1)
-			    		{
-			    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
-			    		}
-		    		}
-		    		else if (machineHeight >= 175)
-		    		{
-			    		if (References.random.nextInt(150) <= 1)
-			    		{
-			    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
-			    		}
-		    		}
-		    		else if (machineHeight >= 150)
-		    		{
-			    		if (References.random.nextInt(200) <= 1)
-			    		{
-			    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
-			    		}
-		    		}
-		    		else if (machineHeight >= 125)
-		    		{
-			    		if (References.random.nextInt(250) <= 1)
-			    		{
-			    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
-			    		}
-		    		}
-		    		else if (machineHeight >= 100)
-		    		{
-			    		if (References.random.nextInt(375) <= 1)
-			    		{
-			    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
-			    		}
-		    		}
-		    		else if (machineHeight >= 76)
-		    		{
-			    		if (References.random.nextInt(500) <= 1)
-			    		{
-			    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
-			    		}
+		    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
 		    		}
 	    		}
-	    		else
+	    		else if (machineHeight >= 175)
 	    		{
-	    			this.setPrimedForLightningStrike(0);
+		    		if (References.random.nextInt(150) <= 1)
+		    		{
+		    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
+		    		}
 	    		}
-	    		
-	    		//Clear the counter if Y is 75 or below.
-	    		if (machineHeight <= 75)
+	    		else if (machineHeight >= 150)
 	    		{
-	    			this.setPrimedForLightningStrike(0);
+		    		if (References.random.nextInt(200) <= 1)
+		    		{
+		    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
+		    		}
 	    		}
-	    		
-	    		if (this.getPrimedForLightningStrike() > 0)
+	    		else if (machineHeight >= 125)
 	    		{
-	    			if (References.random.nextInt(20) <= 1)
-	    			{
-	    				InitParticlesVCRender.generateParticleStaticCharge(this);
-	    			}
-	    			
-	    			if (this.getPrimedForLightningStrike() >= 14)
-	        		{
-	    				if (References.random.nextInt(10) <= 1)
-	        			{
-	        				InitParticlesVCRender.generateParticleStaticCharge(this);
-	        			}
-	        		}
-	    			
-	    			if (this.getPrimedForLightningStrike() >= 16)
-	        		{
-	    				if (References.random.nextInt(10) <= 1)
-	        			{
-	        				InitParticlesVCRender.generateParticleStaticCharge(this);
-	        			}
-	        		}
-	    			
-	    			if (this.getPrimedForLightningStrike() >= 18)
-	        		{
-	    				if (References.random.nextInt(5) <= 1)
-	        			{
-	        				InitParticlesVCRender.generateParticleStaticCharge(this);
-	        			}
-	        		}
+		    		if (References.random.nextInt(250) <= 1)
+		    		{
+		    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
+		    		}
 	    		}
+	    		else if (machineHeight >= 100)
+	    		{
+		    		if (References.random.nextInt(375) <= 1)
+		    		{
+		    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
+		    		}
+	    		}
+	    		else if (machineHeight >= 70)
+	    		{
+		    		if (References.random.nextInt(500) <= 1)
+		    		{
+		    			this.setPrimedForLightningStrike(this.getPrimedForLightningStrike() + 1);
+		    		}
+	    		}
+    		}
+    		else
+    		{
+    			this.setPrimedForLightningStrike(0);
+    		}
+    		
+    		//Clear the counter if Y is 70 or below.
+    		if (machineHeight <= 70)
+    		{
+    			this.setPrimedForLightningStrike(0);
+    		}
+    		
+    		if (this.getPrimedForLightningStrike() > 0)
+    		{
+    			if (References.random.nextInt(20) <= 1)
+    			{
+    				InitParticlesVCRender.generateParticleStaticCharge(this);
+    			}
+    			
+    			if (this.getPrimedForLightningStrike() >= 5)
+        		{
+    				if (References.random.nextInt(10) <= 1)
+        			{
+        				InitParticlesVCRender.generateParticleStaticCharge(this);
+        			}
+        		}
+    			
+    			if (this.getPrimedForLightningStrike() >= 10)
+        		{
+    				if (References.random.nextInt(10) <= 1)
+        			{
+        				InitParticlesVCRender.generateParticleStaticCharge(this);
+        			}
+        		}
+    			
+    			if (this.getPrimedForLightningStrike() >= 15)
+        		{
+    				if (References.random.nextInt(5) <= 1)
+        			{
+        				InitParticlesVCRender.generateParticleStaticCharge(this);
+        			}
+        		}
     		}
     	}
     	
+
     	// Try to cause a lightning strike:
     	if (this.isPrimedForLightningStrike())
 		{
-    		if (this.world.isRemote)
-    		{
-    			for (int i = 0; i < 100; i++)
-    			{
-					InitParticlesVCRender.generateParticleStaticChargeLightningStrike(this);
-    				InitParticlesVCRender.generateParticleStaticChargeLightningStrike(this);
-    			}
-    		}
+    		this.setEventTrigger(EnumsVM.EventTrigger.LIGHTNING_STRIKE.getMetadata());
     		
     		this.machineLightningStrike();
 		}
@@ -2832,80 +3210,334 @@ public class EntityMachineBase extends EntityLiving {
     
     //--------------------------------------------------
     
+    /** Initiates a durability issue based on the getDurability() value. */
+    protected void initiateDurabilityIssues()
+    {
+    	
+    	this.machineEngineStall();
+    	
+    }
+    
+    protected void machineEngineStall()
+    {
+    	if (!this.world.isRemote)
+    	{
+    		if (this.getPoweredOn())
+	    	{
+    			if (this.isFuelBurning())
+    			{
+	    			float total = this.getMaxDurability();
+	    			float current = this.getDurability();
+	    			float percentDurability = ((total - (total-current )) / total) * 100;
+	    			
+	    			if (percentDurability <= 4)
+	    			{
+	    				this.majorIssue();
+	    			}
+	    			else if (percentDurability <= 24)
+	    			{
+	    				this.minorIssue();
+	    			}
+	    			
+	    			
+	    			
+			    	if (this.getIssueTick() > 0)
+			    	{
+			    		this.setPoweredOn(false);
+			    		
+			    		this.setIssueTick(this.getIssueTick() - 1);
+			    		
+			    		if (this.getIssueTick() > 40)
+				    	{
+				    		this.setIssueTick(0);
+				    	}
+			    	}
+    			}
+	    	}
+    		else
+    		{
+    			if (this.getIssueTick() == 1)
+		    	{
+		    		this.setPoweredOn(true);
+		    	}
+    			
+    			if (this.getIssueTick() > 0)
+    			{
+    				this.setIssueTick(this.getIssueTick() - 1);
+    			}
+    		}
+    	}
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**  */
+    private void minorIssue()
+    {
+    	if (References.random.nextInt(400) <= 1)
+    	{
+    		this.setIssueTick(this.getIssueTick() + 2);
+    	}
+    }
+    
+    /**  */
+    private void majorIssue()
+    {
+    	if (References.random.nextInt(300) <= 1)
+    	{
+    		this.setIssueTick(this.getIssueTick() + 5);
+    	}
+    	if (References.random.nextInt(250) <= 1)
+    	{
+    		this.setIssueTick(this.getIssueTick() + 2);
+    	}
+    	if (References.random.nextInt(200) <= 1)
+    	{
+    		this.setIssueTick(this.getIssueTick() + 2);
+    	}
+    }
+    
+    
+    
+    //--------------------------------------------------
+    
     /** Initiates a event trigger based on the getEventTrigger() value. */
     protected void initiateEventTrigger()
     {
-    	//Play the fall sound/particles and resets the trigger:
-    	if (this.getEventTrigger() == 1)
+    	//LogHelper.info("ticking - " + this.getEventTrigger());
+    	// Play the fall sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.FALL.getMetadata())
     	{
     		if (this.world.isRemote)
     		{
-    			this.spawnFallParticles();
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger01Server());
     		}
-    		else
+			else
     		{
 				this.playSound(this.getFallSound(4), 1.0F, 1.0F);
     		}
-    		
-    		this.setEventTrigger(0);
     	}
     	
-    	//Play the death sound/particles and resets the trigger:
-    	if (this.getEventTrigger() == 2)
+    	// Play the broken sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.BROKEN.getMetadata())
     	{
     		if (this.world.isRemote)
     		{
-    			this.spawnInitialBrokenParticles();
+    			NetworkHandler.sendToServer(new MessageHelperEventTrigger02Server());
+    		}
+			else
+    		{
+				this.playSound(this.getBrokenSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	
+    	// Permanently destroys the machine:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.DESTRUCTION.getMetadata())
+    	{
+    		LogHelper.info("ENTITYMACHINEBASE - It's Dead!!!");
+    		//this.setDead();
+    		this.isDead = true;
+    	}
+    	
+    	// Play the lightning strike sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.LIGHTNING_STRIKE.getMetadata())
+    	{
+    		NetworkHandler.sendToServer(new MessageHelperEventTrigger04Server());
+    		
+    		if (this.world.isRemote)
+    		{
     			
-    			NetworkHandler.sendToServer(new PlayerMessageMachineBroken());
     		}
-    		
-    		this.setEventTrigger(0);
+			else
+    		{
+				this.playSound(this.getLightningStrikeSound(), 1.0F, 1.0F);
+    		}
     	}
     	
-    	//Play the upgrade sound/particles and resets the trigger:
-    	if (this.getEventTrigger() == 3)
+    	// Play the injured sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.INJURED.getMetadata())
+    	{
+    		NetworkHandler.sendToServer(new MessageHelperEventTrigger05Server());
+    		
+    		if (this.world.isRemote)
+    		{
+    			
+    		}
+			else
+    		{
+				this.playSound(this.getInjuredSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	
+    	//--------------------------------------------------
+    	
+    	// Play the 2 health sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.HEALTH_2.getMetadata())
     	{
     		if (this.world.isRemote)
     		{
-    			this.spawnUpgradeParticles();
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger11Server());
     		}
-    		else
-    		{
-				this.playSound(this.getUpgradeSound(), 1.0F, 1.0F);
-    		}
-    		
-    		this.setEventTrigger(0);
-    	}
-    	
-    	//Play the heal health sound/particles and resets the trigger:
-    	if (this.getEventTrigger() == 4)
-    	{
-    		if (this.world.isRemote)
-    		{
-    			this.spawnHealHealthParticles();
-    		}
-    		else
+			else
     		{
 				this.playSound(this.getHealHealthSound(), 1.0F, 1.0F);
     		}
-    		
-    		this.setEventTrigger(0);
     	}
-    	
-    	//Play the heal energy sound/particles and resets the trigger:
-    	if (this.getEventTrigger() == 5)
+    	// Play the 8 health sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.HEALTH_8.getMetadata())
     	{
     		if (this.world.isRemote)
     		{
-    			this.spawnHealEnergyParticles();
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger12Server());
     		}
-    		else
+			else
+    		{
+				this.playSound(this.getHealHealthSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	// Play the max health sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.HEALTH_MAX.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger13Server());
+    		}
+			else
+    		{
+				this.playSound(this.getHealHealthSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	
+    	//--------------------------------------------------
+    	
+    	// Play the 25 energy sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.ENERGY_25.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger21Server());
+    		}
+			else
     		{
 				this.playSound(this.getHealEnergySound(), 1.0F, 1.0F);
     		}
-    		
-    		this.setEventTrigger(0);
     	}
+    	// Play the 100 energy sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.ENERGY_100.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger22Server());
+    		}
+			else
+    		{
+				this.playSound(this.getHealEnergySound(), 1.0F, 1.0F);
+    		}
+    	}
+    	// Play the max energy sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.ENERGY_MAX.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger23Server());
+    		}
+			else
+    		{
+				this.playSound(this.getHealEnergySound(), 1.0F, 1.0F);
+    		}
+    	}
+    	
+    	//--------------------------------------------------
+    	
+    	// Play the 50 durability sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.DURABILITY_50.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger31Server());
+    		}
+			else
+    		{
+				this.playSound(this.getHealDurabilitySound(), 1.0F, 1.0F);
+    		}
+    	}
+    	// Play the 200 durability sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.DURABILITY_200.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger32Server());
+    		}
+			else
+    		{
+				this.playSound(this.getHealDurabilitySound(), 1.0F, 1.0F);
+    		}
+    	}
+    	// Play the max durability sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.DURABILITY_MAX.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger33Server());
+    		}
+			else
+    		{
+				this.playSound(this.getHealDurabilitySound(), 1.0F, 1.0F);
+    		}
+    	}
+    	
+    	//--------------------------------------------------
+    	
+    	// Play the tier 1 upgrade sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.UPGRADE_TIER1.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger41Server());
+    		}
+			else
+    		{
+				this.playSound(this.getUpgradeSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	// Play the tier 2 upgrade sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.UPGRADE_TIER2.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger42Server());
+    		}
+			else
+    		{
+				this.playSound(this.getUpgradeSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	// Play the tier 3 upgrade sound/particles:
+    	if (this.getEventTrigger() == EnumsVM.EventTrigger.UPGRADE_TIER3.getMetadata())
+    	{
+    		if (this.world.isRemote)
+    		{
+				NetworkHandler.sendToServer(new MessageHelperEventTrigger43Server());
+    		}
+			else
+    		{
+				this.playSound(this.getUpgradeSound(), 1.0F, 1.0F);
+    		}
+    	}
+    	//if (this.getEventTrigger() > 0)
+    	//{
+    	//	LogHelper.info(this.getEventTrigger());
+    	//}
+    	//this.setPrimedForLightningStrike(19);
+    	
+    	// Resets the event trigger:
+    	this.setEventTrigger(0);
     }
 }

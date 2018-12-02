@@ -28,6 +28,7 @@ public class ItemMachineBase extends Item {
     protected int type;
     protected float health;
     protected int energy;
+    protected int durability;
     
     protected boolean broken;
     protected int fuel;
@@ -73,10 +74,13 @@ public class ItemMachineBase extends Item {
     
     protected String customName;
     protected int visualNameColor;
+	private String procName;
 	
 	public ItemMachineBase()
 	{
 		this.setMaxStackSize(1);
+		
+		this.procName = "ItemMachineProc";
 	}
 	
 	protected TextFormatting getPrimaryLabelColor(int stack)
@@ -124,4 +128,10 @@ public class ItemMachineBase extends Item {
 				return stringColorLabel = TextFormatting.GRAY;
 		}
 	}
+
+    /** Return the name for this gem proc. */
+	public String getGemProcName()
+    {
+        return this.procName.toString();
+    }
 }

@@ -9,15 +9,17 @@ import org.lwjgl.input.Keyboard;
 import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.GuiVM;
 import com.vies.viesmachines.api.References;
-import com.vies.viesmachines.api.util.LogHelper;
 import com.vies.viesmachines.client.gui.GuiContainerVC;
 import com.vies.viesmachines.client.gui.buttons.GuiButtonGeneral1VC;
 import com.vies.viesmachines.client.gui.buttons.GuiButtonGeneral2VC;
 import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
 import com.vies.viesmachines.common.entity.machines.containers.ContainerMachineNoSlots;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -58,8 +60,8 @@ public class GuiMachineMenuStats extends GuiContainerVC {
     	this.buttonList.add(GuiVM.buttonMM1);
 		this.buttonList.add(GuiVM.buttonMM2);
 		this.buttonList.add(GuiVM.buttonMM3);
-		this.buttonList.add(GuiVM.buttonMM4);
-		this.buttonList.add(GuiVM.buttonMM5);
+		//this.buttonList.add(GuiVM.buttonMM4);
+		//this.buttonList.add(GuiVM.buttonMM5);
 		
 		GuiVM.buttonMM2.enabled = false;
     }
@@ -79,6 +81,9 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 	{
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		
+		// Draws a black line under the machine preview options buttons:
+		this.drawRect(this.guiLeft +108, this.guiTop + 6, this.guiLeft +168, this.guiTop + 64, Color.GRAY.getRGB());
+		
 		// Binds the texture to use:
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(TEXTURE);
@@ -86,7 +91,8 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 		// Draws the background texture:
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 		
-		this.drawEntityOnScreen(this.guiLeft + 139, this.guiTop + 58, this.modelRotationHorizontal, 11, this.machine, this.modelRidingEntity);
+		this.drawEntityOnScreen(this.guiLeft + 139, this.guiTop + 58, this.modelRotationHorizontal, 13, this.machine, this.modelRidingEntity);
+ 		
     }
 	
 	@Override
@@ -96,7 +102,22 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 		
 		// Draws a black line under the machine preview options buttons:
 		this.drawRect(130, 75, 168, 76, Color.BLACK.getRGB());
+
 		
+
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(138.5, 10, 0);
+	        GlStateManager.scale(0.5F, 0.5F, 0.5F);
+	        
+	        this.centeredString(fontRenderer, 
+	        		//"===================="
+	        		"Preview"
+	        		, 0, 0, Color.WHITE.getRGB());
+	        
+	        //.drawCenteredString(fontRenderer, "Symbol Display", 0, 0, 1111111);
+		}
+		GlStateManager.popMatrix();
 		// Main labels:
 		GlStateManager.pushMatrix();
 		{
@@ -160,12 +181,19 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 			}
 			
 			// Health:
-			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.health.0"), 68, 230, 11111111);
-			this.centeredString(fontRenderer, Integer.toString((int)this.machine.getHealth()) + " / " + Integer.toString((int)this.machine.getMachineMaxHealth()), 68, 250, Color.WHITE.getRGB());
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.health.0"), 68, 230+13, 11111111);
+			this.centeredString(fontRenderer, Integer.toString((int)this.machine.getHealth()) + " / " + Integer.toString((int)this.machine.getMachineMaxHealth()), 68, 250+13, Color.WHITE.getRGB());
 			
 			// Energy:
-			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.energy.0"), 68, 270, 11111111);
-			this.centeredString(fontRenderer, Integer.toString((int)this.machine.getEnergy()) + " / " + Integer.toString((int)this.machine.getMaxEnergy()), 68, 290, Color.WHITE.getRGB());
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.energy.0"), 68, 270+12, 11111111);
+			this.centeredString(fontRenderer, Integer.toString((int)this.machine.getEnergy()) + " / " + Integer.toString((int)this.machine.getMaxEnergy()), 68, 290+12, Color.WHITE.getRGB());
+			
+			// Durability:
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.durability.0"), 68, 310+12, 11111111);
+			this.centeredString(fontRenderer, Integer.toString((int)this.machine.getDurability()) + " / " + Integer.toString((int)this.machine.getMaxDurability()), 68, 330+12, Color.WHITE.getRGB());
+			
+			
+			
 			
 			// Engine Tier:
 			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.engine.0"), 176, 190, 11111111);
@@ -187,20 +215,27 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 			}
 			
 			// Forward Speed:
-			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.speed.0"), 176, 230, 11111111);
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.speed.0"), 176, 230+13, 11111111);
 			this.centeredString(fontRenderer, 
 					//Integer.toString(
 					Float.toString(EnumsVM.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getFowardSpeedModifier() * 1000)
 					//)
-					, 176, 250, Color.WHITE.getRGB());
+					, 176, 250+13, Color.WHITE.getRGB());
 			//LogHelper.info(
 					//Integer.toString((int) 
 			//				EnumsVC.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getFowardSpeedModifier()
 			//				* 1000//)
 			//);
 			// Fuel Efficiency:
-			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.energyregen.0"), 176, 270, 11111111);
-			this.centeredString(fontRenderer, "+1" + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.per") + " " + Integer.toString(EnumsVM.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getEnergyRegenModifier() / 20) + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.seconds") + ".", 176, 290, Color.WHITE.getRGB());
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.energygain.0"), 176, 270+12, 11111111);
+			this.centeredString(fontRenderer, "+1" + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.per") + " " + Integer.toString(EnumsVM.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getEnergyIncreaseModifier() / 20) + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.sec"), 176, 290+12, Color.WHITE.getRGB());
+			
+			// Fuel Efficiency:
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.durabilityloss.0"), 176, 310+12, 11111111);
+			this.centeredString(fontRenderer, "+1" + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.per") + " " + Integer.toString(EnumsVM.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getDurabilityDecreaseModifier() / 20) + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.sec"), 176, 330+12, Color.WHITE.getRGB());
+			
+			
+			
 			
 			// Component Tier:
 			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.component.0"), 284, 190, 11111111);
@@ -221,12 +256,32 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 				this.centeredString(fontRenderer, TextFormatting.LIGHT_PURPLE + References.Old_I18n.translateToLocalFormatted("viesmachines.main.tier") + " " + Integer.toString(this.machine.getTierComponent()), 284, 210, Color.WHITE.getRGB());
 			}
 			
-			// Ammo:
-			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.ammo.0"), 284, 230, 11111111);
-			this.centeredString(fontRenderer, Integer.toString(this.machine.getAmmoAmount()) + " / "+ Integer.toString(this.machine.getMaxAmmoAmount()), 284, 250, Color.WHITE.getRGB());
+			// Max Ammo:
+			this.centeredString(fontRenderer, TextFormatting.BOLD + References.Old_I18n.translateToLocalFormatted("viesmachines.gui.tt.stats.ammo.0"), 284, 230+13, 11111111);
+			this.centeredString(fontRenderer, Integer.toString(this.machine.getAmmoAmount()) + " / "+ Integer.toString(this.machine.getMaxAmmoAmount()), 284, 250+13, Color.WHITE.getRGB());
 			// Special Stat:
-			this.centeredString(fontRenderer, TextFormatting.BOLD + this.machine.getComponentName(), 284, 270, 11111111);
-			this.centeredString(fontRenderer, "+1" + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.per") + " " + Integer.toString(EnumsVM.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getEnergyRegenModifier()) + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.seconds") + ".", 284, 290, Color.WHITE.getRGB());
+			this.centeredString(fontRenderer, 
+					"----------"
+					//TextFormatting.BOLD + this.machine.getComponentName()
+			, 284, 270+12, 11111111);
+			this.centeredString(fontRenderer, 
+					"----------"
+					//"+1" + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.per") + " " + Integer.toString(EnumsVM.FlyingMachineEngineTier.byId(this.machine.getTierEngine()).getEnergyIncreaseModifier()) + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.main.sec")
+					
+					, 284, 290+12, Color.WHITE.getRGB());
+			
+			// Special Stat:
+			this.centeredString(fontRenderer, TextFormatting.BOLD + this.machine.getComponentName(), 284, 310+12, 11111111);
+			
+			
+			if (this.machine.getTierComponent() < 3)
+			{
+				this.centeredString(fontRenderer, Integer.toString(EnumsVM.FlyingMachineComponentTier.byId(this.machine.getTierComponent()).getMaxElevationModifier()) + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.componentvaluenameflying.0"), 284, 330+12, Color.WHITE.getRGB());
+			}
+			else
+			{
+				this.centeredString(fontRenderer, References.Old_I18n.translateToLocalFormatted("viesmachines.main.unlimited") + " " + References.Old_I18n.translateToLocalFormatted("viesmachines.enum.machinename.componentvaluenameflying.0"), 284, 330+12, Color.WHITE.getRGB());
+			}
 		}
 		GlStateManager.popMatrix();
 		
@@ -299,7 +354,9 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = References.localNameVC("viesmachines.gui.tt.general.previewturnleft.0").length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -313,7 +370,9 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = References.localNameVC("viesmachines.gui.tt.general.previewturn.0").length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -334,7 +393,9 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = References.localNameVC("viesmachines.gui.tt.general.previewturnright.0").length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -348,7 +409,9 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 				
 				GlStateManager.pushMatrix();
 				{
-					GlStateManager.translate(mouseX - this.guiLeft - 20, mouseY - this.guiTop + 6, 0);
+					int textNumber = References.localNameVC("viesmachines.gui.tt.general.previewturn.0").length();
+					
+					GlStateManager.translate(mouseX - this.guiLeft + 3 - textNumber - (textNumber / 2), mouseY - this.guiTop + 6, 0);
 					GlStateManager.scale(0.5, 0.5, 0.5);
 					
 					this.drawHoveringText(text, 0, 0);
@@ -356,6 +419,20 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 				GlStateManager.popMatrix();
 			}
 		}
+		
+		//TODO
+		//GlStateManager.pushMatrix();
+				//{
+				//	this.drawEntityOnScreen(//this.guiLeft + 
+				//			139
+				//			, //this.guiTop + 
+				//			58
+				//			, this.modelRotationHorizontal, 11, 
+				//			this.machine, this.modelRidingEntity);
+				//	
+					
+				//}
+				//GlStateManager.popMatrix();
 	}
 	
 	@Override
@@ -363,7 +440,7 @@ public class GuiMachineMenuStats extends GuiContainerVC {
     {
         super.updateScreen();
         
-        // Deals with the Preview player buttons toggle:
+    	// Deals with the Preview player buttons toggle:
         if(!this.modelRidingEntity)
 		{
         	GuiVM.buttonRidingPlayerTrue.enabled = true;
@@ -374,46 +451,6 @@ public class GuiMachineMenuStats extends GuiContainerVC {
 			GuiVM.buttonRidingPlayerTrue.enabled = false;
 			GuiVM.buttonRidingPlayerFalse.enabled = true;
 		}
-        
-        // Deals with the Power buttons toggle:
-        if(this.machine.getPoweredOn())
-		{
-			GuiVM.buttonMachineOnTrue.visible = true;
-			GuiVM.buttonMachineOnFalse.visible = false;
-		}
-		else
-		{
-			GuiVM.buttonMachineOnTrue.visible = false;
-			GuiVM.buttonMachineOnFalse.visible = true;
-		}
-        
-        // Deals with the Autorun buttons toggle:
-        if(this.machine.getAutorun())
-		{
-			GuiVM.buttonMachineAutorunTrue.visible = true;
-			GuiVM.buttonMachineAutorunFalse.visible = false;
-		}
-		else
-		{
-			GuiVM.buttonMachineAutorunTrue.visible = false;
-			GuiVM.buttonMachineAutorunFalse.visible = true;
-		}
-        
-        // Deals with the Broken affected buttons:
-        if (this.machine.getBroken())
-        {
-        	GuiVM.buttonMusicSelect.enabled = false;
-        	GuiVM.buttonMusicStop.enabled = false;
-        	GuiVM.buttonMusicPlay.enabled = false;
-        	GuiVM.buttonMusicRandom.enabled = false;
-        }
-        else
-        {
-        	GuiVM.buttonMusicSelect.enabled = true;
-        	GuiVM.buttonMusicStop.enabled = true;
-        	GuiVM.buttonMusicPlay.enabled = true;
-        	GuiVM.buttonMusicRandom.enabled = true;
-        }
         
         // Turn machine preview left with shift down:
         if (GuiVM.buttonRotateLeft.isMouseOver() 
@@ -428,5 +465,7 @@ public class GuiMachineMenuStats extends GuiContainerVC {
  	    {
  			this.modelRotationHorizontal = this.modelRotationHorizontal + 2;
  		}
+ 		
+		
     }
 }

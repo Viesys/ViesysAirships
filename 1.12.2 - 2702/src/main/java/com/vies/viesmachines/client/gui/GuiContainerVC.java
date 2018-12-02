@@ -25,6 +25,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -41,6 +42,9 @@ public class GuiContainerVC extends GuiContainer {
 	protected int modelRotationHorizontal;
 	protected boolean modelRidingEntity;
 	
+	public static int machineTexture;
+	
+	public static boolean machineColorActive;
 	public static int textRedNumber;
 	public static int textGreenNumber;
 	public static int textBlueNumber;
@@ -76,6 +80,8 @@ public class GuiContainerVC extends GuiContainer {
 		
 		this.xSize = 176;
 		this.ySize = 222;
+		
+		this.zLevel = 200.0F;
 	}
 	
 	/** Adds the buttons (and other controls) to the screen in question.*/
@@ -87,11 +93,11 @@ public class GuiContainerVC extends GuiContainer {
     	buttonList.clear();
     	Keyboard.enableRepeatEvents(true);
     	
-    	GuiVM.buttonMM1 = new GuiButtonMenuMainVC(1001, this.guiLeft - 35, this.guiTop + 8 + (16 * 0)+50, 36, 14, "", 0);
-    	GuiVM.buttonMM2 = new GuiButtonMenuStatsVC(1002, this.guiLeft - 35, this.guiTop + 8 + (16 * 1)+50, 36, 14, "", 0);
-    	GuiVM.buttonMM3 = new GuiButtonMenuCustomizeVC(1003, this.guiLeft - 35, this.guiTop + 8 + (16 * 2)+50, 36, 14, "", 0);
-    	GuiVM.buttonMM4 = new GuiButtonMenuModuleVC(1004, this.guiLeft - 35, this.guiTop + 8 + (16 * 3)+50, 36, 14, "", 0);
-    	GuiVM.buttonMM5 = new GuiButtonMenuRedstoneVC(1005, this.guiLeft - 35, this.guiTop + 8 + (16 * 6)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM1 = new GuiButtonMenuMainVC(1001, this.guiLeft - 35, this.guiTop + 14 + (14 * 0)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM2 = new GuiButtonMenuStatsVC(1002, this.guiLeft - 35, this.guiTop + 14 + (14 * 1)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM3 = new GuiButtonMenuCustomizeVC(1003, this.guiLeft - 35, this.guiTop + 14 + (14 * 2)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM4 = new GuiButtonMenuModuleVC(1004, this.guiLeft - 35, this.guiTop + 14 + (14 * 3)+50, 36, 14, "", 0);
+    	GuiVM.buttonMM5 = new GuiButtonMenuRedstoneVC(1005, this.guiLeft - 35, this.guiTop + 14 + (14 * 6)+50, 36, 14, "", 0);
     }
     
     /** Called by the controls from the buttonList when activated. (Mouse pressed for buttons) */
@@ -142,6 +148,7 @@ public class GuiContainerVC extends GuiContainer {
 	{
 		int x = 110+5;
 		int x1 = 91+5;
+		int x2 = 72+5;
 		
 		// Draws the top left extension for the current Health amount:
 		this.drawRect(this.guiLeft - 35, this.guiTop + 117-x, this.guiLeft + 1, this.guiTop + 137-x, Color.BLACK.getRGB());
@@ -152,6 +159,11 @@ public class GuiContainerVC extends GuiContainer {
 		this.drawRect(this.guiLeft - 35, this.guiTop + 117-x1, this.guiLeft + 1, this.guiTop + 137-x1, Color.BLACK.getRGB());
 		this.drawRect(this.guiLeft - 34, this.guiTop + 118-x1, this.guiLeft, this.guiTop + 136-x1, Color.LIGHT_GRAY.getRGB());
 		this.drawRect(this.guiLeft - 32, this.guiTop + 120-x1, this.guiLeft - 2, this.guiTop + 134-x1, Color.BLACK.getRGB());
+		
+		// Draws the bottom left extension for the current Durability amount:
+		this.drawRect(this.guiLeft - 35, this.guiTop + 117-x2, this.guiLeft + 1, this.guiTop + 137-x2, Color.BLACK.getRGB());
+		this.drawRect(this.guiLeft - 34, this.guiTop + 118-x2, this.guiLeft, this.guiTop + 136-x2, Color.LIGHT_GRAY.getRGB());
+		this.drawRect(this.guiLeft - 32, this.guiTop + 120-x2, this.guiLeft - 2, this.guiTop + 134-x2, Color.BLACK.getRGB());
 	}
 	
 	@Override
@@ -173,6 +185,14 @@ public class GuiContainerVC extends GuiContainer {
 			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(References.localNameVC("viesmachines.gui.tt.energy.0"), 0, false, TextFormatting.YELLOW, 1), 0, 0, Color.WHITE.getRGB());
 		}
 		GlStateManager.popMatrix();
+		// Durability label:
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(-16.5, 7+19+19, 0);
+			GlStateManager.scale(0.5, 0.5, 0.5);
+			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(References.localNameVC("viesmachines.gui.tt.durability.0"), 0, false, TextFormatting.GREEN, 1), 0, 0, Color.WHITE.getRGB());
+		}
+		GlStateManager.popMatrix();
 		
 		// Health amount:
 		GlStateManager.pushMatrix();
@@ -190,6 +210,16 @@ public class GuiContainerVC extends GuiContainer {
 			GlStateManager.scale(0.75, 0.75, 0.75);
 			
 			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(Integer.toString((int)this.machine.getEnergy()), 0, false, TextFormatting.WHITE, 0), 0, 0, Color.WHITE.getRGB());
+		}
+		GlStateManager.popMatrix();
+
+		// Durability amount:
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(-16.5, 12+19+19, 0);
+			GlStateManager.scale(0.75, 0.75, 0.75);
+			
+			this.drawCenteredString(fontRenderer, this.stringToFlashGolden(Integer.toString((int)this.machine.getDurabilityPercent()) + "%", 0, false, TextFormatting.WHITE, 0), 0, 0, Color.WHITE.getRGB());
 		}
 		GlStateManager.popMatrix();
 	}
@@ -320,14 +350,65 @@ public class GuiContainerVC extends GuiContainer {
 	/** Draws an ItemStack. */
     protected void drawItemStack(ItemStack stack, int x, int y, String altText)
     {
+    	GlStateManager.pushMatrix();
+		{
+			GL11.glEnable(GL11.GL_CULL_FACE);
+	        //GL11.glCullFace(GL11.GL_FRONT);
+			
+			
+			float itemSpin = (((float)Minecraft.getMinecraft().player.getEntityWorld().getTotalWorldTime() + 1) / 20.0F) * (180F / (float)Math.PI);
+	        
+	        if(stack.getItem() instanceof ItemBlock)
+			{
+	        	GL11.glColor4f(1F, 1F, 1F, 1F);
+
+	        	GlStateManager.translate(x, y, 0F);
+            	GlStateManager.translate(0F, 15.0F, 0F);
+		    	GlStateManager.rotate(25.0F, 1.0F, 0.0F, 0.0F);
+		    	GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+            	GlStateManager.scale(50, 50, 50);
+            	
+            	GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+	            
+            	//Spins Item
+    	        GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
+			}
+	        else
+	        {
+	        	GlStateManager.translate(x, y, 0F);
+	        	//GlStateManager.translate(posXIn, posYIn, 50F);
+		        GlStateManager.scale(50, 50, 50);
+		        
+		        //Flips/rotates the model right side up.
+	            GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+	            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+	            
+
+            	//Spins Item
+    	        //GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
+	        }
+			
+	        Minecraft.getMinecraft().getRenderItem().renderItem(stack, TransformType.GROUND);
+	        
+
+	        
+	        //GL11.glCullFace(GL11.GL_BACK);
+	        GL11.glDisable(GL11.GL_CULL_FACE);
+		}
+		GlStateManager.popMatrix();
+    	/**
         GlStateManager.translate(0.0F, 0.0F, 32.0F);
         this.zLevel = 200.0F;
         this.itemRender.zLevel = 200.0F;
         net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
         if (font == null) font = fontRenderer;
-        this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+        GlStateManager.scale(50, 50, 50);
+    	
+        //this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
         this.zLevel = 0.0F;
         this.itemRender.zLevel = 0.0F;
+        */
+        //Minecraft.getMinecraft().getRenderItem().renderItem(stack, TransformType.GROUND);
     }
 	
 	/** Draws a Rotating ItemStack. */
@@ -341,7 +422,7 @@ public class GuiContainerVC extends GuiContainer {
 			{
 	        	GlStateManager.rotate(25.0F, 1.0F, 0.0F, 0.0F);
 	        	GlStateManager.translate(posXIn, posYIn, 0F);
-            	GlStateManager.translate(0F, 15.0F, 0F);
+            	GlStateManager.translate(0F, 15.0F, 20F);
             	GlStateManager.scale(50, 50, 50);
             	
             	GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
@@ -357,6 +438,51 @@ public class GuiContainerVC extends GuiContainer {
 		        //Flips/rotates the model right side up.
 	            GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
 	            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+	            
+
+            	//Spins Item
+    	        GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
+	        }
+			
+	        Minecraft.getMinecraft().getRenderItem().renderItem(stack, TransformType.GROUND);
+		}
+		GlStateManager.popMatrix();
+    }
+    
+    /** Draws a Rotating ItemStack. */
+    protected void drawStillItemStack(ItemStack stack, int posXIn, int posYIn)
+    {
+    	GlStateManager.pushMatrix();
+		{
+			float itemSpin = (((float)Minecraft.getMinecraft().player.getEntityWorld().getTotalWorldTime() + 1) / 20.0F) * (180F / (float)Math.PI);
+	        
+	        if(stack.getItem() instanceof ItemBlock)
+			{
+	        	
+	        	GlStateManager.translate(posXIn, posYIn, 0F);
+            	GlStateManager.translate(0F, 2.5F, 30F);
+            	
+            	GlStateManager.rotate(25.0F, 1.0F, 0.0F, 0.0F);
+	        	GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+            	GlStateManager.scale(50, 50, 50);
+            	
+            	GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+	            
+            	//Spins Item
+    	        //GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
+			}
+	        else
+	        {
+	        	GlStateManager.translate(posXIn, posYIn, 50F);
+		        GlStateManager.scale(50, 50, 0);
+		        
+		        //Flips/rotates the model right side up.
+	            GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+	            GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
+	            
+
+            	//Spins Item
+    	        //GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
 	        }
 			
 	        Minecraft.getMinecraft().getRenderItem().renderItem(stack, TransformType.GROUND);
@@ -374,6 +500,68 @@ public class GuiContainerVC extends GuiContainer {
 	    	mc.renderEngine.bindTexture(new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/gui_heads.png"));
 	    	
 	    	GlStateManager.translate(this.guiLeft + 41 + xIn, this.guiTop + 63 + yIn, 100.0F);
+	        GlStateManager.scale(0.625F, 0.625F, 0.625F);
+	    	
+	    	switch(skullType)
+			{
+			    case 0:
+			    case 1:
+			    default:
+			    	this.drawTexturedModalRect(0, 0, 0, 0, 32, 32);
+			        break;
+			    case 2:
+			    	this.drawTexturedModalRect(0, 0, 32, 0, 32, 32);
+			        break;
+			    case 3:
+			    	this.drawTexturedModalRect(0, 0, 64, 0, 32, 32);
+			        break;
+			    case 4:
+			    	this.drawTexturedModalRect(0, 0, 96, 0, 32, 32);
+			        break;
+			    case 5:
+			    	this.drawTexturedModalRect(0, 0, 128, 0, 32, 32);
+			        break;
+			    case 6:
+			    	this.drawTexturedModalRect(0, 0, 160, 0, 32, 32);
+			        break;
+			    case 7:
+			    	this.drawTexturedModalRect(0, 0, 192, 0, 32, 32);
+			        break;
+			    case 8:
+			    	this.drawTexturedModalRect(0, 0, 224, 0, 32, 32);
+			        break;
+			    case 9:
+			    	this.drawTexturedModalRect(0, 0, 0, 32, 32, 32);
+			        break;
+			    case 10:
+			    	this.drawTexturedModalRect(0, 0, 32, 32, 32, 32);
+			        break;
+			    case 11:
+			    	this.drawTexturedModalRect(0, 0, 64, 32, 32, 32);
+			        break;
+			    case 12:
+			    	this.drawTexturedModalRect(0, 0, 96, 32, 32, 32);
+			        break;
+			    case 13:
+			    	this.drawTexturedModalRect(0, 0, 128, 0, 32, 32);
+			        break;
+			}
+		}
+		GlStateManager.popMatrix();
+    }
+    
+    
+    
+    /** Draws an Entity Head. */
+    protected void drawEntityHeadForground(int xIn, int yIn, int skullType)
+    {
+    	
+    	GlStateManager.pushMatrix();
+		{
+			GL11.glColor4f(1F, 1F, 1F, 1F);
+	    	mc.renderEngine.bindTexture(new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/gui_heads.png"));
+	    	
+	    	GlStateManager.translate(41 + xIn, 63 + yIn, 100.0F);
 	        GlStateManager.scale(0.625F, 0.625F, 0.625F);
 	    	
 	    	switch(skullType)
@@ -483,16 +671,77 @@ public class GuiContainerVC extends GuiContainer {
 		GlStateManager.popMatrix();
     }
     
+    /** Draws a Supporter Head. */
+    protected void drawEntitySupporterHeadForground(int xIn, int yIn, int skullType)
+    {
+    	GlStateManager.pushMatrix();
+		{
+			GL11.glColor4f(1F, 1F, 1F, 1F);
+	    	mc.renderEngine.bindTexture(new ResourceLocation(References.MOD_ID + ":" + "textures/models/heads/supporters/gui_supporter_heads.png"));
+	    	
+	    	GlStateManager.translate(41 + xIn, 63 + yIn, 100.0F);
+	        GlStateManager.scale(0.625F, 0.625F, 0.625F);
+	    	
+	    	switch(skullType)
+			{
+			    case 0:
+			    case 1:
+			    default:
+			    	this.drawTexturedModalRect(0, 0, 0, 0, 32, 32);
+			        break;
+			    case 2:
+			    	this.drawTexturedModalRect(0, 0, 32, 0, 32, 32);
+			        break;
+			    case 3:
+			    	this.drawTexturedModalRect(0, 0, 64, 0, 32, 32);
+			        break;
+			    case 4:
+			    	this.drawTexturedModalRect(0, 0, 96, 0, 32, 32);
+			        break;
+			    case 5:
+			    	this.drawTexturedModalRect(0, 0, 128, 0, 32, 32);
+			        break;
+			    case 6:
+			    	this.drawTexturedModalRect(0, 0, 160, 0, 32, 32);
+			        break;
+			    case 7:
+			    	this.drawTexturedModalRect(0, 0, 192, 0, 32, 32);
+			        break;
+			    case 8:
+			    	this.drawTexturedModalRect(0, 0, 224, 0, 32, 32);
+			        break;
+			    case 9:
+			    	this.drawTexturedModalRect(0, 0, 0, 32, 32, 32);
+			        break;
+			    case 10:
+			    	this.drawTexturedModalRect(0, 0, 32, 32, 32, 32);
+			        break;
+			    case 11:
+			    	this.drawTexturedModalRect(0, 0, 64, 32, 32, 32);
+			        break;
+			    case 12:
+			    	this.drawTexturedModalRect(0, 0, 96, 32, 32, 32);
+			        break;
+			    case 13:
+			    	this.drawTexturedModalRect(0, 0, 128, 0, 32, 32);
+			        break;
+			}
+		}
+		GlStateManager.popMatrix();
+    }
+    
     /** Draws an entity on the screen. */
     protected void drawEntityOnScreen(int posX, int posY, int horizontalIn, int scale, Entity entityIn, boolean ridingEntityIn)
     {
+    	
     	GlStateManager.pushMatrix();
 		{
 			GL11.glEnable(GL11.GL_CULL_FACE);
 	        GL11.glCullFace(GL11.GL_FRONT);
 	        
-	        EntityMachineBase machineIn = (EntityMachineBase) entityIn;
 	        
+	        //EntityMachineBase machineIn = (EntityMachineBase) entityIn;
+	        //this.zLevel = 200.0F;
 	        GlStateManager.translate(posX, posY, 100.0F);
 	        GlStateManager.scale((float)(scale), (float)scale, (float)scale);
 	        
@@ -501,8 +750,21 @@ public class GuiContainerVC extends GuiContainer {
 	        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
 	        GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
 	        
-	        //Fixes the position to be at a right
+	        if (!GuiVM.buttonRotateLeft.isMouseOver() 
+    		&& !GuiVM.buttonRotateRight.isMouseOver() 
+	        && !this.isShiftKeyDown())
+     	    {
+		        float itemSpin = (((float)Minecraft.getMinecraft().player.getEntityWorld().getTotalWorldTime() + 1) / 50.0F) * (180F / (float)Math.PI);
+		        
+				//Spins Item
+		        GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
+     	    }
+	        
+	        
 	        GlStateManager.rotate(horizontalIn, 0.0F, 1.0F, 0.0F);
+	    	        
+	        //
+	        //GlStateManager.rotate(horizontalIn, 0.0F, 1.0F, 0.0F);
 	        
 	        RenderHelper.disableStandardItemLighting();
 	        
@@ -512,7 +774,7 @@ public class GuiContainerVC extends GuiContainer {
 	        rendermanager.setRenderShadow(false);
 	        
 	        //This is the non-multipass rendering way to render an entity.
-	        //rendermanager.renderEntity(entityIn, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+	        //rendermanager.renderEntity(entityIn, 10.0D, 10.0D, 10.0D, 0.0F, 1.0F, false);
 	        
 	        rendermanager.renderEntityStatic(entityIn, 0, false);
 	        rendermanager.renderMultipass(entityIn, 0F);
@@ -520,16 +782,31 @@ public class GuiContainerVC extends GuiContainer {
 	        if (ridingEntityIn)
 	        {
 	        	Entity rider = entityIn.getControllingPassenger();
-	        	
+	    		
 	        	rendermanager.renderEntityStatic(rider, 0, false);
 	        }
 	        
 	        rendermanager.setRenderShadow(true);
 	        
+
 	        GL11.glCullFace(GL11.GL_BACK);
 	        GL11.glDisable(GL11.GL_CULL_FACE);
+	        
 		}
 		GlStateManager.popMatrix();
+		
+
+		
+		
+		// Fixes the brightness for buttons in relation to the day/night cycle:
+		int i = 15728880;
+		int j = i % 65536;
+        int k = i / 65536;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+        //GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        
+        
+
     }
     
     /** Draws a machine part on the screen. */
@@ -553,6 +830,18 @@ public class GuiContainerVC extends GuiContainer {
 	        GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
 	        
 	        //Fixes the position to be at a right
+	        //GlStateManager.rotate(horizontalIn, 0.0F, 1.0F, 0.0F);
+	        if (!GuiVM.buttonRotateLeft.isMouseOver() 
+    		&& !GuiVM.buttonRotateRight.isMouseOver() 
+	        && !this.isShiftKeyDown())
+     	    {
+		        float itemSpin = (((float)Minecraft.getMinecraft().player.getEntityWorld().getTotalWorldTime() + 1) / 50.0F) * (180F / (float)Math.PI);
+		        
+				//Spins Item
+		        GlStateManager.rotate(itemSpin * 1, 0F, 1F, 0F);
+     	    }
+	        
+	        
 	        GlStateManager.rotate(horizontalIn, 0.0F, 1.0F, 0.0F);
 	        
 	        RenderHelper.disableStandardItemLighting();
@@ -581,7 +870,21 @@ public class GuiContainerVC extends GuiContainer {
 	        
 	        GL11.glCullFace(GL11.GL_BACK);
 	        GL11.glDisable(GL11.GL_CULL_FACE);
+	        
+	        
 		}
 		GlStateManager.popMatrix();
+		
+
+		
+		
+		// Fixes the brightness for buttons in relation to the day/night cycle:
+		int i = 15728880;
+		int j = i % 65536;
+        int k = i / 65536;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+        //GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        
+        
     }
 }

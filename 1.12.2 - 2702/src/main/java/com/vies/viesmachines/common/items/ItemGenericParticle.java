@@ -51,8 +51,8 @@ public class ItemGenericParticle extends Item {
 			textColor = TextFormatting.DARK_PURPLE;
 		}
 		
-		tooltip.add(textColor + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
-		tooltip.add(textColor + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(textColor + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(textColor + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
 	}
 	
 	@Override

@@ -3,11 +3,14 @@ package com.vies.viesmachines.common.entity.machines;
 import com.vies.viesmachines.api.EnumsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.LogHelper;
+import com.vies.viesmachines.client.InitParticlesVCRender;
+import com.vies.viesmachines.init.LootTableHandler;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.MoverType;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemStackHandler;
@@ -27,8 +30,8 @@ public class EntityMachineFlying extends EntityMachineFuel {
 	
 	public EntityMachineFlying(World worldIn, double x, double y, double z,
 			
-			int frameTierIn, int engineTierIn, int componentTierIn, 
-			int typeIn, float healthIn, int energyIn, 
+			int frameTierIn, int engineTierIn, int componentTierIn, int typeIn, 
+			float healthIn, int energyIn, int durabilityIn, 
 			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
 			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
 			int ammoAmountIn, int ammoTypeIn, 
@@ -70,11 +73,11 @@ public class EntityMachineFlying extends EntityMachineFuel {
         this.prevPosY = y;
         this.prevPosZ = z;
         
-        
+        /**
         this.setTierFrame(frameTierIn);
 		this.setTierEngine(engineTierIn);
 		this.setTierComponent(componentTierIn);
-		LogHelper.info("---"+ this.getTierFrame());
+		//LogHelper.info("---"+ this.getTierFrame());
 		this.setType(typeIn);
 		this.setHealth(healthIn);
 		this.setEnergy(energyIn);
@@ -123,6 +126,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
         
         this.setCustomNameTag(customNameIn);
 		this.setVisualNameColor(customNameColorIn);
+		*/
 	}
 	
 	
@@ -189,6 +193,20 @@ public class EntityMachineFlying extends EntityMachineFuel {
 	public void onLivingUpdate()
     {
         super.onLivingUpdate();
+        
+        
+    }
+	
+    
+    
+	//==================================================
+	// TODO       Overrides from EntityLiving
+	//==================================================
+    
+	@Override
+    protected ResourceLocation getLootTable()
+    {
+    	return LootTableHandler.MACHINE_FLYING;
     }
 	
     
@@ -256,7 +274,7 @@ public class EntityMachineFlying extends EntityMachineFuel {
 	        		}
 	            	else
 	            	{
-	            		f1 -= this.getForwardSpeed() * 0.5;//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+	            		f1 -= this.getForwardSpeed();// * 0.5;//this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
 	            	}
 		        }
 			}

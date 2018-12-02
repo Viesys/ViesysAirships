@@ -39,6 +39,7 @@ public class RenderMachineBeacon extends TileEntitySpecialRenderer<TileEntityMac
 	@Override
 	public void render(TileEntityMachineBeacon te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
 	{
+		/**
 		// Push the matrix - Renders items to find and process:
 		GL11.glPushMatrix();
 		
@@ -46,12 +47,12 @@ public class RenderMachineBeacon extends TileEntitySpecialRenderer<TileEntityMac
 		GL11.glTranslatef((float)x + 0.5F, (float)y + 1.05F, (float)z + 0.5F);
 		GL11.glRotatef(0F, 0.0F, 0.0F, 1.0F);
 		
-		this.renderItemToFind(te, x, y, z, partialTicks, destroyStage);
-		this.renderItemToProcess(te, x, y, z, partialTicks, destroyStage);
+		////this.renderItemToFind(te, x, y, z, partialTicks, destroyStage);
+		////this.renderItemToProcess(te, x, y, z, partialTicks, destroyStage);
 		
 		// Pop the matrix:
 		GL11.glPopMatrix();
-		
+		/**
 		//--------------------------------------------------
 		
 		// Push the matrix - Renders the KitFabricator:
@@ -92,7 +93,7 @@ public class RenderMachineBeacon extends TileEntitySpecialRenderer<TileEntityMac
 		// Binds the texture to use:
 		this.bindTexture(texture);
 		// Render the model:
-		this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
+		//this.model.render(te, 0, 0, 0, 0, 0, 0.0625F);
 		
 		if (te.isOn)
 		{
@@ -353,7 +354,7 @@ public class RenderMachineBeacon extends TileEntitySpecialRenderer<TileEntityMac
 	/** Renders the item the KitFabricator is looking for. */
 	private void renderItemToFind(TileEntityMachineBeacon te, double x, double y, double z, float partialTicks, int destroyStage)
     {
-        ItemStack itemstack = new ItemStack(ItemsVM.CHARGED_SHARD);
+        ItemStack itemstack = new ItemStack(ItemsVM.PARTICLE_STATIC_CHARGE);
         //InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, te.gemstoneMeta
         
         if(itemstack.isEmpty())

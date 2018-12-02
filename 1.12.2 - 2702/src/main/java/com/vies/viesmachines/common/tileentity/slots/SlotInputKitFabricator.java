@@ -19,8 +19,8 @@ public class SlotInputKitFabricator  extends SlotItemHandler {
     {
 		Item item = stack.getItem();
 		
-		if(item == ItemsVM.CHARGED_SHARD) return false;
+		if(item == ItemsVM.KIT_RAW) return true;
         
-		return true;
+		return false;
     }
 }

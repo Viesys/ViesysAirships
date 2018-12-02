@@ -42,8 +42,16 @@ public class MessageHelperGuiMachineMenuCustomizePrimarySkinColorApply extends M
 	{
 		EntityMachineBase machineIn = (EntityMachineBase) player.getRidingEntity();
 		
-		if (machineIn.getEnergy() >= CostsVM.COST_FRAME_COLOR)
+		if (player.isCreative())
 		{
+			machineIn.setVisualFrameColor(true);
+			machineIn.setVisualFrameColorRed(message.textRedIn);
+			machineIn.setVisualFrameColorGreen(message.textGreenIn);
+			machineIn.setVisualFrameColorBlue(message.textBlueIn);
+		}
+		else if (machineIn.getEnergy() >= CostsVM.COST_FRAME_COLOR)
+		{
+			machineIn.setVisualFrameColor(true);
 			machineIn.setVisualFrameColorRed(message.textRedIn);
 			machineIn.setVisualFrameColorGreen(message.textGreenIn);
 			machineIn.setVisualFrameColorBlue(message.textBlueIn);

@@ -1,6 +1,7 @@
 package com.vies.viesmachines.common.entity.machines;
 
 import com.vies.viesmachines.api.util.LogHelper;
+import com.vies.viesmachines.init.LootTableHandler;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -12,13 +13,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class EntityMachineWater extends EntityMachineFuel {
 	
-	protected static final IAttribute MAX_OXYGEN = (new RangedAttribute((IAttribute)null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
+	//protected static final IAttribute MAX_OXYGEN = (new RangedAttribute((IAttribute)null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
     
 	
 	
@@ -48,39 +50,38 @@ public class EntityMachineWater extends EntityMachineFuel {
 	
 	public EntityMachineWater(World worldIn, double x, double y, double z,
 			
-			int frameTierIn, int engineTierIn, int componentTierIn,
-			float currentHPIn, int currentEPIn, 
-			int currentFuelIn, int totalFuelIn,
-			int itemstackFuelItemIn, int itemstackFuelSizeIn,
-			boolean brokenIn, int machineEnhancement1In,
+			int frameTierIn, int engineTierIn, int componentTierIn, int typeIn, 
+			float healthIn, int energyIn, int durabilityIn, 
+			boolean brokenIn, int currentFuelIn, int totalFuelIn, 
+			//int itemstackFuelItemIn, int itemstackFuelSizeIn, 
+			int ammoAmountIn, int ammoTypeIn, 
+			int machineEnhancement1In, 
 			
-			int ammoAmountIn, int ammoTypeIn,
 			
-			int visualTypeModelIn, int visualVariantModelIn,
+			
+			int visualModelFrameIn, int visualModelEngineIn, int visualModelComponentIn, 
 			
 			int visualFrameTextureIn, 
-			boolean visualFrameTransparentIn, boolean visualFrameColorIn,
+			boolean visualFrameTransparentIn, boolean visualFrameColorIn, 
 			int visualFrameColorRedIn, 
 			int visualFrameColorGreenIn, 
-			int visualFrameColorBlueIn,
+			int visualFrameColorBlueIn, 
 			
-			int visualEngineParticleIn,
-			int visualEngineDisplayTypeIn,
-			int visualEngineDisplayItemstackIn,
-			int visualEngineDisplayItemstackMetaIn,
-			int visualEngineDisplayHeadIn,
-			int visualEngineDisplaySupporterHeadIn,
-			int visualEngineDisplayHolidayIn,
+			int visualEngineParticleIn, 
+			int visualEngineDisplayTypeIn, 
+			int visualEngineDisplayItemstackIn, 
+			int visualEngineDisplayItemstackMetaIn, 
+			int visualEngineDisplayHeadIn, 
+			int visualEngineDisplaySupporterHeadIn, 
+			int visualEngineDisplayHolidayIn, 
 			
 			int visualComponentTextureIn, 
-			boolean visualComponentTransparentIn, boolean visualComponentColorIn,
+			boolean visualComponentTransparentIn, boolean visualComponentColorIn, 
 			int visualComponentColorRedIn, 
 			int visualComponentColorGreenIn, 
-			int visualComponentColorBlueIn,
+			int visualComponentColorBlueIn, 
 			
-    		//int bombType1, int bombType2, int bombType3,
-    		
-    		NBTTagCompound compoundIn, String customNameIn, int visualNameColorIn) 
+    		NBTTagCompound compoundIn, String customNameIn, int customNameColorIn)
 	{
 		this(worldIn);
         this.setPosition(x, y, z);
@@ -91,7 +92,7 @@ public class EntityMachineWater extends EntityMachineFuel {
         this.prevPosX = x;
         this.prevPosY = y;
         this.prevPosZ = z;
-		
+		/**
 		this.frameTier = frameTierIn;
 		this.engineTier = engineTierIn;
 		this.componentTier = componentTierIn;
@@ -134,6 +135,7 @@ public class EntityMachineWater extends EntityMachineFuel {
         
         this.setCustomNameTag(customNameIn);
 		this.visualNameColor = visualNameColorIn;
+		*/
 	}
 	
 	
@@ -209,6 +211,12 @@ public class EntityMachineWater extends EntityMachineFuel {
 	//==================================================
 	
 	@Override
+    protected ResourceLocation getLootTable()
+    {
+    	return LootTableHandler.MACHINE_WATER;
+    }
+	
+	@Override
     public double getMountedYOffset()
     {
         return 0.15D;
@@ -227,15 +235,15 @@ public class EntityMachineWater extends EntityMachineFuel {
 	//==================================================
     
     @Override
-    public void controlAirship()
+    public void initiateControlAirship()
     {
-    	super.controlAirship();
+    	super.initiateControlAirship();
     	
     	if(this.isBeingRidden())
         {
 	        float f1 = 0.0F;
 	        
-	        if(this.broken)
+	        if(this.getBroken())//.broken)
 			{
 	    		
 			}

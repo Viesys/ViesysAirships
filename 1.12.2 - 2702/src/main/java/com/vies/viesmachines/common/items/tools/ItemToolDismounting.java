@@ -24,11 +24,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemToolDismounting extends Item {
 	
+	private String procName;
+	
 	public ItemToolDismounting() 
 	{
 		this.setMaxStackSize(1);
 		this.setMaxDamage(25);
-		ItemHelper.setItemName(this, "item_tool_dismounting");
+		
+		this.procName = "ToolsProc";
+		
+		ItemHelper.setItemName(this, "item_tool_dismounter");
 		this.setCreativeTab(ViesMachines.tabItems);
 	}
 	
@@ -70,16 +75,22 @@ public class ItemToolDismounting extends Item {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
 		tooltip.add(TextFormatting.DARK_GREEN + "================================");
-		tooltip.add(TextFormatting.WHITE + References.localNameVC(this.getUnlocalizedName() + ".tt.1") 
-		+ " " + TextFormatting.GRAY + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
-		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.3"));
+		tooltip.add(TextFormatting.WHITE + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1") 
+		+ " " + TextFormatting.GRAY + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.3"));
 		tooltip.add("");
-		tooltip.add(References.localNameVC(this.getUnlocalizedName() + ".tt.4"));
+		tooltip.add(References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.4"));
 	}
 	
 	@Override
 	public EnumRarity getRarity(ItemStack stack)
     {
 		return EnumRarity.COMMON;
+    }
+
+    /** Return the name for this gem proc. */
+	public String getGemProcName()
+    {
+        return this.procName.toString();
     }
 }

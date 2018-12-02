@@ -19,9 +19,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemComponentFlying extends Item {
 	
+	private String procName;
+	
 	public ItemComponentFlying(String unlocalizedNameIn) 
 	{
 		ItemHelper.setItemName(this, unlocalizedNameIn);
+		
+		this.procName = "ComponentFlyingProc";
 		
 		this.setMaxStackSize(64);
 		this.setCreativeTab(ViesMachines.tabItems);
@@ -33,15 +37,21 @@ public class ItemComponentFlying extends Item {
     {
 		TextFormatting color = TextFormatting.GOLD;
 		
-		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.1"));
-		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.2"));
+		tooltip.add(color + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.1"));
+		tooltip.add(color + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.2"));
 		tooltip.add(" ");
-		tooltip.add(color + References.localNameVC(this.getUnlocalizedName() + ".tt.3"));
+		tooltip.add(color + References.Old_I18n.translateToLocal(this.getUnlocalizedName() + ".tt.3"));
 	}
 	
 	@Override
 	public EnumRarity getRarity(ItemStack stack)
     {
         return EnumRarity.UNCOMMON;
+    }
+
+    /** Return the name for this gem proc. */
+	public String getGemProcName()
+    {
+        return this.procName.toString();
     }
 }

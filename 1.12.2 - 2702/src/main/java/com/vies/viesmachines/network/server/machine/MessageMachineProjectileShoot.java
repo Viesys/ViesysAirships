@@ -36,7 +36,50 @@ public class MessageMachineProjectileShoot extends MessageBase<MessageMachinePro
 	{
 		EntityMachineBase machineIn = (EntityMachineBase) player.getRidingEntity();
 		
-		if (machineIn.getAmmoAmount() > 0)
+		if (player.isCreative())
+		{
+			//Normal
+			if (machineIn.getAmmoType() == 0)
+			{
+				EntityBulletNormal entitybulletnormal = new EntityBulletNormal(player.world, 
+						player.posX + (double)(MathHelper.sin(-player.rotationYaw * 0.017453292F) * 02.50F), 
+						player.posY + 0.95D, 
+						player.posZ + (double)(MathHelper.cos(player.rotationYaw * 0.017453292F) * 02.50F));
+				
+				entitybulletnormal.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F, 0.0F);
+		        
+				machineIn.world.spawnEntity(entitybulletnormal);
+			}
+			
+			//Electrical
+			if (machineIn.getAmmoType() == 1
+			&& machineIn.getEnergy() >= CostsVM.COST_PROJECTILE_ELECTRICAL)
+			{
+				EntityBulletElectrical entitybulletelectrical = new EntityBulletElectrical(player.world, 
+						player.posX + (double)(MathHelper.sin(-player.rotationYaw * 0.017453292F) * 02.50F), 
+						player.posY + 0.95D, 
+						player.posZ + (double)(MathHelper.cos(player.rotationYaw * 0.017453292F) * 02.50F));
+				
+				entitybulletelectrical.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F, 0.0F);
+		        
+				machineIn.world.spawnEntity(entitybulletelectrical);
+			}
+			
+			//Explosive
+			if (machineIn.getAmmoType() == 2
+			&& machineIn.getEnergy() >= CostsVM.COST_PROJECTILE_EXPLOSIVE)
+			{
+				EntityBulletExplosive entitybulletexplosive = new EntityBulletExplosive(player.world, 
+						player.posX + (double)(MathHelper.sin(-player.rotationYaw * 0.017453292F) * 02.50F), 
+						player.posY + 0.95D, 
+						player.posZ + (double)(MathHelper.cos(player.rotationYaw * 0.017453292F) * 02.50F));
+				
+				entitybulletexplosive.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F, 0.0F);
+				
+				machineIn.world.spawnEntity(entitybulletexplosive);
+			}
+		}
+		else if (machineIn.getAmmoAmount() > 0)
 		{
 			if (machineIn.getAmmoType() == 1 && machineIn.getEnergy() < CostsVM.COST_PROJECTILE_ELECTRICAL
 			|| machineIn.getAmmoType() == 2 && machineIn.getEnergy() < CostsVM.COST_PROJECTILE_EXPLOSIVE)

@@ -274,13 +274,13 @@ public class TileEntityMachineBeacon extends TileEntity implements ITickable {
             {
             	this.inventory.insertItem(1, new ItemStack(
             			//InitItemsVG.GEMSTONE_ITEM_BASIC_V1
-            			ItemsVM.CHARGED_SHARD, 1 + this.procAmount, this.itemToFindMeta), false);
+            			ItemsVM.XEGONITE, 1 + this.procAmount, this.itemToFindMeta), false);
             }
             else if(itemstack1.isItemEqual(
             		//GemCuttingRecipes.CUT_GEM_OUTPUT[this.itemToFindMeta]
             		new ItemStack(
                 			//InitItemsVG.GEMSTONE_ITEM_BASIC_V1
-                			ItemsVM.CHARGED_SHARD, 1)
+                			ItemsVM.XEGONITE, 1)
             		))
             {
             	if(itemstack1.getCount() + this.procAmount > 64)

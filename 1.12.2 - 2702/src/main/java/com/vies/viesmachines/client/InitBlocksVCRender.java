@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -38,6 +39,11 @@ public final class InitBlocksVCRender extends BlocksVM {
 	{
 		INSTANCE.registerBlockModels();
 		INSTANCE.registerItemModels();
+		
+		//net.minecraft.item.Item.getTileEntityItemStackRenderer();
+		
+		//Item.getTileEntityItemStackRenderer()
+		
 	}
 	
 	/**

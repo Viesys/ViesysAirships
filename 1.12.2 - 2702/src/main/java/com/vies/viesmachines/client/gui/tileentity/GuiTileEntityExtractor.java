@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 
 public class GuiTileEntityExtractor extends GuiContainer {
 	
+	private final ResourceLocation TEXTURE = new ResourceLocation(References.MOD_ID + ":" + "textures/gui/container_gui_appliance_extractor.png");
+	
 	private InventoryPlayer playerInventory;
 	private TileEntityExtractor appliance;
 	private final World world;
@@ -34,15 +36,6 @@ public class GuiTileEntityExtractor extends GuiContainer {
 	public static int metaPosZ;
 	
 	private GuiButton buttonPower;
-	//private GuiButton buttonDraconite;
-	//private GuiButton buttonVelious;
-	//private GuiButton buttonArcanite;
-	//private GuiButton buttonKatcheen;
-	//private GuiButton buttonCarnelian;
-	//private GuiButton buttonNecrocite;
-	//private GuiButton buttonOnyxius;
-	//private GuiButton buttonSoularite;
-	//private GuiButton buttonEbonheart;
 	
 	public GuiTileEntityExtractor(InventoryPlayer playerInventory, World worldIn, TileEntityExtractor applianceIn)
 	{
@@ -72,26 +65,8 @@ public class GuiTileEntityExtractor extends GuiContainer {
     	Keyboard.enableRepeatEvents(true);
     	
     	buttonPower = new GuiButton(9, this.guiLeft + 17+9, this.guiTop + 53, 16, 16, " ");
-    	//buttonDraconite = new GuiButton(0, this.guiLeft - 31, this.guiTop + 8, 16, 16, " ");
-    	//buttonVelious = new GuiButton(1, this.guiLeft - 31, this.guiTop + 24, 16, 16, " ");
-    	//buttonArcanite = new GuiButton(2, this.guiLeft - 31, this.guiTop + 40, 16, 16, " ");
-    	//buttonKatcheen = new GuiButton(3, this.guiLeft - 31, this.guiTop + 56, 16, 16, " ");
-    	//buttonCarnelian = new GuiButton(4, this.guiLeft - 15, this.guiTop + 8, 16, 16, " ");
-    	//buttonNecrocite = new GuiButton(5, this.guiLeft - 15, this.guiTop + 24, 16, 16, " ");
-    	//buttonOnyxius = new GuiButton(6, this.guiLeft - 15, this.guiTop + 40, 16, 16, " ");
-    	//buttonSoularite = new GuiButton(7, this.guiLeft - 15, this.guiTop + 56, 16, 16, " ");
-    	//buttonEbonheart = new GuiButton(8, this.guiLeft - 23, this.guiTop + 72, 16, 16, " ");
-		
+    	
     	this.buttonList.add(buttonPower);
-    	//this.buttonList.add(buttonDraconite);
-    	//this.buttonList.add(buttonVelious);
-    	//this.buttonList.add(buttonArcanite);
-    	//this.buttonList.add(buttonKatcheen);
-    	//this.buttonList.add(buttonCarnelian);
-    	//this.buttonList.add(buttonNecrocite);
-    	//this.buttonList.add(buttonOnyxius);
-    	//this.buttonList.add(buttonSoularite);
-    	//this.buttonList.add(buttonEbonheart);
     }
     
     /**
@@ -160,7 +135,7 @@ public class GuiTileEntityExtractor extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) 
 	{
 		GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-		this.mc.getTextureManager().bindTexture(new ResourceLocation(References.MOD_ID + ":" + "textures/gui/container_gui_appliance_extractor.png"));
+		this.mc.getTextureManager().bindTexture(TEXTURE);
 		this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
 		
 		this.drawTexturedModalRect(this.guiLeft + 156, this.guiTop + 19, 176, 50, 8, 1);
@@ -175,8 +150,8 @@ public class GuiTileEntityExtractor extends GuiContainer {
             this.drawTexturedModalRect(i + 81, j + 50 - k, 176, 13 - k, 14, k + 1);
         }
         
-        this.drawRect(this.guiLeft, this.guiTop + 8, this.guiLeft - 31, this.guiTop + 73, Color.BLACK.getRGB());
-        this.drawRect(this.guiLeft - 7, this.guiTop + 73, this.guiLeft - 23, this.guiTop + 89, Color.BLACK.getRGB());
+        //this.drawRect(this.guiLeft, this.guiTop + 8, this.guiLeft - 31, this.guiTop + 73, Color.BLACK.getRGB());
+        //this.drawRect(this.guiLeft - 7, this.guiTop + 73, this.guiLeft - 23, this.guiTop + 89, Color.BLACK.getRGB());
     }
 	
     private int getBurnLeftScaled(int pixels)
@@ -205,21 +180,8 @@ public class GuiTileEntityExtractor extends GuiContainer {
 			this.drawTexturedModalRect(17+9, 53, 0, 166, 16, 16);
 		}
 		
-		this.drawItemStack(new ItemStack(ItemsVM.CHARGED_SHARD, 1), 56+24, 17, "");
+		this.drawItemStack(new ItemStack(ItemsVM.XEGONITE, 1), 56+24, 17, "");
 		
-		/*
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, this.appliance.gemstoneMeta), 56, 17, "");
-		
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 0), -31, 9, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 1), -31, 25, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 2), -31, 41, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 3), -31, 57, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 4), -15, 9, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 5), -15, 25, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 6), -15, 41, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 7), -15, 57, "");
-		this.drawItemStack(new ItemStack(InitItemsVG.GEMSTONE_ITEM_BASIC_V1, 1, 8), -23, 73, "");
-		*/
 		if(this.appliance.getField(2) >= 200)
 		{
 			this.fontRenderer.drawString(this.appliance.getField(2) + "%", 14+9, 27, 0);

@@ -19,8 +19,6 @@ public class ItemsTab extends CreativeTabs {
 	@Override
 	public ItemStack getTabIconItem() 
 	{
-		return new ItemStack(ItemsVM.LOGIC_CHIP
-				//.ITEM_AIRSHIP_CREATIVE
-				, 1);
+		return new ItemStack(ItemsVM.ITEM_MACHINE_FLYING_AIRSHIP, 1);
 	}
 }

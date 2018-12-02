@@ -2,8 +2,10 @@ package com.vies.viesmachines.api;
 
 import com.vies.viesmachines.common.items.ItemGeneric;
 import com.vies.viesmachines.common.items.ItemGenericParticle;
+import com.vies.viesmachines.common.items.ItemGenericSymbol;
 import com.vies.viesmachines.common.items.ItemGenericWIP;
 import com.vies.viesmachines.common.items.kits.ItemKitAdmin;
+import com.vies.viesmachines.common.items.kits.ItemKitDurability;
 import com.vies.viesmachines.common.items.kits.ItemKitEnergy;
 import com.vies.viesmachines.common.items.kits.ItemKitHealth;
 import com.vies.viesmachines.common.items.machines.flying.ItemMachineFlyingAirship;
@@ -21,11 +23,11 @@ import net.minecraft.item.Item;
 
 public class ItemsVM {
 	
-	public static final Item CHARGED_SHARD = new ItemGeneric("item_charged_shard", EnumRarity.COMMON);
+	public static final Item XEGONITE = new ItemGeneric("item_xegonite", EnumRarity.COMMON);
 	public static final Item MACHINE_PELLETS = new ItemMachinePellets("item_machine_pellets", EnumRarity.UNCOMMON);
 	public static final Item MACHINE_AMMO = new ItemGeneric("item_machine_ammo", EnumRarity.UNCOMMON);
 	
-	public static final Item LOGIC_CHIP = new ItemGeneric("item_logic_chip", EnumRarity.COMMON);
+	public static final Item CIRCUIT_LOGIC = new ItemGeneric("item_circuit_logic", EnumRarity.COMMON);
 	public static final Item MACHINE_FRAME = new ItemGeneric("item_machine_frame", EnumRarity.COMMON);
 	public static final Item MACHINE_ENGINE = new ItemGeneric("item_machine_engine", EnumRarity.COMMON);
 	
@@ -49,17 +51,17 @@ public class ItemsVM {
 	
 	//===============================================================
 	
-	public static final Item KIT_RAW = new ItemGeneric("kits/item_kit_raw", EnumRarity.COMMON);
 	public static final Item KIT_HEALTH_2 = new ItemKitHealth("kits/item_kit_health_2", EnumRarity.UNCOMMON, 0);
 	public static final Item KIT_HEALTH_8 = new ItemKitHealth("kits/item_kit_health_8", EnumRarity.RARE, 1);
-	
 	public static final Item KIT_HEALTH_MAX = new ItemKitHealth("kits/item_kit_health_max", EnumRarity.EPIC, 2);
+	
 	public static final Item KIT_ENERGY_25 = new ItemKitEnergy("kits/item_kit_energy_25", EnumRarity.UNCOMMON, 0);
 	public static final Item KIT_ENERGY_100 = new ItemKitEnergy("kits/item_kit_energy_100", EnumRarity.RARE, 1);
-	
 	public static final Item KIT_ENERGY_MAX = new ItemKitEnergy("kits/item_kit_energy_max", EnumRarity.EPIC, 2);
-	public static final Item KIT_UPGRADE_MAX = new ItemKitAdmin("kits/item_admin_upgrade_max", EnumRarity.EPIC, 0);
-	public static final Item KIT_MACHINE_MAX = new ItemKitAdmin("kits/item_admin_machine_max", EnumRarity.EPIC, 1);
+	
+	public static final Item KIT_DURABILITY_50 = new ItemKitDurability("kits/item_kit_durability_50", EnumRarity.UNCOMMON, 0);
+	public static final Item KIT_DURABILITY_200 = new ItemKitDurability("kits/item_kit_durability_200", EnumRarity.RARE, 1);
+	public static final Item KIT_DURABILITY_MAX = new ItemKitDurability("kits/item_kit_durability_max", EnumRarity.EPIC, 2);
 	
 	//===============================================================
 
@@ -77,7 +79,41 @@ public class ItemsVM {
 	
 	//===============================================================
 	
-	public static final Item TOOL_DISMOUNTING = new ItemToolDismounting();
+	public static final Item TOOL_DISMOUNTER = new ItemToolDismounting();
+	
+	//===============================================================
+	
+	public static final Item XEGONITE_WATER = new ItemGeneric("item_xegonite_water", EnumRarity.COMMON);
+	public static final Item XEGONITE_LAVA = new ItemGeneric("item_xegonite_lava", EnumRarity.COMMON);
+	public static final Item XEGONITE_ENDER = new ItemGeneric("item_xegonite_ender", EnumRarity.COMMON);
+	
+	
+	
+	public static final Item KIT_RAW = new ItemGeneric("kits/item_kit_raw", EnumRarity.COMMON);
+	
+	public static final Item KIT_UPGRADE_MAX = new ItemKitAdmin("kits/item_admin_upgrade_max", EnumRarity.EPIC, 0);
+	public static final Item KIT_MACHINE_MAX = new ItemKitAdmin("kits/item_admin_machine_max", EnumRarity.EPIC, 1);
+	
+	public static final Item CIRCUIT_ADAPTIVE = new ItemGeneric("item_circuit_adaptive", EnumRarity.COMMON);
+	
+	
+	
+	//==================================================
+    // TODO              Particles
+	//==================================================
+    
+	//public static final Item SYMBOL_LOGOVIESMACHINES = new ItemGenericSymbol("symbols/item_symbol_logoviesmachines");
+	public static final Item SYMBOL_LOGOFORGE = new ItemGenericSymbol("symbols/item_symbol_logoforge");
+	//public static final Item SYMBOL_LOGOMINECRAFT = new ItemGenericSymbol("symbols/item_symbol_logominecraft");
+	public static final Item SYMBOL_COINSTACK = new ItemGenericSymbol("symbols/item_symbol_coinstack");
+	public static final Item SYMBOL_SCROLL = new ItemGenericSymbol("symbols/item_symbol_scroll");
+	public static final Item SYMBOL_WRENCH = new ItemGenericSymbol("symbols/item_symbol_wrench");
+	public static final Item SYMBOL_KEY = new ItemGenericSymbol("symbols/item_symbol_key");
+	public static final Item SYMBOL_PADLOCK = new ItemGenericSymbol("symbols/item_symbol_padlock");
+	public static final Item SYMBOL_BELL = new ItemGenericSymbol("symbols/item_symbol_bell");
+	public static final Item SYMBOL_ANCHOR = new ItemGenericSymbol("symbols/item_symbol_anchor");
+	public static final Item SYMBOL_BARREL = new ItemGenericSymbol("symbols/item_symbol_barrel");
+	public static final Item SYMBOL_GEARS = new ItemGenericSymbol("symbols/item_symbol_gears");
 	
 	
 	

@@ -86,6 +86,8 @@ public class ModelAirshipFrame1Primary extends ModelBase
     ModelRenderer Primary_Bar_Middle_Back_2;
     ModelRenderer Primary_Bar_Bottom_Front_1;
     ModelRenderer Primary_Bar_Bottom_Front_2;
+    //ModelRenderer Display_Stand_Base;
+    //ModelRenderer Display_Stand_Top;
 
     public ModelAirshipFrame1Primary()
     {
@@ -414,6 +416,14 @@ public class ModelAirshipFrame1Primary extends ModelBase
         Primary_Bar_Bottom_Front_2.setTextureSize( 128, 128 );
         Primary_Bar_Bottom_Front_2.addBox( -13.5F, -1F, -0.5F, 27, 2, 1);
         Primary_Bar_Bottom_Front_2.setRotationPoint( -5F, 5.9F, 0F );
+        //Display_Stand_Base = new ModelRenderer( this, 16, 0 );
+        //Display_Stand_Base.setTextureSize( 128, 128 );
+        //Display_Stand_Base.addBox( -1F, -2F, -1F, 2, 4, 2);
+        //Display_Stand_Base.setRotationPoint( -6F, 2F, -13F );
+        //Display_Stand_Top = new ModelRenderer( this, 22, 0 );
+        ////Display_Stand_Top.setTextureSize( 128, 128 );
+        //Display_Stand_Top.addBox( -0.5F, -0.5F, -0.5F, 1, 1, 1);
+        //Display_Stand_Top.setRotationPoint( -6F, 0F, -13F );
     }
 
    public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7)
@@ -817,6 +827,16 @@ public class ModelAirshipFrame1Primary extends ModelBase
         Primary_Bar_Bottom_Front_2.rotateAngleY = 1.570796F;
         Primary_Bar_Bottom_Front_2.rotateAngleZ = 0F;
         Primary_Bar_Bottom_Front_2.renderWithRotation(par7);
+
+        //Display_Stand_Base.rotateAngleX = 0F;
+        //Display_Stand_Base.rotateAngleY = 0F;
+        //Display_Stand_Base.rotateAngleZ = 0F;
+        //Display_Stand_Base.renderWithRotation(par7);
+
+        //Display_Stand_Top.rotateAngleX = 0F;
+        //Display_Stand_Top.rotateAngleY = 0F;
+        //Display_Stand_Top.rotateAngleZ = 0F;
+        //Display_Stand_Top.renderWithRotation(par7);
 
     }
 

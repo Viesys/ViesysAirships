@@ -9,15 +9,16 @@ import net.minecraft.block.material.Material;
 
 public class BlockFenceVM extends BlockFence {
 	
-	public BlockFenceVM(String unlocalizedNameIn, Material materialIn, SoundType soundTypeIn) 
+	public BlockFenceVM(String nameIn, Material materialIn, SoundType soundTypeIn) 
 	{
 		super(materialIn, null);
-		BlockHelper.setBlockName(this, unlocalizedNameIn);
+		BlockHelper.setBlockName(this, nameIn);
 		
-		this.setHarvestLevel("pickaxe", 2);
-		this.setHardness(5.0F);
+		this.setHarvestLevel("pickaxe", 1);
+		this.setHardness(15.0F);
+		this.setResistance(50.0F);
 		this.setSoundType(soundTypeIn);
-		this.useNeighborBrightness=true;
 		this.setCreativeTab(ViesMachines.tabBlocks);
+		this.setLightOpacity(255);
 	}
 }

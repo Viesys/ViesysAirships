@@ -1,23 +1,25 @@
 package com.vies.viesmachines.client.gui.machines;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
-import com.vies.viesmachines.api.EnumsVM;
+import com.vies.viesmachines.api.ItemsVM;
 import com.vies.viesmachines.api.References;
 import com.vies.viesmachines.api.util.LogHelper;
+import com.vies.viesmachines.common.entity.machines.EntityMachineBase;
 import com.vies.viesmachines.common.entity.machines.EntityMachineFlying;
+import com.vies.viesmachines.common.entity.machines.EntityMachineFuel;
+import com.vies.viesmachines.common.entity.machines.EntityMachineGround;
+import com.vies.viesmachines.common.entity.machines.EntityMachineWater;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -34,30 +36,32 @@ public class GuiMachineHUD extends Gui {
 	private final int hudHeight;
 	private float speedMod;
 	
-	private EntityMachineFlying flyingMachine;
+	private EntityMachineFuel machine;
+	private ArrayList activeBuffIcons = new ArrayList();
+	private ArrayList activeDebuffIcons = new ArrayList();
 	
 	public GuiMachineHUD()
 	{
 		super();
 		
-		hudWidth = 108;
-        hudHeight = 26;
+		this.hudWidth = 108;
+        this.hudHeight = 26;
         
-        fontRenderer = mc.fontRenderer;
+        this.fontRenderer = this.mc.fontRenderer;
 	}
 	
 	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public void onRenderFlyingMachineBarPre(RenderGameOverlayEvent.Pre event) 
 	{
-		if(event.getType() == ElementType.ALL) 
+		if (event.getType() == ElementType.ALL) 
 		{
-			if(mc.player.getRidingEntity() instanceof EntityMachineFlying)
+			if (mc.player.getRidingEntity() instanceof EntityMachineBase)
 		    {
 				GuiIngameForge.renderHealthMount = false;
 		    }
 			else
 			{
-				if(GuiIngameForge.renderHealthMount == false)
+				if (GuiIngameForge.renderHealthMount == false)
 				{
 					GuiIngameForge.renderHealthMount = true;
 				}
@@ -68,158 +72,151 @@ public class GuiMachineHUD extends Gui {
 	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public void onRenderFlyingMachineBar(RenderGameOverlayEvent.Post event) 
 	{
-		
-		if(event.getType() == ElementType.ALL) 
+		if (event.getType() == ElementType.ALL) 
 		{
-			if(mc.player.getRidingEntity() instanceof EntityMachineFlying)
+			if (mc.player.getRidingEntity() instanceof EntityMachineFuel)
 		    {
-				this.flyingMachine = (EntityMachineFlying) Minecraft.getMinecraft().player.getRidingEntity();
+				this.machine = (EntityMachineFuel) Minecraft.getMinecraft().player.getRidingEntity();
 				
 				GlStateManager.enableRescaleNormal();
 	            GlStateManager.enableBlend();
 	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 	            
-	            //Add this block of code before you draw the section of your texture containing transparency
+	            // Add this block of code before you draw the section of your texture containing transparency:
 	 			GlStateManager.pushAttrib();
 	 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	 			GlStateManager.disableLighting();
 	 			
-	 			//Alpha test and blend needed due to vanilla or Forge rendering bug
+	 			// Alpha test and blend needed due to vanilla or Forge rendering bug:
 	 			GlStateManager.enableAlpha();
 	 			GlStateManager.enableBlend();
+	 			
+	            // Screen resolution:
+				ScaledResolution sr = new ScaledResolution(mc);
+	            int hudX = sr.getScaledWidth() / 2 - (this.hudWidth / 2); // left edge of GUI
+	            int hudY = sr.getScaledHeight() - 56; // top edge of GUI
+	            
+	            int hudXDefault = hudX + 45;
+	            int hudYDefault = hudY;
 	         	
 	            Minecraft.getMinecraft().getTextureManager().bindTexture(FLYING_HUD_TEXTURE);
 				
-	            //Screen resolution
-				ScaledResolution sr = new ScaledResolution(mc);
-	            int hudX = sr.getScaledWidth() / 2 - (this.hudWidth / 2); // left edge of GUI
-	            
-	            int hudY = sr.getScaledHeight() - 56; //2; // top edge of GUI
-	            
-	            //int hudYtest = sr.getScaledHeight() - 56;
-	            
-	            //int textX = hudX + 30; // xcoord for text
-	            //int textY = hudY + 22; // ycoord for text
-	            //int ledX = 1;
-				
-	            int hudXDefault = hudX + 45;//+ this.hudWidth;
-	            int hudYDefault = hudY;
-	            //LogHelper.info("X = " + hudX);
-	            //LogHelper.info("Y = " + (hudYtest - (hudYtest/2)));
-	            
+	            // Renders the Main image:
 	            GlStateManager.pushMatrix();
 				{
 					GlStateManager.translate(hudXDefault, hudYDefault, 0);
-					//GlStateManager.scale(0.5F, 0.5F, 0.5F);
 					
-					//Draw the background static texture.
-					drawTexturedModalRect(0, 0, 0, 0, 108, 26
-							//hudWidth, hudHeight
-							);
+					// Draw the background static texture:
+					this.drawTexturedModalRect(0, 0, 0, 0, 101, 26);
 				}
 				GlStateManager.popMatrix();
 				
-				//Bottom lower fuel bar
-				//Creates a solid green bar
-				//if(this.machine.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_NORMAL.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
-				//{
-				//	drawTexturedModalRect(hudX + 36, hudY + 31, 36, 72, hudX, 6);
-				//}
-				//else
-				{
-					int fuelbarwidth1 = (int)(((float) this.flyingMachine.getFuel() / (this.flyingMachine.getFuelTotal())) * 101);
-					
-					drawTexturedModalRect(hudXDefault, hudYDefault + 9, 128, 9, fuelbarwidth1, 10);
-				}
-				
-				//Top bigger stack bar
-				//Creates a solid green bar
-				//if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_NORMAL.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
-				//{
-				//	drawTexturedModalRect(hudX + 2, hudY + 14, 2, 66, 177, 6);
-				//}
-				//else
-				//{
-				//	int fuelbarwidth2 = (int)(((float) this.flyingMachine.fuelItemStackSize / 64) * 178);
-				//	drawTexturedModalRect(hudX + 2, hudY + 14, 2, 53, fuelbarwidth2, 6);
-				//}
-				
-				//Airship lights on
-				//if(this.flyingMachine.getStoredFuel() >= 1)
-				//{
-				//	drawTexturedModalRect(hudX + 16, hudY, 16, 44, 150, 7);
-				//}
-				
-				//Draw Module Icon
-				//GlStateManager.pushMatrix();
-				//{
-				//	GlStateManager.translate(hudX + 85, hudY + 2, 0);
-				//	GlStateManager.scale(1.5, 1.5, 1.5);
-					
-				//	if(this.flyingMachine.getModuleActiveSlot1() > 0)
-				//	{
-				//		this.drawModuleIcon(this.flyingMachine.getModuleActiveSlot1());
-				//	}
-				//}
-				//GlStateManager.popMatrix();
-				
-				//Draw Yellow Border over Module Icon
-				//if(this.airship.getModuleActiveSlot1() > 0)
-				//{
-				//	this.drawTexturedModalRect(hudX + 83, hudY + 0, 0, 224, 16, 16);
-				//}
-				
-				//Altitude Logic
-				//this.renderHUDAltitude(hudX, hudY);
-				
-				//Timer Logic
-				//this.renderHUDFuelTimer(hudXDefault, hudYDefault);
-				
-				
-				
-				this.renderHUDMachineHP(hudXDefault, hudYDefault);
-				
-				this.renderHUDMachineEP(hudXDefault, hudYDefault);
-				
-				//
-				this.drawItemStack(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance(), hudXDefault, hudYDefault);
-				
-				
-				//Shows the Item in the fuel slot regardless of creative or survival.
-				if (!this.flyingMachine.inventory.getStackInSlot(0).isEmpty())
+				// Machine lights on:
+				if (this.machine.getFuel() >= 1
+				|| this.mc.player.isCreative())
 				{
 					GlStateManager.pushMatrix();
 					{
-						GlStateManager.translate(hudXDefault+88, hudYDefault+2.5, 0);
-						GlStateManager.scale(0.5, 0.5, 0.5);
+						GlStateManager.translate(hudXDefault + 84.5, hudYDefault, 0);
 						
-						this.drawCenteredString(fontRenderer, "x", 0, 0, Color.WHITE.getRGB());
+						// Left Light:
+						this.drawTexturedModalRect(0, 0, 101, 0, 4, 7);
 					}
 					GlStateManager.popMatrix();
-					
-					
 					GlStateManager.pushMatrix();
 					{
-						GlStateManager.translate(hudXDefault+95, hudYDefault+3, 0);
-						GlStateManager.scale(0.5, 0.5, 0.5);
+						GlStateManager.translate(hudXDefault + 97.5, hudYDefault, 0);
 						
-						this.drawCenteredString(fontRenderer, Integer.toString(this.flyingMachine.getItemstackFuelSize()), 0, 0, Color.WHITE.getRGB());
+						// Right Light:
+						this.drawTexturedModalRect(0, 0, 101, 0, 4, 7);
 					}
 					GlStateManager.popMatrix();
 				}
 				
-				//GlStateManager.pushMatrix();
-				//{
-				//	GlStateManager.translate(hudXDefault+95, hudYDefault+3, 0);
-				//	GlStateManager.scale(0.5, 0.5, 0.5);
-					
-				//	this.drawCenteredString(fontRenderer, Integer.toString(0), 0, 0, Color.WHITE.getRGB());
-				//}
-				//GlStateManager.popMatrix();
+				// Is machine armed light:
+				if (this.machine.getArmed())
+				{
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault + 66.5, hudYDefault + 2, 0);
+						
+						this.drawTexturedModalRect(0, 0, 101, 7, 5, 5);
+					}
+					GlStateManager.popMatrix();
+				}
+				
+				
+				this.renderBuffIcons(hudXDefault, hudYDefault);
+				this.renderDebuffIcons(hudXDefault, hudYDefault);
+				
+				
+				//this.getSpecialStat(this.machine, hudXDefault, hudYDefault);
+				
+				// Handles Fuel Display logic:
+				if (this.mc.player.isCreative())
+				{
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault, hudYDefault + 9, 0);
+						
+						// Draws the 'Creative' fuel bar:
+						this.drawTexturedModalRect(0, 0, 128, 8, 101, 7);
+					}
+					GlStateManager.popMatrix();
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault + 51, hudYDefault + 10.5, 0);
+						GlStateManager.scale(0.5, 0.5, 0.5);
+						
+						// Draws the black box the 'Creative Mode' text goes over:
+						this.drawRect(-25-14, -3, 23+14, 10, Color.BLACK.getRGB());
+						//this.drawRect(-25, -3, 23, 9, Color.BLACK.getRGB());
+						this.centeredString(fontRenderer, this.stringToRainbow("Creative Mode", false), 0, 0, Color.WHITE.getRGB());
+					}
+					GlStateManager.popMatrix();
+				}
+				else
+				{
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault, hudYDefault + 9, 0);
+						
+						int fuelbarwidth = (int)(((float) this.machine.getFuel() / (this.machine.getFuelTotal())) * 101);
+						
+						// Draws the fuel bar:
+						this.drawTexturedModalRect(0, 0, 128, 0, fuelbarwidth, 7);
+					}
+					GlStateManager.popMatrix();
+				}
+				
+				this.renderHUDMachineHealth(hudXDefault, hudYDefault);
+				this.renderHUDMachineEnergy(hudXDefault, hudYDefault);
+				this.renderHUDMachineDurability(hudXDefault, hudYDefault);
+				
+				//Use for ammo
+				if (!this.machine.inventory.getStackInSlot(0).isEmpty())
+				{
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault - 0.875, hudYDefault, 0);
+						
+						this.drawItemStack(ItemsVM.MACHINE_PELLETS.getDefaultInstance(), 0, 0);
+					}
+					GlStateManager.popMatrix();
+				}
+				
+				// Shows the item in the fuel slot regardless of creative or survival:
+				if (!this.machine.inventory.getStackInSlot(0).isEmpty())
+				{
+					GlStateManager.pushMatrix();
+					{
+						GlStateManager.translate(hudXDefault + 16.125, hudYDefault, 0);
+						
+						this.drawItemStack(this.machine.inventory.getStackInSlot(0).getItem().getDefaultInstance(), 0, 0);
+					}
+					GlStateManager.popMatrix();
+				}
+				
 				
 				
 				GlStateManager.popAttrib();
@@ -227,618 +224,334 @@ public class GuiMachineHUD extends Gui {
 		}
 	}
 	
+	//==================================================
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/**
-	@SubscribeEvent(priority=EventPriority.NORMAL)
-	public void onRenderMachineBar(RenderGameOverlayEvent.Post event) 
+	/**  */
+	private TextFormatting getColorTextHealth()
 	{
-		if(event.getType() == ElementType.ALL) 
+		TextFormatting textColor = TextFormatting.WHITE;
+		
+		if (this.machine.getHealth() == 0)
 		{
-			GuiIngameForge.renderFood = true;
-			
-			this.isMachine = mc.player.getRidingEntity() instanceof EntityMachineBase;
-			
-			if(this.isMachine)
-		    {
-				this.machine = (EntityMachineBase) Minecraft.getMinecraft().player.getRidingEntity();
-				
-				GlStateManager.enableRescaleNormal();
-	            GlStateManager.enableBlend();
-	            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-	            
-	            //Add this block of code before you draw the section of your texture containing transparency
-	 			GlStateManager.pushAttrib();
-	 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	 			GlStateManager.disableLighting();
-	 			
-	 			//Alpha test and blend needed due to vanilla or Forge rendering bug
-	 			GlStateManager.enableAlpha();
-	 			GlStateManager.enableBlend();
-	         	
-	            Minecraft.getMinecraft().getTextureManager().bindTexture(HUD_TEXTURE);
-				
-	            //Screen resolution
-				ScaledResolution sr = new ScaledResolution(mc);
-	            int hudX = sr.getScaledWidth() / 2 - (hudWidth / 2); // left edge of GUI
-	            int hudY = 2; // top edge of GUI
-	            int textX = hudX + 30; // xcoord for text
-	            int textY = hudY + 22; // ycoord for text
-	            int ledX = 1;
-				
-				//Draw the background static texture.
-				drawTexturedModalRect(hudX, hudY, 0, 0, hudWidth, hudHeight + 2);
-				
-				//Bottom lower fuel bar
-				//Creates a solid green bar
-				//if(this.machine.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_NORMAL.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
-				//{
-				//	drawTexturedModalRect(hudX + 36, hudY + 31, 36, 72, hudX, 6);
-				//}
-				//else
-				{
-					int fuelbarwidth1 = (int)(((float) this.machine.getStoredFuel() / (this.machine.getStoredFuelTotal())) * 110);
-					
-					drawTexturedModalRect(hudX + 36, hudY + 31, 36, 59, fuelbarwidth1, 6);
-				}
-				
-				//Top bigger stack bar
-				//Creates a solid green bar
-				//if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_NORMAL.getMetadata()
-				//|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
-				//{
-				//	drawTexturedModalRect(hudX + 2, hudY + 14, 2, 66, 177, 6);
-				//}
-				//else
-				{
-					int fuelbarwidth2 = (int)(((float) this.machine.getFuelItemStackSizePowered() / 64) * 178);
-					drawTexturedModalRect(hudX + 2, hudY + 14, 2, 53, fuelbarwidth2, 6);
-				}
-				
-				//Airship lights on
-				if(this.machine.getStoredFuel() >= 1)
-				{
-					drawTexturedModalRect(hudX + 16, hudY, 16, 44, 150, 7);
-				}
-				
-				//Draw Module Icon
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudX + 85, hudY + 2, 0);
-					GlStateManager.scale(1.5, 1.5, 1.5);
-					
-					if(this.airship.getModuleActiveSlot1() > 0)
-					{
-						this.drawModuleIcon(this.airship.getModuleActiveSlot1());
-					}
-				}
-				GlStateManager.popMatrix();
-				
-				//Draw Yellow Border over Module Icon
-				if(this.airship.getModuleActiveSlot1() > 0)
-				{
-					this.drawTexturedModalRect(hudX + 83, hudY + 0, 0, 224, 16, 16);
-				}
-				
-				//Altitude Logic
-				this.renderHUDAltitude(hudX, hudY);
-				
-				//Timer Logic
-				this.renderHUDFuelTimer(hudX, hudY);
-				
-				GlStateManager.popAttrib();
-		    }
+			textColor = TextFormatting.BLACK;
 		}
+		else if (this.machine.getHealth() <= (this.machine.getMaxHealth() * 0.24))
+		{
+			textColor = TextFormatting.RED;
+		}
+		else if (this.machine.getHealth() <= (this.machine.getMaxHealth() * 0.49))
+		{
+			textColor = TextFormatting.YELLOW;
+		}
+		else if (this.machine.getHealth() <= (this.machine.getMaxHealth() * 0.74))
+		{
+			textColor = TextFormatting.GREEN;
+		}
+		else if (this.machine.getHealth() <= (this.machine.getMaxHealth() * 0.99))
+		{
+			textColor = TextFormatting.AQUA;
+		}
+		else if (this.machine.getHealth() == this.machine.getMaxHealth())
+		{
+			textColor = TextFormatting.AQUA;
+		}
+		
+		return textColor;
 	}
 	
-	*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private void drawModuleIcon(int metaIn)
+	/**  */
+	private TextFormatting getColorTextEnergy()
 	{
-		if(metaIn == EnumsVM.ModuleType.ALTITUDE_LESSER.getMetadata())
+		TextFormatting textColor = TextFormatting.WHITE;
+		
+		if (this.machine.getEnergy() == 0)
 		{
-			this.drawTexturedModalRect(0, 0, 0, 248, 8, 8);
+			textColor = TextFormatting.BLACK;
 		}
-		if(metaIn == EnumsVM.ModuleType.ALTITUDE_NORMAL.getMetadata())
+		else if (this.machine.getEnergy() <= (this.machine.getMaxEnergy() * 0.24))
 		{
-			this.drawTexturedModalRect(0, 0, 8, 248, 8, 8);
+			textColor = TextFormatting.RED;
 		}
-		if(metaIn == EnumsVM.ModuleType.ALTITUDE_GREATER.getMetadata())
+		else if (this.machine.getEnergy() <= (this.machine.getMaxEnergy() * 0.49))
 		{
-			this.drawTexturedModalRect(0, 0, 16, 248, 8, 8);
+			textColor = TextFormatting.YELLOW;
+		}
+		else if (this.machine.getEnergy() <= (this.machine.getMaxEnergy() * 0.74))
+		{
+			textColor = TextFormatting.GREEN;
+		}
+		else if (this.machine.getEnergy() <= (this.machine.getMaxEnergy() * 0.99))
+		{
+			textColor = TextFormatting.AQUA;
+		}
+		else if (this.machine.getEnergy() == this.machine.getMaxEnergy())
+		{
+			textColor = TextFormatting.AQUA;
 		}
 		
-		if(metaIn == EnumsVM.ModuleType.SPEED_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 24, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.SPEED_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 32, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.SPEED_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 40, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.STORAGE_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 48, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.STORAGE_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 56, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.STORAGE_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 64, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.FUEL_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 72, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.FUEL_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 80, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.FUEL_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 88, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.MUSIC_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 96, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.MUSIC_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 104, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.MUSIC_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 112, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.CRUISE_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 120, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.CRUISE_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 128, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.CRUISE_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 136, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.WATER_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 144, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.WATER_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 152, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.WATER_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 160, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.INFINITE_FUEL_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 168, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.INFINITE_FUEL_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 176, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 184, 248, 8, 8);
-		}
-		
-		if(metaIn == EnumsVM.ModuleType.BOMB_LESSER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 192, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.BOMB_NORMAL.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 200, 248, 8, 8);
-		}
-		if(metaIn == EnumsVM.ModuleType.BOMB_GREATER.getMetadata())
-		{
-			this.drawTexturedModalRect(0, 0, 208, 248, 8, 8);
-		}
+		return textColor;
 	}
 	
-	
-	/**
-	private void renderHUDAltitude(int hudXIn, int hudYIn)
+	/**  */
+	private TextFormatting getColorTextDurability()
 	{
-		//Altitude Current
-		//Check if Altitude module is in.
-		if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_LESSER.getMetadata()
-		|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_NORMAL.getMetadata()
-		|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_GREATER.getMetadata())
+		TextFormatting textColor = TextFormatting.WHITE;
+		
+		if (this.machine.getDurabilityPercent() <= 1)
 		{
-			GlStateManager.pushMatrix();
-			{
-				GlStateManager.translate(hudXIn + 74, hudYIn + 6, 0);
-				GlStateManager.scale(0.75, 0.75, 0.75);
-				
-				this.drawCenteredString(fontRenderer, Integer.toString(this.airship.getPosition().getY()), 0, 0, 60155);
-			}
-			GlStateManager.popMatrix();
+			textColor = TextFormatting.DARK_RED;
 		}
-		else
+		else if (this.machine.getDurabilityPercent() <= (100 * 0.24))
 		{
-			//Makes Current Altitude color Red
-			if(this.airship.getPosition().getY() >= (int)EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude() - 5)
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 74, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, Integer.toString(this.airship.getPosition().getY()), 0, 0, 16711680);
-				}
-				GlStateManager.popMatrix();
-			}
-			//Makes Current Altitude color Yellow
-			else if(this.airship.getPosition().getY() >= (int)EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude() - 15)
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 74, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, Integer.toString(this.airship.getPosition().getY()), 0, 0, 16187136);
-				}
-				GlStateManager.popMatrix();
-			}
-			//Makes Current Altitude color Green
-			else
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 74, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, Integer.toString(this.airship.getPosition().getY()), 0, 0, 196352);
-				}
-				GlStateManager.popMatrix();
-			}
+			textColor = TextFormatting.RED;
+		}
+		else if (this.machine.getDurabilityPercent() <= (100 * 0.49))
+		{
+			textColor = TextFormatting.YELLOW;
+		}
+		else if (this.machine.getDurabilityPercent() <= (100 * 0.74))
+		{
+			textColor = TextFormatting.GREEN;
+		}
+		else if (this.machine.getDurabilityPercent() <= (100 * 0.99))
+		{
+			textColor = TextFormatting.AQUA;
+		}
+		else if (this.machine.getDurabilityPercent() == 100)
+		{
+			textColor = TextFormatting.AQUA;
 		}
 		
-		
-		
-		//Altitude Max
-		//Check if Altitude module is in.
-		if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_LESSER.getMetadata()
-		|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_NORMAL.getMetadata()
-		|| this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_GREATER.getMetadata())
-		{
-			if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_LESSER.getMetadata())
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 108.5, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, "225", 0, 0, 60155);
-				}
-				GlStateManager.popMatrix();
-			}
-			else if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_NORMAL.getMetadata())
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 108.5, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, "250", 0, 0, 60155);
-				}
-				GlStateManager.popMatrix();
-			}
-			else if(this.airship.getModuleActiveSlot1() == EnumsVC.ModuleType.ALTITUDE_GREATER.getMetadata())
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 108.5, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, "\u221e", 0, 0, 60155);
-				}
-				GlStateManager.popMatrix();
-			}
-		}
-		else
-		{
-			//Makes Current Altitude color Red
-			if(this.airship.getPosition().getY() >= (int)EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude() - 5)
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 108.5, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, Integer.toString(EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude()), 0, 0, 16711680);
-				}
-				GlStateManager.popMatrix();
-			}
-			//Makes Current Altitude color Yellow
-			else if(this.airship.getPosition().getY() >= (int)EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude() - 15)
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 108.5, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, Integer.toString(EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude()), 0, 0, 16187136);
-				}
-				GlStateManager.popMatrix();
-			}
-			//Makes Current Altitude color Green
-			else
-			{
-				GlStateManager.pushMatrix();
-				{
-					GlStateManager.translate(hudXIn + 108.5, hudYIn + 6, 0);
-					GlStateManager.scale(0.75, 0.75, 0.75);
-					
-					this.drawCenteredString(fontRenderer, Integer.toString(EnumsVC.MainTierBalloon.byId(this.airship.getMainTierBalloon()).getMaxAltitude()), 0, 0, 196352);
-				}
-				GlStateManager.popMatrix();
-			}
-		}
+		return textColor;
 	}
 	
-	*/
-	
-	private void renderHUDFuelTimer(int hudXIn, int hudYIn)
+	/** Renders the Machine Health. */
+	private void renderHUDMachineHealth(int hudXIn, int hudYIn)
 	{
-		//Timer logic
-		int timer;
-		int remainder;
-		int minutes;
-		int seconds;
-		int hours;
-		/**
-		//Calculation from ticks to seconds.
-		if(this.flyingMachine.storedFuel == 0)
-		{
-			timer = ((((this.flyingMachine.getStoredFuel() / 10) + 18) + (this.flyingMachine.fuelItemStack / 10)) / 20);
-		}
-		else
-		{
-			timer = ((((this.flyingMachine.getStoredFuel() / this.flyingMachine.storedFuel) + 18) + (this.flyingMachine.fuelItemStack / this.flyingMachine.storedFuel)) / 20);
-		}
-		*/
-		
-		
-		timer = 0;
-				
-		if(this.flyingMachine.getFuel() > 0)
-		{
-			timer = 
-					(int) ((
-							//(float)(this.flyingMachine.storedFuel) / 
-							(float)(this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance()))
-							/
-							(float)(this.flyingMachine.getFuel())
-					)*100);
-		}
-		
-		//else
-		//{
-		//	timer = 0;
-		//}
-				//((((this.flyingMachine.storedFuel / this.flyingMachine.storedFuel) + 18) + (this.flyingMachine.fuelItemStack / this.flyingMachine.storedFuel)) / 20);
-		
-		
-		remainder = (timer % 3600);
-		minutes = remainder / 60;
-		seconds = remainder % 60;
-		hours = timer / 3600;
-		
-		//Converts time to normal standards
-		String hrs = (hours < 10 ? "0" : "") + hours;
-		String mins = (minutes < 10 ? "0" : "") + minutes;
-		String secs = (seconds < 10 ? "0" : "") + seconds;
-		
-		//if(this.flyingMachine.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_LESSER.getMetadata()
-		//|| this.flyingMachine.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_NORMAL.getMetadata()
-		//|| this.flyingMachine.getModuleActiveSlot1() == EnumsVC.ModuleType.INFINITE_FUEL_GREATER.getMetadata())
-		//{
-			//Time "infinite" to display
-		//	String s1 = "\u221e" + ":" + "\u221e" + ":" + "\u221e";
-			
-		//	GlStateManager.pushMatrix();
-		//	{
-		//		GlStateManager.translate(hudXIn + 91, hudYIn + 22.5, 0);
-		//		GlStateManager.scale(0.75, 0.75, 0.75);
-				
-		//		this.drawCenteredString(fontRenderer, s1, 0, 0, 196352);
-		//	}
-		//	GlStateManager.popMatrix();
-		//}
-		//else
-		
-		
-		LogHelper.info(
-				
-				this.flyingMachine.getFuel() 
-				+ "  -  " +
-				this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance())
-				+ "  -  " +
-				
-				(
-						(float)this.flyingMachine.getFuel() / 
-						(float)this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.getItemstackFuelItem()).getDefaultInstance())
-				)*100
-				
-				+ "  -  " +
-				
-				//(float)this.flyingMachine.storedFuel / this.flyingMachine.getItemBurnTime(Item.getItemById(this.flyingMachine.itemstackFuelItem).getDefaultInstance()) * 100
-				//+ "  -  " +
-				timer 
-				
-				
-				);
-		
-		{
-			//Time in seconds to display
-			String s = hrs + ":" + mins + ":" + secs;
-			String s2 = "*" + References.localNameVC("vm.hud.nofuel") + "*";
-			
-			GlStateManager.pushMatrix();
-			{
-				GlStateManager.translate(hudXIn + 72.5, hudYIn + 3, 0);
-				GlStateManager.scale(0.5, 0.5, 0.5);
-				
-				//Aqua timer
-				if(hours > 0)
-				{
-					this.drawCenteredString(fontRenderer, s, 0, 0, 60155);
-				}
-				else if(minutes >= 15 && seconds >= 0)
-				{
-					this.drawCenteredString(fontRenderer, s, 0, 0, 60155);
-				}
-				//Green timer
-				else if(minutes >= 5 && seconds >= 0)
-				{
-					this.drawCenteredString(fontRenderer, s, 0, 0, 1571584);
-				}
-				//Yellow timer
-				else if(minutes >= 2 && seconds >= 0)
-				{
-					this.drawCenteredString(fontRenderer, s, 0, 0, 15596288);
-				}
-				//Orange timer
-				else if(minutes >= 1 && seconds >= 0)
-				{
-					this.drawCenteredString(fontRenderer, s, 0, 0, 16493312);
-				}
-				//Red timer
-				else if(seconds >= 1)
-				{
-					this.drawCenteredString(fontRenderer, s, 0, 0, 16449536);
-				}
-				//Timer Off
-				else if(seconds >= 0)
-				{
-					this.drawCenteredString(fontRenderer, s2, 0, 0, 16449536);
-				}
-			}
-			GlStateManager.popMatrix();
-		}
-	}
-	
-	private void renderHUDMachineHP(int hudXIn, int hudYIn)
-	{
-		int HPcolor = Color.CYAN.getRGB();
-		
-		if ((int)this.flyingMachine.getHealth() < (int)this.flyingMachine.getMaxHealth())
-		{
-			HPcolor = Color.RED.getRGB();
-		}
-		
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(hudXIn + 7, hudYIn + 3, 0);
-			GlStateManager.scale(0.5, 0.5, 0.5);
+			GlStateManager.translate(hudXIn + 13.25, hudYIn + 3.25, 0);
+			GlStateManager.scale(0.375, 0.375, 0.375);
 			
-			this.drawCenteredString(fontRenderer, Integer.toString((int)this.flyingMachine.getHealth())
-					, 0, 0, HPcolor);
+			this.centeredString(fontRenderer, this.getColorTextHealth() + Integer.toString((int)this.machine.getHealth()), 0, 0, Color.RED.getRGB());
 		}
 		GlStateManager.popMatrix();
 	}
 	
-	private void renderHUDMachineEP(int hudXIn, int hudYIn)
+	/** Renders the Machine Energy. */
+	private void renderHUDMachineEnergy(int hudXIn, int hudYIn)
 	{
-		int EPcolor = Color.CYAN.getRGB();
-		
-		if ((int)this.flyingMachine.getHealth() < (int)this.flyingMachine.getMaxHealth())
-		{
-			EPcolor = Color.YELLOW.getRGB();
-		}
 		GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(hudXIn + 19.5, hudYIn + 3, 0);
-			GlStateManager.scale(0.5, 0.5, 0.5);
+			GlStateManager.translate(hudXIn + 32.25, hudYIn + 3.25, 0);
+			GlStateManager.scale(0.375, 0.375, 0.375);
 			
-			this.drawCenteredString(fontRenderer, Integer.toString((int)this.flyingMachine.getEnergy())
-					, 0, 0, EPcolor);
+			this.centeredString(fontRenderer, this.getColorTextEnergy() + Integer.toString((int)this.machine.getEnergy()), 0, 0, Color.YELLOW.getRGB());
 		}
 		GlStateManager.popMatrix();
 	}
 	
-
-	/** Holds a instance of RenderItem, used to draw the achievement icons on screen (is based on ItemStack) */
-    //protected RenderItem itemRender;
-    
-	/**
-     * Draws an ItemStack.
-     */
+	/** Renders the Machine Durability. */
+	private void renderHUDMachineDurability(int hudXIn, int hudYIn)
+	{
+		GlStateManager.pushMatrix();
+		{
+			GlStateManager.translate(hudXIn + 51.25, hudYIn + 3.25, 0);
+			GlStateManager.scale(0.375, 0.375, 0.375);
+			
+			this.centeredString(fontRenderer, this.getColorTextDurability() + Integer.toString((int)this.machine.getDurabilityPercent()) + "%", 0, 0, Color.GREEN.getRGB());
+		}
+		GlStateManager.popMatrix();
+	}
+	
+	/** Draws an ItemStack with stack size. */
     private void drawItemStack(ItemStack stack, int xIn, int yIn)
     {
-    	//Minecraft.getMinecraft().getRenderItem().renderItem(stack, TransformType.GROUND);
-        
     	GlStateManager.pushMatrix();
 		{
-			GlStateManager.translate(xIn + 76.35, yIn + 1.5, 0);
-			
-			//GlStateManager.translate(x + 0, y + 0, 0);
+			GlStateManager.translate(xIn + 73.35, yIn + 1.5, 0);
 			GlStateManager.scale(0.41, 0.41, 0.41);
 			
-			
-			
 			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
+			Minecraft.getMinecraft().getRenderItem().renderItemOverlayIntoGUI(this.fontRenderer, stack, 0, 0, Integer.toString(this.machine.inventory.getStackInSlot(0).getCount()));
 		}
 		GlStateManager.popMatrix();
-		
-		
-    	//GlStateManager.translate(0.0F, 0.0F, 32.0F);
-        //this.zLevel = 200.0F;
-        ////this.itemRender.zLevel = 200.0F;
-        //net.minecraft.client.gui.FontRenderer font = stack.getItem().getFontRenderer(stack);
-        //if (font == null) font = fontRenderer;
-        //this.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
-       //t//his.zLevel = 0.0F;
-        //this.itemRender.zLevel = 0.0F;
     }
+    
+    /** Makes the inserted string centered with no shadow. */
+    public void centeredString(FontRenderer fontRendererIn, String text, int x, int y, int color)
+    {
+        fontRendererIn.drawString(text, (x - fontRendererIn.getStringWidth(text) / 2), y, color);
+    }
+	
+	/** Makes the inserted string rainbow colored. */
+	protected static String stringToRainbow(String parString, boolean parReturnToBlack)
+	{
+	   int stringLength = parString.length();
+	   
+	   if (stringLength < 1)
+	   {
+	      return "";
+	   }
+	   
+	   String outputString = "";
+	   
+	   TextFormatting[] colorChar = 
+	      {
+	         TextFormatting.RED,
+	         TextFormatting.DARK_RED,
+	         TextFormatting.GOLD,
+	         TextFormatting.YELLOW,
+	         TextFormatting.GREEN,
+	         TextFormatting.DARK_GREEN,
+	         TextFormatting.AQUA,
+	         TextFormatting.BLUE,
+	         TextFormatting.LIGHT_PURPLE,
+	         TextFormatting.DARK_PURPLE
+	      };
+	   
+	   for (int i = 0; i < stringLength; i++)
+	   {
+	      outputString = outputString+colorChar[i%8]+parString.substring(i, i+1);
+	   }
+	   
+	   // Return color to a common one after (most chat is white, but for other GUI might want black):
+	   if (parReturnToBlack)
+	   {
+	      return outputString+TextFormatting.BLACK;
+	   }
+	   
+	   return outputString+TextFormatting.WHITE;
+	}
+    
+	/** Renders buff icons. */
+	private void renderBuffIcons(int hudXDefault, int hudYDefault)
+	{
+		// Clears the buff array:
+		this.activeBuffIcons.clear();
+		
+		// Checks what is active and adds them to the buff array:
+		// Special ammo use on:
+		if (this.machine.getArmed()
+		&& this.machine.getAmmoAmount() > 0
+		&& this.machine.getAmmoType() > 0)
+		{
+			this.activeBuffIcons.add(0);
+		}
+		
+		// Autorun on:
+		if (this.machine.getAutorun())
+		{
+			this.activeBuffIcons.add(12);
+		}
+		
+		//TO BE DETERMINED:
+		//if (this.machine.getPoweredOn())
+		//{
+			//this.activeBuffIcons.add(24);
+		//}
+		
+		// Checks if the buff array has something in it:
+		if (!this.activeBuffIcons.isEmpty())
+		{
+			GlStateManager.pushMatrix();
+			{
+				GlStateManager.translate(hudXDefault + 1.75, hudYDefault + 17.5, 0);
+				GlStateManager.scale(0.5, 0.5, 0.5);
+				
+				// Renders the active buff icons in order:
+				for (int i = 0; i < this.activeBuffIcons.size(); i++)
+				{
+					this.drawTexturedModalRect((i * 16), 0, 244, (int) this.activeBuffIcons.get(i), 12, 12);
+				}
+			}
+			GlStateManager.popMatrix();
+		}
+	}
+    
+	/** Renders debuff icons. */
+	private void renderDebuffIcons(int hudXDefault, int hudYDefault)
+	{
+		// Clears the debuff array:
+		this.activeDebuffIcons.clear();
+		
+		// Checks what is active and adds them to the debuff array:
+		// Durability warnings:
+		if (this.machine.getDurabilityPercent() <= 4)
+		{
+			this.activeDebuffIcons.add(12);
+		}
+		else if (this.machine.getDurabilityPercent() <= 24)
+		{
+			this.activeDebuffIcons.add(0);
+		}
+		
+		// Static charge buildup:
+		if (this.machine.getPrimedForLightningStrike() > 0)
+		{
+			this.activeDebuffIcons.add(24);
+		}
+		
+		// Checks if the array has something in it:
+		if (!this.activeDebuffIcons.isEmpty())
+		{
+			GlStateManager.pushMatrix();
+			{
+				GlStateManager.translate(hudXDefault + 1.75, hudYDefault + 17.5, 0);
+				GlStateManager.scale(0.5, 0.5, 0.5);
+				
+				String test = "";
+				
+				// Renders the active debuff icons in order:
+				for (int i = 0; i < this.activeDebuffIcons.size(); i++)
+				{
+					Minecraft.getMinecraft().getTextureManager().bindTexture(FLYING_HUD_TEXTURE);
+					
+					this.drawTexturedModalRect(51 + (i * 16), 0, 232, (int) this.activeDebuffIcons.get(i), 12, 12);
+					
+					if (Integer.parseInt(this.activeDebuffIcons.get(i).toString()) == 24)
+					{
+						GlStateManager.translate(59 + (i * 16), 7, 0);
+						GlStateManager.scale(0.5, 0.5, 0.5);
+						test = Integer.toString(this.machine.getPrimedForLightningStrike());
+						this.centeredString(fontRenderer, test, 0, 0, Color.WHITE.getRGB());
+						
+						Minecraft.getMinecraft().getTextureManager().bindTexture(FLYING_HUD_TEXTURE);
+					}
+				}
+			}
+			GlStateManager.popMatrix();
+		}
+	}
+	
+	private void getSpecialStat(EntityMachineBase machineIn, int hudXDefault, int hudYDefault)
+	{
+		if (machineIn instanceof EntityMachineGround)
+		{
+			LogHelper.info("This is a Ground Mount");
+		}
+		
+		if (machineIn instanceof EntityMachineWater)
+		{
+			LogHelper.info("This is a Water Mount");
+		}
+		
+		if (machineIn instanceof EntityMachineFlying)
+		{
+			EntityMachineFlying machineFlying = (EntityMachineFlying) machineIn;
+			
+			GlStateManager.pushMatrix();
+			{
+				GlStateManager.translate(hudXDefault + 1.75, hudYDefault + 17.5, 0);
+				GlStateManager.scale(0.5, 0.5, 0.5);
+				
+				this.centeredString(fontRenderer, Integer.toString((int)machineFlying.posY), 0, 0, Color.WHITE.getRGB());
+				this.centeredString(fontRenderer, Integer.toString(machineFlying.getMaxElevation()), 0, 0, Color.WHITE.getRGB());
+			}
+			GlStateManager.popMatrix();
+			
+			
+			
+		}
+	}
 }
