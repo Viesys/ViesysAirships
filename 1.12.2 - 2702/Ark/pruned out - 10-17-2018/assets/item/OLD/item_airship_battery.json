@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "viesysmachines:items/item_airship_battery"
-    }
-}

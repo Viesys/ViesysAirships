@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "viesysmachines:items/upgrades/item_upgrade_airship_core_tier3"
-    }
-}

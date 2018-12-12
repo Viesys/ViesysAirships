@@ -1,8 +1,0 @@
-{
-    "parent": "block/half_slab",
-    "textures": {
-        "bottom": "viesmachines:blocks/block_xegonite_slab_bottom",
-        "top": "viesmachines:blocks/block_xegonite_slab_top",
-        "side": "viesmachines:blocks/block_xegonite_slab_side"
-    }
-}

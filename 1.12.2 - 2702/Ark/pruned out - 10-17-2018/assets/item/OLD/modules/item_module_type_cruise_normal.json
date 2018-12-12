@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "viesysmachines:items/modules/item_module_type_cruise_normal"
-    }
-}

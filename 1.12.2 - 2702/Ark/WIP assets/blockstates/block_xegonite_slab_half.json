@@ -1,7 +1,0 @@
-{
-    "variants": 
-    {
-        "half=bottom": { "model": "viesmachines:block_xegonite_slab_bottom" },
-        "half=top": { "model": "viesmachines:block_xegonite_slab_top" }
-    }
-}
